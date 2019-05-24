@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -13,13 +12,13 @@ namespace Terminals.Network
 {
     internal class Server
     {
-        private readonly IPersistence persistence;
+        internal const int SERVER_PORT = 1216;
 
         private readonly ConnectionManager connectionManager;
 
+        private readonly IPersistence persistence;
+
         private readonly TcpListener server = new TcpListener(IPAddress.Any, SERVER_PORT);
-        internal const int SERVER_PORT = 1216;
-        public bool ServerOnline { get; private set; }
 
         public Server(IPersistence persistence, ConnectionManager connectionManager)
         {
@@ -27,15 +26,17 @@ namespace Terminals.Network
             this.connectionManager = connectionManager;
         }
 
+        public bool ServerOnline { get; private set; }
+
         public void Stop()
         {
-            ServerOnline = false;
+            this.ServerOnline = false;
         }
 
         public void Start()
         {
-            ServerOnline = true;
-            ThreadPool.QueueUserWorkItem(new WaitCallback(StartServer), null);
+            this.ServerOnline = true;
+            ThreadPool.QueueUserWorkItem(this.StartServer, null);
         }
 
         private static void FinishDisconnect(Socket incomingSocket)
@@ -47,15 +48,16 @@ namespace Terminals.Network
         {
             try
             {
-                while (ServerOnline)
+                while (this.ServerOnline)
                 {
                     this.server.Start();
-                    Socket incomingSocket = this.server.AcceptSocket();
-                    byte[] received = new byte[512];
+                    var incomingSocket = this.server.AcceptSocket();
+                    var received = new byte[512];
                     incomingSocket.Receive(received, received.Length, 0);
-                    string userName = Encoding.Default.GetString(received);
-                    SendFavorites(incomingSocket);
+                    var userName = Encoding.Default.GetString(received);
+                    this.SendFavorites(incomingSocket);
                 }
+
                 this.server.Stop();
             }
             catch (Exception exc)
@@ -66,34 +68,36 @@ namespace Terminals.Network
 
         private void SendFavorites(Socket incomingSocket)
         {
-            ArrayList list = FavoritesToSharedList();
-            Byte[] data = SharedListToBinaryData(list);
+            var list = this.FavoritesToSharedList();
+            var data = SharedListToBinaryData(list);
             incomingSocket.Send(data);
             FinishDisconnect(incomingSocket);
         }
 
         private ArrayList FavoritesToSharedList()
         {
-            IFavorites favoritesToShare = this.persistence.Favorites;
-            ArrayList list = new ArrayList();
-            
-            foreach (IFavorite favorite in favoritesToShare)
+            var favoritesToShare = this.persistence.Favorites;
+            var list = new ArrayList();
+
+            foreach (var favorite in favoritesToShare)
             {
-                FavoriteConfigurationElement configFavorite = ModelConverterV2ToV1.ConvertToFavorite(favorite, persistence, this.connectionManager);
+                var configFavorite =
+                    ModelConverterV2ToV1.ConvertToFavorite(favorite, this.persistence, this.connectionManager);
                 list.Add(SharedFavorite.ConvertFromFavorite(this.persistence, configFavorite));
             }
+
             return list;
         }
 
-        private static Byte[] SharedListToBinaryData(ArrayList favorites)
+        private static byte[] SharedListToBinaryData(ArrayList favorites)
         {
-            MemoryStream favs = Serialize.SerializeBinary(favorites);
+            var favs = Serialize.SerializeBinary(favorites);
 
             if (favs != null && favs.Length > 0)
             {
                 if (favs.CanRead && favs.Position > 0)
                     favs.Position = 0;
-                Byte[] data = favs.ToArray();
+                var data = favs.ToArray();
                 favs.Close();
                 favs.Dispose();
                 return data;

@@ -12,7 +12,7 @@ namespace Terminals
             const string MESSAGE = "Do you wan't to start with local files store?\r\n" +
                                    "Yes - start with files store (You will be able to fix the configuration.)\r\n" +
                                    "No - Exit application";
-            DialogResult fallback = MessageBox.Show(MESSAGE, "Terminals database connection failed",
+            var fallback = MessageBox.Show(MESSAGE, "Terminals database connection failed",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
             return fallback == DialogResult.Yes;
         }

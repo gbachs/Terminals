@@ -6,20 +6,22 @@ using System.Linq;
 namespace Terminals.Data
 {
     /// <summary>
-    /// In previous versions Groups and Tags.
-    /// Now both features are solved here.
+    ///     In previous versions Groups and Tags.
+    ///     Now both features are solved here.
     /// </summary>
     internal class Groups : IGroups, IFavoriteGroups
     {
-        private readonly DataDispatcher dispatcher;
-        private readonly FilePersistence persistence;
         private readonly Dictionary<Guid, IGroup> cache;
+
+        private readonly DataDispatcher dispatcher;
+
+        private readonly FilePersistence persistence;
 
         internal Groups(FilePersistence persistence)
         {
             this.persistence = persistence;
             this.dispatcher = persistence.Dispatcher;
-            this.cache = new Dictionary<Guid,IGroup>();
+            this.cache = new Dictionary<Guid, IGroup>();
         }
 
         private bool AddToCache(Group group)
@@ -36,12 +38,10 @@ namespace Terminals.Data
             var added = new List<IGroup>();
             if (groups == null)
                 return added;
-            
+
             foreach (Group group in groups)
-            {
-                if (AddToCache(group))
+                if (this.AddToCache(group))
                     added.Add(group);
-            }
 
             return added;
         }
@@ -51,12 +51,10 @@ namespace Terminals.Data
             var deleted = new List<IGroup>();
             if (groups == null)
                 return deleted;
-            
+
             foreach (Group group in groups)
-            {
-                if (DeleteFromCache(group))
+                if (this.DeleteFromCache(group))
                     deleted.Add(group);
-            }
 
             return deleted;
         }
@@ -79,9 +77,9 @@ namespace Terminals.Data
 
         internal List<IGroup> Merge(List<IGroup> newGroups)
         {
-            List<IGroup> oldGroups = this.ToList();
-            List<IGroup> addedGroups = ListsHelper.GetMissingSourcesInTarget(newGroups, oldGroups);
-            List<IGroup> deletedGroups = ListsHelper.GetMissingSourcesInTarget(oldGroups, newGroups);
+            var oldGroups = this.ToList();
+            var addedGroups = ListsHelper.GetMissingSourcesInTarget(newGroups, oldGroups);
+            var deletedGroups = ListsHelper.GetMissingSourcesInTarget(oldGroups, newGroups);
             addedGroups = this.AddAllToCache(addedGroups);
             this.dispatcher.ReportGroupsAdded(addedGroups);
             deletedGroups = this.DeleteFromCache(deletedGroups);
@@ -90,8 +88,8 @@ namespace Terminals.Data
         }
 
         /// <summary>
-        /// Deletes all favorites from all groups and removes empty groups after that.
-        /// Also fires removed groups event.
+        ///     Deletes all favorites from all groups and removes empty groups after that.
+        ///     Also fires removed groups event.
         /// </summary>
         internal void DeleteFavoritesFromAllGroups(List<IFavorite> favoritesToRemove)
         {
@@ -103,19 +101,17 @@ namespace Terminals.Data
 
         internal static void RemoveFavoritesFromGroups(List<IFavorite> favoritesToRemove, IEnumerable<IGroup> groups)
         {
-            foreach (IGroup group in groups)
-            {
+            foreach (var group in groups)
                 group.RemoveFavorites(favoritesToRemove);
-            }
         }
 
         #region IGroups members
 
         /// <summary>
-        /// Gets group by its name. If there are more than one with this name returns the first found.
-        /// If there is no group with such name, returns null. Search isn't case sensitive.
-        /// Use this only to identify, if group with required name isn't already present,
-        /// to prevent name duplicities.
+        ///     Gets group by its name. If there are more than one with this name returns the first found.
+        ///     If there is no group with such name, returns null. Search isn't case sensitive.
+        ///     Use this only to identify, if group with required name isn't already present,
+        ///     to prevent name duplicities.
         /// </summary>
         public IGroup this[string groupName]
         {
@@ -128,7 +124,7 @@ namespace Terminals.Data
         }
 
         /// <summary>
-        /// Gets a group by its unique identifier. Returns null, if the identifier is unknown.
+        ///     Gets a group by its unique identifier. Returns null, if the identifier is unknown.
         /// </summary>
         internal IGroup this[Guid groupId]
         {
@@ -143,7 +139,7 @@ namespace Terminals.Data
 
         public void Add(IGroup group)
         {
-            if (AddToCache(group as Group))
+            if (this.AddToCache(group as Group))
             {
                 this.dispatcher.ReportGroupsAdded(new List<IGroup> {group});
                 this.persistence.SaveImmediatelyIfRequested();
@@ -176,9 +172,9 @@ namespace Terminals.Data
         public void Delete(IGroup group)
         {
             var toRemove = group as Group;
-            if (DeleteFromCache(toRemove))
+            if (this.DeleteFromCache(toRemove))
             {
-                List<IFavorite> changedFavorites = group.Favorites;
+                var changedFavorites = group.Favorites;
                 this.RemoveChildGroupsParent(toRemove);
                 this.dispatcher.ReportGroupsDeleted(new List<IGroup> {group});
                 this.dispatcher.ReportFavoritesUpdated(changedFavorites);
@@ -188,17 +184,15 @@ namespace Terminals.Data
 
         private void RemoveChildGroupsParent(Group group)
         {
-            List<IGroup> childs = this.GetChildGroups(group);
+            var childs = this.GetChildGroups(group);
             SetParentToRoot(childs);
             this.dispatcher.ReportGroupsUpdated(childs);
         }
 
         private static void SetParentToRoot(List<IGroup> childs)
         {
-            foreach (IGroup child in childs)
-            {
+            foreach (var child in childs)
                 child.Parent = null;
-            }
         }
 
         private List<IGroup> GetChildGroups(Group group)
@@ -217,7 +211,7 @@ namespace Terminals.Data
 
         public void Rebuild()
         {
-            List<IGroup> emptyGroups = this.GetEmptyGroups();
+            var emptyGroups = this.GetEmptyGroups();
             this.DeleteFromCache(emptyGroups);
             this.dispatcher.ReportGroupsDeleted(emptyGroups);
             this.persistence.SaveImmediatelyIfRequested();

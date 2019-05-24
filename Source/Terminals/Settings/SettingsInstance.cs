@@ -3,16 +3,10 @@
     internal partial class Settings
     {
         /// <summary>
-        /// Gets the thread safe singleton instance.
-        /// Use only for startup procedure, will removed in the future.
+        ///     Gets the thread safe singleton instance.
+        ///     Use only for startup procedure, will removed in the future.
         /// </summary>
-        public static Settings Instance
-        {
-            get
-            {
-                return Nested.instance;
-            }
-        }
+        public static Settings Instance => Nested.instance;
 
         private static class Nested
         {

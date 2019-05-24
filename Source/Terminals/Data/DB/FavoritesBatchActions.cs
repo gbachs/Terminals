@@ -7,13 +7,15 @@ using Terminals.Data.FilePersisted;
 namespace Terminals.Data.DB
 {
     /// <summary>
-    /// Does required action on group of favorites
+    ///     Does required action on group of favorites
     /// </summary>
     internal class FavoritesBatchActions : FavoriteBatchUpdates
     {
-        private readonly Favorites favorites;
         private readonly EntitiesCache<DbFavorite> cache;
+
         private readonly DataDispatcher dispatcher;
+
+        private readonly Favorites favorites;
 
         internal FavoritesBatchActions(Favorites favorites, EntitiesCache<DbFavorite> cache, IPersistence persistence)
             : base(persistence)
@@ -26,21 +28,21 @@ namespace Terminals.Data.DB
         internal override void ApplyUserNameToFavorites(List<IFavorite> selectedFavorites, string newUserName)
         {
             var values = new ApplyValueParams(base.ApplyUserNameToFavorites,
-                                          selectedFavorites, newUserName, "UserName");
+                selectedFavorites, newUserName, "UserName");
             this.ApplyValue(values);
         }
 
         internal override void ApplyDomainNameToFavorites(List<IFavorite> selectedFavorites, string newDomainName)
         {
             var values = new ApplyValueParams(base.ApplyDomainNameToFavorites,
-                                          selectedFavorites, newDomainName, "DomainName");
+                selectedFavorites, newDomainName, "DomainName");
             this.ApplyValue(values);
         }
 
         internal override void SetPasswordToFavorites(List<IFavorite> selectedFavorites, string newPassword)
         {
             var values = new ApplyValueParams(base.SetPasswordToFavorites,
-                                          selectedFavorites, newPassword, "Password");
+                selectedFavorites, newPassword, "Password");
             this.ApplyValue(values);
         }
 
@@ -52,14 +54,14 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                string message = string.Format("Unable to apply {0} to favorites", applyParams.PropertyName);
-                this.dispatcher.ReportActionError(ApplyValue, applyParams, this, exception, message);
+                var message = string.Format("Unable to apply {0} to favorites", applyParams.PropertyName);
+                this.dispatcher.ReportActionError(this.ApplyValue, applyParams, this, exception, message);
             }
         }
 
         private void TryApplyValue(ApplyValueParams applyParams)
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
                 var dbFavorites = applyParams.Favorites.Cast<DbFavorite>().ToList();
                 database.Cache.AttachAll(dbFavorites);

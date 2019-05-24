@@ -70,8 +70,8 @@ namespace Terminals.Forms
 
         public override string ToString()
         {
-            return string.Format("ConenctionDefinition:Favorites={0},Console={1},NewWindow={2},NewFavorite={3}",
-                this.Favorites.Count(), this.ForceConsole, this.ForceNewWindow, this.NewFavorite);
+            return
+                $"ConenctionDefinition:Favorites={this.Favorites.Count()},Console={this.ForceConsole},NewWindow={this.ForceNewWindow},NewFavorite={this.NewFavorite}";
         }
     }
 }

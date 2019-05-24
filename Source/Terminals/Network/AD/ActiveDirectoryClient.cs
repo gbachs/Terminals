@@ -5,44 +5,49 @@ using System.Threading;
 namespace Terminals.Network
 {
     internal delegate void ListComputersDoneDelegate(bool success);
+
     internal delegate void ComputerFoundDelegate(ActiveDirectoryComputer computer);
-    
+
     internal class ActiveDirectoryClient
     {
-        internal event ListComputersDoneDelegate ListComputersDone;
-        internal event ComputerFoundDelegate ComputerFound;
         private readonly object runLock = new object();
 
-        private Boolean isRunning;
-        internal Boolean IsRunning
+        private bool cancelationPending;
+
+        private bool isRunning;
+
+        internal bool IsRunning
         {
             get
             {
-                lock (runLock)
+                lock (this.runLock)
                 {
                     return this.isRunning;
                 }
             }
             private set
             {
-                lock (runLock)
+                lock (this.runLock)
                 {
                     this.isRunning = value;
                 }
             }
         }
 
-        private Boolean cancelationPending;
-        private Boolean CancelationPending
+        private bool CancelationPending
         {
             get
             {
-                lock (runLock)
+                lock (this.runLock)
                 {
                     return this.cancelationPending;
                 }
             }
         }
+
+        internal event ListComputersDoneDelegate ListComputersDone;
+
+        internal event ComputerFoundDelegate ComputerFound;
 
         internal void FindComputers(ActiveDirectorySearchParams searchParams)
         {
@@ -50,33 +55,30 @@ namespace Terminals.Network
             {
                 this.cancelationPending = false;
                 this.IsRunning = true;
-                ThreadPool.QueueUserWorkItem(new WaitCallback(StartScan), searchParams); 
+                ThreadPool.QueueUserWorkItem(this.StartScan, searchParams);
             }
         }
 
         internal void Stop()
         {
-            lock (runLock)
+            lock (this.runLock)
             {
                 if (this.isRunning)
-                {
                     this.cancelationPending = true;
-                }
             }
         }
-
 
         private void StartScan(object state)
         {
             try
             {
                 var searchParams = state as ActiveDirectorySearchParams;
-                SearchComputers(searchParams);
-                FireListComputersDone(true);
+                this.SearchComputers(searchParams);
+                this.FireListComputersDone(true);
             }
             catch (Exception exc)
             {
-                FireListComputersDone(false);
+                this.FireListComputersDone(false);
                 Logging.Error("Could not list the computers on the domain: " + state, exc);
             }
             finally
@@ -87,11 +89,11 @@ namespace Terminals.Network
 
         private void SearchComputers(ActiveDirectorySearchParams searchParams)
         {
-            using (DirectoryEntry entry = new DirectoryEntry(string.Format("LDAP://{0}", searchParams.Domain)))
+            using (var entry = new DirectoryEntry(string.Format("LDAP://{0}", searchParams.Domain)))
             {
-                using (DirectorySearcher searcher = CreateSearcher(entry, searchParams))
+                using (var searcher = CreateSearcher(entry, searchParams))
                 {
-                    using (SearchResultCollection found = searcher.FindAll())
+                    using (var found = searcher.FindAll())
                     {
                         this.ImportResults(searchParams, found);
                     }
@@ -105,7 +107,7 @@ namespace Terminals.Network
             {
                 if (this.CancelationPending)
                     return;
-                DirectoryEntry computer = result.GetDirectoryEntry();
+                var computer = result.GetDirectoryEntry();
                 var comp = ActiveDirectoryComputer.FromDirectoryEntry(searchParams.Domain, computer);
                 this.FireComputerFound(comp);
             }
@@ -116,12 +118,12 @@ namespace Terminals.Network
             var searcher = new DirectorySearcher(entry);
             searcher.Asynchronous = true;
             searcher.Filter = searchParams.Filter;
-            searcher.SearchRoot = new DirectoryEntry("LDAP://"+searchParams.Searchbase);
+            searcher.SearchRoot = new DirectoryEntry("LDAP://" + searchParams.Searchbase);
             searcher.PageSize = searchParams.PageSize;
             return searcher;
         }
 
-        private void FireListComputersDone(Boolean success)
+        private void FireListComputersDone(bool success)
         {
             if (this.ListComputersDone != null)
                 this.ListComputersDone(success);
@@ -130,7 +132,7 @@ namespace Terminals.Network
         private void FireComputerFound(ActiveDirectoryComputer computer)
         {
             if (this.ComputerFound != null)
-                ComputerFound(computer);
+                this.ComputerFound(computer);
         }
     }
 }

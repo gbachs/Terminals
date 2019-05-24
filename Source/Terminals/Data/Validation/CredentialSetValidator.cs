@@ -5,6 +5,7 @@ namespace Terminals.Data.Validation
     internal class CredentialSetValidator : AbstractValidator<ICredentialSet>
     {
         internal const string NAME_MIN_LENGTH = "Name cant be empty.";
+
         internal const string USERNAME_MIN_LENGTH = "UserName cant be empty.";
 
         public CredentialSetValidator()

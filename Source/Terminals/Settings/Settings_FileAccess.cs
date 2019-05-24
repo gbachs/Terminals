@@ -1,15 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Windows.Forms;
+using System.Xml;
 using Terminals.Data;
 using Terminals.Properties;
 using SysConfig = System.Configuration;
-using System.Reflection;
-using System.Windows.Forms;
-using System.Xml;
 
 namespace Terminals.Configuration
 {
@@ -18,128 +16,123 @@ namespace Terminals.Configuration
     internal partial class Settings
     {
         /// <summary>
-        /// Informs lisseners, that configuration file was changed by another application
-        /// or another Terminals instance. In this case all cached not saved data are lost.
-        /// </summary>
-        internal event ConfigurationChangedHandler ConfigurationChanged;
-
-        private readonly FileLocations fileLocations;
-        internal FileLocations FileLocations
-        {
-            get { return fileLocations; }
-        }
-
-        private System.Configuration.Configuration _config = null;
-
-        private System.Configuration.Configuration Config
-        {
-            get
-            {
-                if (_config == null)
-                    _config = GetConfiguration();
-
-                return _config;
-            }
-        }
-
-        private IDataFileWatcher fileWatcher;
-
-        /// <summary>
-        /// Prevent concurent updates on config file by another program
+        ///     Prevent concurent updates on config file by another program
         /// </summary>
         private static readonly Mutex fileLock = new Mutex(false, "Terminals.CodePlex.com.Settings");
 
+        private SysConfig.Configuration _config;
+
         /// <summary>
-        /// Flag informing, that configuration shouldnt be saved imediately, but after explicit call
-        /// This increases performance for 
+        ///     Flag informing, that configuration shouldnt be saved imediately, but after explicit call
+        ///     This increases performance for
         /// </summary>
         private bool delayConfigurationSave;
 
-        private Func<string, IDataFileWatcher> initializeFileWatcher;
+        private IDataFileWatcher fileWatcher;
 
-        internal Settings() : this(p => new DataFileWatcher(p))
+        private readonly Func<string, IDataFileWatcher> initializeFileWatcher;
+
+        internal Settings()
+            : this(p => new DataFileWatcher(p))
         {
         }
 
-        internal Settings(IDataFileWatcher fileWatcher) : this(p => fileWatcher)
+        internal Settings(IDataFileWatcher fileWatcher)
+            : this(p => fileWatcher)
         {
         }
 
         private Settings(Func<string, IDataFileWatcher> initializeFileWatcher)
         {
-            this.fileLocations = new FileLocations(this);
+            this.FileLocations = new FileLocations(this);
             this.initializeFileWatcher = initializeFileWatcher;
-            this.fileLocations.ConfigFileChanged += this.ConfigFilePathChanged;
+            this.FileLocations.ConfigFileChanged += this.ConfigFilePathChanged;
         }
 
-        /// <summary>
-        /// Real filewatch works, only, if the path is correctly configured.
-        /// Changing the path after the watch is created, doesnt raise any event.
-        /// </summary>
-        private void ConfigFilePathChanged(object sender, FileChangedEventArgs e)
-        {
-            this.fileWatcher = this.initializeFileWatcher(e.NewPath);
-            this.fileWatcher.FileChanged += new EventHandler(ConfigFileChanged);
-        }
+        internal FileLocations FileLocations { get; }
 
-        private void ConfigFileChanged(object sender, EventArgs e)
+        private SysConfig.Configuration Config
         {
-            TerminalsConfigurationSection old = GetSection();
-            ForceReload();
-            var args = ConfigurationChangedEventArgs.CreateFromSettings(old, GetSection());
-            FireConfigurationChanged(args);
-        }
-
-        private void FireConfigurationChanged(ConfigurationChangedEventArgs args)
-        {
-            if (ConfigurationChanged != null)
+            get
             {
-                ConfigurationChanged(args);
+                if (this._config == null)
+                    this._config = this.GetConfiguration();
+
+                return this._config;
             }
         }
 
         /// <summary>
-        /// Because filewatcher is created before the main form in GUI thread.
-        /// This lets to fire the file system watcher events in GUI thread. 
+        ///     Informs lisseners, that configuration file was changed by another application
+        ///     or another Terminals instance. In this case all cached not saved data are lost.
+        /// </summary>
+        internal event ConfigurationChangedHandler ConfigurationChanged;
+
+        /// <summary>
+        ///     Real filewatch works, only, if the path is correctly configured.
+        ///     Changing the path after the watch is created, doesnt raise any event.
+        /// </summary>
+        private void ConfigFilePathChanged(object sender, FileChangedEventArgs e)
+        {
+            this.fileWatcher = this.initializeFileWatcher(e.NewPath);
+            this.fileWatcher.FileChanged += this.ConfigFileChanged;
+        }
+
+        private void ConfigFileChanged(object sender, EventArgs e)
+        {
+            var old = this.GetSection();
+            this.ForceReload();
+            var args = ConfigurationChangedEventArgs.CreateFromSettings(old, this.GetSection());
+            this.FireConfigurationChanged(args);
+        }
+
+        private void FireConfigurationChanged(ConfigurationChangedEventArgs args)
+        {
+            if (this.ConfigurationChanged != null)
+                this.ConfigurationChanged(args);
+        }
+
+        /// <summary>
+        ///     Because filewatcher is created before the main form in GUI thread.
+        ///     This lets to fire the file system watcher events in GUI thread.
         /// </summary>
         internal void AssignSynchronizationObject(ISynchronizeInvoke synchronizer)
         {
-            fileWatcher.AssignSynchronizer(synchronizer);
+            this.fileWatcher.AssignSynchronizer(synchronizer);
         }
 
         internal void ForceReload()
         {
-            _config = GetConfiguration();
+            this._config = this.GetConfiguration();
         }
 
         /// <summary>
-        /// Prevents save configuration after each change. After this call, no settings are saved
-        /// into config file, until you call SaveAndFinishDelayedUpdate.
-        /// This dramatically increases performance. Use this method for batch updates.
+        ///     Prevents save configuration after each change. After this call, no settings are saved
+        ///     into config file, until you call SaveAndFinishDelayedUpdate.
+        ///     This dramatically increases performance. Use this method for batch updates.
         /// </summary>
         internal void StartDelayedUpdate()
         {
-            delayConfigurationSave = true;
+            this.delayConfigurationSave = true;
         }
 
         /// <summary>
-        /// Stops prevent write changes into config file and immediately writes last state.
-        /// Usually the changes are saved immediately
+        ///     Stops prevent write changes into config file and immediately writes last state.
+        ///     Usually the changes are saved immediately
         /// </summary>
         internal void SaveAndFinishDelayedUpdate()
         {
-            delayConfigurationSave = false;
-            SaveImmediatelyIfRequested();
+            this.delayConfigurationSave = false;
+            this.SaveImmediatelyIfRequested();
         }
 
         private void SaveImmediatelyIfRequested()
         {
-            if (!delayConfigurationSave)
-            {
+            if (!this.delayConfigurationSave)
                 try
                 {
-                    fileLock.WaitOne();  // lock the file for changes by other application instance
-                    Save();
+                    fileLock.WaitOne(); // lock the file for changes by other application instance
+                    this.Save();
                 }
                 catch (Exception exception)
                 {
@@ -149,79 +142,80 @@ namespace Terminals.Configuration
                 {
                     fileLock.ReleaseMutex();
                 }
-            }
         }
 
         private void Save()
         {
-            fileWatcher.StopObservation();
-            Config.Save();
-            fileWatcher.StartObservation();
-            Debug.WriteLine(String.Format("Terminals.config file saved."));
+            this.fileWatcher.StopObservation();
+            this.Config.Save();
+            this.fileWatcher.StartObservation();
+            Debug.WriteLine("Terminals.config file saved.");
         }
 
-        private System.Configuration.Configuration GetConfiguration()
+        private SysConfig.Configuration GetConfiguration()
         {
             try
             {
-                CreateConfigFileIfNotExist();
-                return OpenConfiguration();
+                this.CreateConfigFileIfNotExist();
+                return this.OpenConfiguration();
             }
             catch (Exception exc) // try to recover the file
             {
                 Logging.Error("Get Configuration", exc);
-                BackUpConfigFile();
-                SaveDefaultConfigFile();
-                return OpenConfiguration();
+                this.BackUpConfigFile();
+                this.SaveDefaultConfigFile();
+                return this.OpenConfiguration();
             }
         }
 
         private void CreateConfigFileIfNotExist()
         {
-            if (!File.Exists(fileLocations.Configuration))
-                SaveDefaultConfigFile();
+            if (!File.Exists(this.FileLocations.Configuration))
+                this.SaveDefaultConfigFile();
         }
 
-        private ExeConfigurationFileMap CreateConfigFileMap()
+        private SysConfig.ExeConfigurationFileMap CreateConfigFileMap()
         {
-            ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
-            configFileMap.ExeConfigFilename = fileLocations.Configuration;
+            var configFileMap = new SysConfig.ExeConfigurationFileMap();
+            configFileMap.ExeConfigFilename = this.FileLocations.Configuration;
             return configFileMap;
         }
 
-        private System.Configuration.Configuration OpenConfiguration()
+        private SysConfig.Configuration OpenConfiguration()
         {
-            ExeConfigurationFileMap configFileMap = CreateConfigFileMap();
+            var configFileMap = this.CreateConfigFileMap();
             fileLock.WaitOne();
-            System.Configuration.Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+            var config =
+                SysConfig.ConfigurationManager.OpenMappedExeConfiguration(configFileMap,
+                    SysConfig.ConfigurationUserLevel.None);
             fileLock.ReleaseMutex();
             return config;
         }
 
         private void BackUpConfigFile()
         {
-            if (File.Exists(fileLocations.Configuration))
+            if (File.Exists(this.FileLocations.Configuration))
             {
-                string backupFileName = GetBackupFileName();
+                var backupFileName = GetBackupFileName();
                 // back it up before we do anything
-                File.Copy(fileLocations.Configuration, backupFileName);
+                File.Copy(this.FileLocations.Configuration, backupFileName);
                 // now delete it
-                File.Delete(fileLocations.Configuration);
+                File.Delete(this.FileLocations.Configuration);
             }
         }
 
         private static string GetBackupFileName()
         {
-            string newGUID = Guid.NewGuid().ToString();
-            long fileDate = DateTime.Now.ToFileTime();
-            string backupFile = String.Format("Terminals-{1}-{0}.config", newGUID, fileDate);
+            var newGUID = Guid.NewGuid().ToString();
+            var fileDate = DateTime.Now.ToFileTime();
+            var backupFile = string.Format("Terminals-{1}-{0}.config", newGUID, fileDate);
             return FileLocations.GetFullPath(backupFile);
         }
 
         internal void SaveDefaultConfigFile()
         {
-            string templateConfigFile = Resources.Terminals;
-            File.WriteAllText(fileLocations.Configuration, templateConfigFile);
+            var templateConfigFile = Resources.Terminals;
+            File.WriteAllText(this.FileLocations.Configuration, templateConfigFile);
         }
 
         private static void MoveAndDeleteFile(string fileName, string tempFileName)
@@ -238,91 +232,81 @@ namespace Terminals.Configuration
                 File.Delete(fileName);
         }
 
-        private System.Configuration.Configuration ImportConfiguration()
+        private SysConfig.Configuration ImportConfiguration()
         {
             // get a temp filename to hold the current settings which are failing
-            string tempFile = Path.GetTempFileName();
+            var tempFile = Path.GetTempFileName();
 
-            fileWatcher.StopObservation();
-            MoveAndDeleteFile(fileLocations.Configuration, tempFile);
-            SaveDefaultConfigFile();
-            fileWatcher.StartObservation();
-            System.Configuration.Configuration c = OpenConfiguration();
+            this.fileWatcher.StopObservation();
+            MoveAndDeleteFile(this.FileLocations.Configuration, tempFile);
+            this.SaveDefaultConfigFile();
+            this.fileWatcher.StartObservation();
+            var c = this.OpenConfiguration();
 
             // get a list of the properties on the Settings object (static props)
-            PropertyInfo[] propList = typeof(Settings).GetProperties();
+            var propList = typeof(Settings).GetProperties();
 
             // read all the xml from the erroring file
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
             doc.LoadXml(File.ReadAllText(tempFile));
 
             // get the settings root
-            XmlNode root = doc.SelectSingleNode("/configuration/settings");
+            var root = doc.SelectSingleNode("/configuration/settings");
             try
             {
                 // for each setting's attribute
                 foreach (XmlAttribute att in root.Attributes)
-                {
                     // scan for the related property if any
                     try
                     {
-                        foreach (PropertyInfo info in propList)
-                        {
+                        foreach (var info in propList)
                             try
                             {
                                 if (info.Name.ToLower() == att.Name.ToLower())
                                 {
                                     // found a matching property, try to set it
-                                    string val = att.Value;
+                                    var val = att.Value;
                                     info.SetValue(null, Convert.ChangeType(val, info.PropertyType), null);
                                     break;
                                 }
                             }
                             catch (Exception exc)
-                            {   // ignore the error
+                            {
+                                // ignore the error
                                 Logging.Error("Remapping Settings Inner", exc);
                             }
-                        }
                     }
                     catch (Exception exc) // ignore the error
                     {
                         Logging.Error("Remapping Settings Outer", exc);
                     }
-                }
             }
             catch (Exception exc) // ignore the error
             {
                 Logging.Error("Remapping Settings Outer Try", exc);
             }
 
-            XmlNodeList favs = doc.SelectNodes("/configuration/settings/favorites/add");
+            var favs = doc.SelectNodes("/configuration/settings/favorites/add");
             try
             {
                 foreach (XmlNode fav in favs)
-                {
                     try
                     {
-                        FavoriteConfigurationElement newFav = new FavoriteConfigurationElement();
+                        var newFav = new FavoriteConfigurationElement();
                         foreach (XmlAttribute att in fav.Attributes)
-                        {
                             try
                             {
-                                foreach (PropertyInfo info in newFav.GetType().GetProperties())
-                                {
+                                foreach (var info in newFav.GetType().GetProperties())
                                     try
                                     {
                                         if (info.Name.ToLower() == att.Name.ToLower())
                                         {
                                             // found a matching property, try to set it
-                                            string val = att.Value;
+                                            var val = att.Value;
                                             if (info.PropertyType.IsEnum)
-                                            {
                                                 info.SetValue(newFav, Enum.Parse(info.PropertyType, val), null);
-                                            }
                                             else
-                                            {
                                                 info.SetValue(newFav, Convert.ChangeType(val, info.PropertyType), null);
-                                            }
 
                                             break;
                                         }
@@ -331,21 +315,18 @@ namespace Terminals.Configuration
                                     {
                                         Logging.Error("Remapping Favorites 1", exc);
                                     }
-                                }
                             }
                             catch (Exception exc) // ignore the error
                             {
                                 Logging.Error("Remapping Favorites 2", exc);
                             }
-                        }
 
-                        AddFavorite(newFav);
+                        this.AddFavorite(newFav);
                     }
                     catch (Exception exc) // ignore the error
                     {
                         Logging.Error("Remapping Favorites 3", exc);
                     }
-                }
             }
             catch (Exception exc) // ignore the error
             {
@@ -359,15 +340,15 @@ namespace Terminals.Configuration
         {
             try
             {
-                return Config.GetSection("settings") as TerminalsConfigurationSection;
+                return this.Config.GetSection("settings") as TerminalsConfigurationSection;
             }
             catch (Exception exc)
             {
                 if (exc.Message.Contains("telnet"))
                 {
                     MessageBox.Show("You need to replace telnetrows, telnetcols, telnetfont, telnetbackcolor, "
-                    + "telnettextcolor, telnetcursorcolor with consolerows, consolecols, consolefont, consolebackcolor, "
-                    + "consoletextcolor, consolecursorcolor");
+                                    + "telnettextcolor, telnetcursorcolor with consolerows, consolecols, consolefont, consolebackcolor, "
+                                    + "consoletextcolor, consolecursorcolor");
                     return null;
                 }
 
@@ -376,8 +357,8 @@ namespace Terminals.Configuration
                 try
                 {
                     // kick into the import routine
-                    System.Configuration.Configuration configuration = ImportConfiguration();
-                    configuration = GetConfiguration();
+                    var configuration = this.ImportConfiguration();
+                    configuration = this.GetConfiguration();
                     if (configuration == null)
                         MessageBox.Show("Terminals was able to automatically upgrade your existing connections.");
                     return configuration.GetSection("settings") as TerminalsConfigurationSection;
@@ -386,7 +367,8 @@ namespace Terminals.Configuration
                 {
                     Logging.Error("Trying to import connections failed", importException);
 #if !DEBUG
-                    string message = string.Format("Terminals was NOT able to automatically upgrade your existing connections.\r\nError:{0}",
+                    string message =
+ string.Format("Terminals was NOT able to automatically upgrade your existing connections.\r\nError:{0}",
                         importException.Message);
                     MessageBox.Show(message);
 #endif

@@ -7,54 +7,21 @@ namespace Terminals.Network.WMI
     {
         public WMIServerCredentials()
         {
-            InitializeComponent();
+            this.InitializeComponent();
+        }
 
+        public string SelectedServer { get => this.comboBox1.Text; set => this.comboBox1.Text = value; }
 
-        }
-        public string SelectedServer
-        {
-            get
-            {
-                return this.comboBox1.Text;
-            }
-            set
-            {
-                this.comboBox1.Text = value;
-            }
-        }
-        public string Username
-        {
-            get
-            {
-                return this.UsernameTextbox.Text;
-            }
-            set
-            {
-                this.UsernameTextbox.Text = value;
-            }
-        }
-        public string Password
-        {
-            get
-            {
-                return this.PasswordTextbox.Text;
-            }
-            set
-            {
-                this.PasswordTextbox.Text = value;
-            }
-        }
+        public string Username { get => this.UsernameTextbox.Text; set => this.UsernameTextbox.Text = value; }
+
+        public string Password { get => this.PasswordTextbox.Text; set => this.PasswordTextbox.Text = value; }
 
         private void WMIServerCredentials_Load(object sender, EventArgs e)
         {
-            if (System.Environment.UserDomainName != null && System.Environment.UserDomainName != "")
-            {
-                this.UsernameTextbox.Text = string.Format(@"{0}\{1}", System.Environment.UserDomainName, System.Environment.UserName);
-            }
+            if (Environment.UserDomainName != null && Environment.UserDomainName != "")
+                this.UsernameTextbox.Text = string.Format(@"{0}\{1}", Environment.UserDomainName, Environment.UserName);
             else
-            {
-                this.UsernameTextbox.Text = System.Environment.UserName;
-            }
+                this.UsernameTextbox.Text = Environment.UserName;
 
             //try {
             //    foreach(FavoriteConfigurationElement elm in Settings.GetFavorites()) {

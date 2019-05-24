@@ -10,8 +10,9 @@ namespace Terminals.Data.FilePersisted
     {
         private const string FAVORITESINGROUP = "//t:FavoritesInGroup";
 
-        private readonly XmlNamespaceManager namespaceManager;
         private readonly XDocument document;
+
+        private readonly XmlNamespaceManager namespaceManager;
 
         private FavoritesXmlFile(XDocument document)
         {
@@ -41,18 +42,20 @@ namespace Terminals.Data.FilePersisted
 
         internal UnknonwPluginElements RemoveUnknownFavorites(string[] availableProtocols)
         {
-            IEnumerable<XElement> favorites = this.SelectElements("//t:Favorite");
-            List<XElement> unknownFavorites = favorites.Where(f => this.IsUnknownProtocol(f, availableProtocols)).ToList();
+            var favorites = this.SelectElements("//t:Favorite");
+            var unknownFavorites = favorites.Where(f => this.IsUnknownProtocol(f, availableProtocols)).ToList();
             unknownFavorites.ForEach(f => f.Remove());
-            IEnumerable<XElement> groupMembership = this.SelectElements(FAVORITESINGROUP);
-            Dictionary<string, List<XElement>> unknownMemberships = this.FilterGroupMembeship(groupMembership, unknownFavorites);
+            var groupMembership = this.SelectElements(FAVORITESINGROUP);
+            var unknownMemberships = this.FilterGroupMembeship(groupMembership, unknownFavorites);
             return new UnknonwPluginElements(unknownFavorites, unknownMemberships);
         }
 
-        private Dictionary<string, List<XElement>> FilterGroupMembeship(IEnumerable<XElement> favoritesInGroups, List<XElement> unknownFavorites)
+        private Dictionary<string, List<XElement>> FilterGroupMembeship(IEnumerable<XElement> favoritesInGroups,
+            List<XElement> unknownFavorites)
         {
-            string[] unknownFavoriteIds = unknownFavorites.Select(f => f.Attribute("id").Value).ToArray();
-            return favoritesInGroups.ToDictionary(FindGroupId, fg => this.FilterUnknownFavoritesForGroup(fg, unknownFavoriteIds));
+            var unknownFavoriteIds = unknownFavorites.Select(f => f.Attribute("id").Value).ToArray();
+            return favoritesInGroups.ToDictionary(FindGroupId,
+                fg => this.FilterUnknownFavoritesForGroup(fg, unknownFavoriteIds));
         }
 
         private List<XElement> FilterUnknownFavoritesForGroup(XElement favoritesInGroup, string[] unknownFavoriteIds)
@@ -88,21 +91,20 @@ namespace Terminals.Data.FilePersisted
 
         private void AppenUnknownGroupMembership(Dictionary<string, List<XElement>> unknownFavoritesInGroup)
         {
-            foreach (XElement favoritesInGroup in this.SelectElements(FAVORITESINGROUP))
-            {
+            foreach (var favoritesInGroup in this.SelectElements(FAVORITESINGROUP))
                 this.AddUnknownFavoritesToGroup(unknownFavoritesInGroup, favoritesInGroup);
-            }
         }
 
-        private void AddUnknownFavoritesToGroup(Dictionary<string, List<XElement>> unknownFavoritesInGroup, XElement favoritesInGroup)
+        private void AddUnknownFavoritesToGroup(Dictionary<string, List<XElement>> unknownFavoritesInGroup,
+            XElement favoritesInGroup)
         {
-            string groupId = FindGroupId(favoritesInGroup);
+            var groupId = FindGroupId(favoritesInGroup);
             List<XElement> toAdd = null;
 
             if (unknownFavoritesInGroup.TryGetValue(groupId, out toAdd))
             {
                 // missing backslash is not a mistake: search inside the element.
-                XElement favorites = this.SelectElements(favoritesInGroup, "t:Favorites").First();
+                var favorites = this.SelectElements(favoritesInGroup, "t:Favorites").First();
                 favorites.Add(toAdd);
             }
         }
@@ -114,7 +116,7 @@ namespace Terminals.Data.FilePersisted
 
         private void AppendUnknownFavorites(List<XElement> unknownFavorites)
         {
-            XElement favorites = this.SelectElements("//t:Favorites").First();
+            var favorites = this.SelectElements("//t:Favorites").First();
             favorites.Add(unknownFavorites);
         }
 

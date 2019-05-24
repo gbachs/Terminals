@@ -1,50 +1,59 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
 using System.Text;
+using System.Xml;
+using IconHandler;
 
 namespace Terminals.Wizard.MMC
 {
     internal class MMCFile
     {
-        System.IO.FileInfo mmcFileInfo;
-        string rawContents;
-        public string Name;
-        public bool Parsed = false;
-        public System.Drawing.Icon SmallIcon;
+        private readonly FileInfo mmcFileInfo;
 
-        public MMCFile(System.IO.FileInfo MMCFile)
+        public string Name;
+
+        public bool Parsed;
+
+        private string rawContents;
+
+        public Icon SmallIcon;
+
+        public MMCFile(FileInfo MMCFile)
         {
-            mmcFileInfo = MMCFile;
-            Parse();
+            this.mmcFileInfo = MMCFile;
+            this.Parse();
         }
+
         public MMCFile(string MMCFile)
         {
-            if (System.IO.File.Exists(MMCFile))
+            if (File.Exists(MMCFile))
             {
-                mmcFileInfo = new System.IO.FileInfo(MMCFile);
-                Parse();
+                this.mmcFileInfo = new FileInfo(MMCFile);
+                this.Parse();
             }
         }
+
         protected void Parse()
         {
             try
             {
-                rawContents = System.IO.File.ReadAllText(mmcFileInfo.FullName, Encoding.Default);
-                if (rawContents != null && rawContents.Trim() != "" && rawContents.StartsWith("<?xml"))
+                this.rawContents = File.ReadAllText(this.mmcFileInfo.FullName, Encoding.Default);
+                if (this.rawContents != null && this.rawContents.Trim() != "" && this.rawContents.StartsWith("<?xml"))
                 {
-                    System.Xml.XmlDocument xDoc = new System.Xml.XmlDocument();
-                    xDoc.LoadXml(rawContents);
-                    System.Xml.XmlNode node = xDoc.SelectSingleNode("/MMC_ConsoleFile/StringTables/StringTable/Strings");
-                    foreach (System.Xml.XmlNode cNode in node.ChildNodes)
+                    var xDoc = new XmlDocument();
+                    xDoc.LoadXml(this.rawContents);
+                    var node = xDoc.SelectSingleNode("/MMC_ConsoleFile/StringTables/StringTable/Strings");
+                    foreach (XmlNode cNode in node.ChildNodes)
                     {
-                        string name = cNode.InnerText;
+                        var name = cNode.InnerText;
                         if (name != "Favorites" && name != "Console Root")
                         {
-                            Name = name;
-                            Parsed = true;
+                            this.Name = name;
+                            this.Parsed = true;
                             break;
                         }
                     }
-
 
                     //System.Xml.XmlNode binarynode = xDoc.SelectSingleNode("/MMC_ConsoleFile/BinaryStorage");
                     //foreach (System.Xml.XmlNode child in binarynode.ChildNodes)
@@ -62,23 +71,18 @@ namespace Terminals.Wizard.MMC
                     //    }
                     //}
 
-
-                    System.Xml.XmlNode visual = xDoc.SelectSingleNode("/MMC_ConsoleFile/VisualAttributes/Icon");
+                    var visual = xDoc.SelectSingleNode("/MMC_ConsoleFile/VisualAttributes/Icon");
                     if (visual != null)
                     {
-                        string iconFile = visual.Attributes["File"].Value;
-                        int index = Convert.ToInt32(visual.Attributes["Index"].Value);
-                        System.Drawing.Icon[] icons = IconHandler.IconHandler.IconsFromFile(iconFile, IconHandler.IconSize.Small);
+                        var iconFile = visual.Attributes["File"].Value;
+                        var index = Convert.ToInt32(visual.Attributes["Index"].Value);
+                        var icons = IconHandler.IconHandler.IconsFromFile(iconFile, IconSize.Small);
                         if (icons != null && icons.Length > 0)
                         {
                             if (icons.Length > index)
-                            {
-                                SmallIcon = icons[index];
-                            }
+                                this.SmallIcon = icons[index];
                             else
-                            {
-                                SmallIcon = icons[0];
-                            }
+                                this.SmallIcon = icons[0];
                         }
                     }
                 }

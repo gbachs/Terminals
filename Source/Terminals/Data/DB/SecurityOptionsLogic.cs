@@ -3,30 +3,30 @@
 namespace Terminals.Data.DB
 {
     /// <summary>
-    /// Sql implementation of user credentials directly used on favorites.
-    /// Remember, that this type isn't used inside protocol options.
-    /// We don't use table per type mapping here, because the credential base doesn't have to be defined,
-    /// if user has selected StoredCredential. CredentialBase is implemented with lazy loading, 
-    /// e.g. this item has in database its CredentialBase only 
-    /// if some of its values to assigned has not null or empty value
+    ///     Sql implementation of user credentials directly used on favorites.
+    ///     Remember, that this type isn't used inside protocol options.
+    ///     We don't use table per type mapping here, because the credential base doesn't have to be defined,
+    ///     if user has selected StoredCredential. CredentialBase is implemented with lazy loading,
+    ///     e.g. this item has in database its CredentialBase only
+    ///     if some of its values to assigned has not null or empty value
     /// </summary>
     internal partial class DbSecurityOptions : ISecurityOptions
     {
-        private StoredCredentials storedCredentials;
-
         /// <summary>
-        /// reference to the associated credentials by its ID.
-        /// Is resolved by request from storedCredentials field.
+        ///     reference to the associated credentials by its ID.
+        ///     Is resolved by request from storedCredentials field.
         /// </summary>
         private int? credentialId;
 
+        private StoredCredentials storedCredentials;
+
         /// <summary>
-        /// Distinguish between newly created CachedCredentials or loaded
+        ///     Distinguish between newly created CachedCredentials or loaded
         /// </summary>
         internal bool NewCachedCredentials { get; private set; }
 
         /// <summary>
-        /// Cached base properties. Loaded from reference or assigned by creation only.
+        ///     Cached base properties. Loaded from reference or assigned by creation only.
         /// </summary>
         internal DbCredentialBase CachedCredentials { get; private set; }
 
@@ -87,16 +87,14 @@ namespace Terminals.Data.DB
             }
         }
 
-        public Guid Credential
+        public Guid Credential { get => this.GetCredential(); set => this.SetCredential(value); }
+
+        public ISecurityOptions Copy()
         {
-            get 
-            {
-                return this.GetCredential();
-            }
-            set
-            {
-                this.SetCredential(value);
-            }
+            var copy = new DbSecurityOptions();
+            // newCachedCredentials doesn't have to be assigned here, because it depends on the values copied
+            copy.UpdateFrom(this);
+            return copy;
         }
 
         private bool CanCommitSecuredValue(string newValue)
@@ -104,7 +102,7 @@ namespace Terminals.Data.DB
             // don't force store of empty value, if Security is not present in database
             // but allow clear, if security was already used
             return !string.IsNullOrEmpty(newValue) ||
-                   (string.IsNullOrEmpty(newValue) && this.CachedCredentials != null);
+                   string.IsNullOrEmpty(newValue) && this.CachedCredentials != null;
         }
 
         internal void AssignStores(StoredCredentials storedCredentials)
@@ -114,7 +112,7 @@ namespace Terminals.Data.DB
 
         private Guid GetCredential()
         {
-            DbCredentialSet resolved = this.ResolveCredentailFromStore();
+            var resolved = this.ResolveCredentailFromStore();
             if (resolved != null)
                 return resolved.Guid;
 
@@ -125,7 +123,7 @@ namespace Terminals.Data.DB
         {
             if (this.credentialId != null)
                 return this.storedCredentials[this.credentialId.Value];
-            
+
             return null;
         }
 
@@ -139,16 +137,14 @@ namespace Terminals.Data.DB
 
         private void SetCredentialByStoreId(Guid value)
         {
-            DbCredentialSet credentialToAssign = this.storedCredentials[value];
+            var credentialToAssign = this.storedCredentials[value];
             if (credentialToAssign != null)
-            {
                 this.credentialId = credentialToAssign.Id;
-            }
         }
 
         /// <summary>
-        /// LazyLoading of CredentialBase for favorites, where security wasn't touched until now.
-        /// The credential base doesn't have to be initialized, if used doesn't configure its properties.
+        ///     LazyLoading of CredentialBase for favorites, where security wasn't touched until now.
+        ///     The credential base doesn't have to be initialized, if used doesn't configure its properties.
         /// </summary>
         private void EnsureCredentialBase()
         {
@@ -189,14 +185,6 @@ namespace Terminals.Data.DB
                 this.CredentialSet = null;
         }
 
-        public ISecurityOptions Copy()
-        {
-            var copy = new DbSecurityOptions();
-            // newCachedCredentials doesn't have to be assigned here, because it depends on the values copied
-            copy.UpdateFrom(this);
-            return copy;
-        }
-
         internal void UpdateFrom(DbSecurityOptions source)
         {
             this.EncryptedUserName = source.EncryptedUserName;
@@ -215,7 +203,7 @@ namespace Terminals.Data.DB
         }
 
         /// <summary>
-        /// Because of CachedCredentialBase lazy loading, we have to mark the property as initially saved.
+        ///     Because of CachedCredentialBase lazy loading, we have to mark the property as initially saved.
         /// </summary>
         internal void Save()
         {

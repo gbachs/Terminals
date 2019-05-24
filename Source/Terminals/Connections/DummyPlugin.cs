@@ -7,13 +7,13 @@ using Terminals.Data;
 namespace Terminals.Connections
 {
     /// <summary>
-    /// Implementation of default values in case required plugin is not available.
+    ///     Implementation of default values in case required plugin is not available.
     /// </summary>
     internal class DummyPlugin : IConnectionPlugin, IOptionsConverterFactory
     {
-        public int Port { get { return 0; } }
+        public int Port => 0;
 
-        public string PortName { get { return KnownConnectionConstants.RDP; } }
+        public string PortName => KnownConnectionConstants.RDP;
 
         public Image GetIcon()
         {
@@ -32,7 +32,7 @@ namespace Terminals.Connections
 
         public Type GetOptionsType()
         {
-            return typeof (EmptyOptions);
+            return typeof(EmptyOptions);
         }
 
         public ProtocolOptions CreateOptions()

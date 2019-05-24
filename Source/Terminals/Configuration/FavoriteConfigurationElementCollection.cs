@@ -10,11 +10,28 @@ namespace Terminals
         {
         }
 
-        public override ConfigurationElementCollectionType CollectionType
+        public override ConfigurationElementCollectionType CollectionType =>
+            ConfigurationElementCollectionType.AddRemoveClearMap;
+
+        public FavoriteConfigurationElement this[int index]
         {
-            get
+            get => (FavoriteConfigurationElement)this.BaseGet(index);
+            set
             {
-                return ConfigurationElementCollectionType.AddRemoveClearMap;
+                if (this.BaseGet(index) != null)
+                    this.BaseRemoveAt(index);
+                this.BaseAdd(index, value);
+            }
+        }
+
+        public new FavoriteConfigurationElement this[string name]
+        {
+            get => (FavoriteConfigurationElement)this.BaseGet(name);
+            set
+            {
+                if (this.BaseGet(name) != null)
+                    this.BaseRemove(name);
+                this.BaseAdd(value);
             }
         }
 
@@ -23,92 +40,57 @@ namespace Terminals
             return new FavoriteConfigurationElement();
         }
 
-
         protected override ConfigurationElement CreateNewElement(string elementName)
         {
             return new FavoriteConfigurationElement();
         }
 
-        protected override Object GetElementKey(ConfigurationElement element)
+        protected override object GetElementKey(ConfigurationElement element)
         {
             return ((FavoriteConfigurationElement)element).Name;
         }
 
-        public FavoriteConfigurationElement this[int index]
-        {
-            get
-            {
-                return (FavoriteConfigurationElement)BaseGet(index);
-            }
-            set
-            {
-                if (BaseGet(index) != null)
-                {
-                    BaseRemoveAt(index);
-                }
-                BaseAdd(index, value);
-            }
-        }
-
-        new public FavoriteConfigurationElement this[string name]
-        {
-            get
-            {
-                return (FavoriteConfigurationElement)BaseGet(name);
-            }
-            set
-            {
-                if (BaseGet(name) != null)
-                {
-                    BaseRemove(name);
-                }
-                BaseAdd(value);
-            }
-        }
-
         public int IndexOf(FavoriteConfigurationElement item)
         {
-            return BaseIndexOf(item);
+            return this.BaseIndexOf(item);
         }
 
         public void Add(FavoriteConfigurationElement item)
         {
-            BaseAdd(item);
+            this.BaseAdd(item);
         }
 
         protected override void BaseAdd(ConfigurationElement element)
         {
-            BaseAdd(element, false);
+            this.BaseAdd(element, false);
         }
 
         public void Remove(FavoriteConfigurationElement item)
         {
-            if (BaseIndexOf(item) >= 0)
-                BaseRemove(item.Name);
+            if (this.BaseIndexOf(item) >= 0)
+                this.BaseRemove(item.Name);
         }
 
         public void RemoveAt(int index)
         {
-            BaseRemoveAt(index);
+            this.BaseRemoveAt(index);
         }
 
         public void Remove(string name)
         {
-            BaseRemove(name);
+            this.BaseRemove(name);
         }
 
         public void Clear()
         {
-            BaseClear();
+            this.BaseClear();
         }
 
         internal SortableList<FavoriteConfigurationElement> ToList()
         {
             var favorites = new SortableList<FavoriteConfigurationElement>();
             foreach (FavoriteConfigurationElement favorite in this)
-            {
-               favorites.Add(favorite);
-            }
+                favorites.Add(favorite);
 
             return favorites;
         }

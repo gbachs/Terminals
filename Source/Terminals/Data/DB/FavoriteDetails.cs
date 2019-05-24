@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Data.Entity.Infrastructure;
 using Unified;
 
@@ -7,29 +6,37 @@ namespace Terminals.Data.DB
 {
     internal partial class DbFavorite : IFavorite
     {
+        public void ChangeProtocol(string protocol, ProtocolOptions options)
+        {
+            this.Protocol = protocol;
+            this.protocolProperties = options;
+        }
+
         /// <summary>
-        /// Manages lazy loading and caching of the favorite extended properties, which are modeled
-        /// as referenced entities. Also handles manual loading/saving of icon and favorite protocol properties.
+        ///     Manages lazy loading and caching of the favorite extended properties, which are modeled
+        ///     as referenced entities. Also handles manual loading/saving of icon and favorite protocol properties.
         /// </summary>
         internal class FavoriteDetails
         {
             private readonly DbFavorite favorite;
 
-            // cached copies of reference properties
-            internal DataDispatcher Dispatcher { get; set; }
-            internal DbSecurityOptions Security { get; private set; }
-            internal DbBeforeConnectExecute ExecuteBeforeConnect { get; private set; }
-            internal DbDisplayOptions Display { get; private set; }
-
             private bool protocolPropertiesLoaded;
 
-            internal bool Loaded
+            internal FavoriteDetails(DbFavorite favorite)
             {
-                get
-                {
-                    return this.Security != null;
-                }
+                this.favorite = favorite;
             }
+
+            // cached copies of reference properties
+            internal DataDispatcher Dispatcher { get; set; }
+
+            internal DbSecurityOptions Security { get; private set; }
+
+            internal DbBeforeConnectExecute ExecuteBeforeConnect { get; private set; }
+
+            internal DbDisplayOptions Display { get; private set; }
+
+            internal bool Loaded => this.Security != null;
 
             public DbCredentialBase CredentialBaseToRemove
             {
@@ -42,14 +49,9 @@ namespace Terminals.Data.DB
                 }
             }
 
-            internal FavoriteDetails(DbFavorite favorite)
-            {
-                this.favorite = favorite;
-            }
-
             /// <summary>
-            /// Loads security, Execute and display options from database.
-            /// Doesnt load protocol properties or icon
+            ///     Loads security, Execute and display options from database.
+            ///     Doesnt load protocol properties or icon
             /// </summary>
             internal void Load()
             {
@@ -66,15 +68,15 @@ namespace Terminals.Data.DB
                 // concurrency: no idea how to solve favorite details loading
                 catch (EntityException exception)
                 {
-                    ReleaseReferences(); // rollback loading
-                    this.Dispatcher.ReportActionError(LoadDetailsFromDatabase, this.favorite, exception,
+                    this.ReleaseReferences(); // rollback loading
+                    this.Dispatcher.ReportActionError(this.LoadDetailsFromDatabase, this.favorite, exception,
                         "Unable to load favorite details from database.\r\nDatabase connection lost.");
                 }
             }
 
             private void TryLoadDetailsFromDatabase()
             {
-                using (Database database = DatabaseConnections.CreateInstance())
+                using (var database = DatabaseConnections.CreateInstance())
                 {
                     database.Favorites.Attach(this.favorite);
                     this.LoadReferences(database);
@@ -94,7 +96,7 @@ namespace Terminals.Data.DB
 
             private void LoadReferences(Database database)
             {
-                DbEntityEntry<DbFavorite> favoriteEntry = database.Entry(this.favorite);
+                var favoriteEntry = database.Entry(this.favorite);
                 favoriteEntry.Reference(f => f.Security).Load();
                 // we have to load security references after the parent references is loaded
                 this.favorite.Security.LoadReferences(database);
@@ -107,35 +109,37 @@ namespace Terminals.Data.DB
                 // partial save possible of of next methods, try to save as much as possible
                 if (this.Loaded)
                     this.Security.Save();
-                
+
                 this.SaveProtocolProperties(database);
             }
 
             /// <summary>
-            /// Using given database context commits changes of protocol properties into the database
+            ///     Using given database context commits changes of protocol properties into the database
             /// </summary>
             private void SaveProtocolProperties(Database database)
             {
                 try
                 {
-                    string serializedProperties = Serialize.SerializeXMLAsString(this.favorite.protocolProperties);
+                    var serializedProperties = Serialize.SerializeXMLAsString(this.favorite.protocolProperties);
                     database.UpdateFavoriteProtocolProperties(this.favorite.Id, serializedProperties);
                     this.favorite.isNewlyCreated = false;
                 }
                 catch (DbUpdateException)
                 {
                     // recovery will be done by next update
-                    Logging.Error("Unable to update favorite protocol properties in database because of concurrency exception");
+                    Logging.Error(
+                        "Unable to update favorite protocol properties in database because of concurrency exception");
                 }
                 catch (EntityException exception)
                 {
-                    this.Dispatcher.ReportActionError(SaveProtocolProperties, database, this.favorite,
-                                                      exception, "Unable to Save favorite protocol properties to database.\r\nDatabase connection lost.");
+                    this.Dispatcher.ReportActionError(this.SaveProtocolProperties, database, this.favorite,
+                        exception,
+                        "Unable to Save favorite protocol properties to database.\r\nDatabase connection lost.");
                 }
             }
 
             /// <summary>
-            /// Realization of expensive property lazy loading
+            ///     Realization of expensive property lazy loading
             /// </summary>
             internal void LoadProtocolProperties()
             {
@@ -150,7 +154,7 @@ namespace Terminals.Data.DB
                 }
                 catch (EntityException exception)
                 {
-                    this.Dispatcher.ReportActionError(LoadProtocolProperties, this.favorite, exception,
+                    this.Dispatcher.ReportActionError(this.LoadProtocolProperties, this.favorite, exception,
                         "Unable to load favorite protocol properties from database.\r\nDatabase connection lost.");
                 }
             }
@@ -166,23 +170,23 @@ namespace Terminals.Data.DB
 
             private ProtocolOptions LoadPropertiesFromDatabase()
             {
-                using (Database database = DatabaseConnections.CreateInstance())
+                using (var database = DatabaseConnections.CreateInstance())
                 {
-                    string serializedProperties = database.GetProtocolPropertiesByFavorite(this.favorite.Id);
-                    Type propertiesType = this.favorite.protocolProperties.GetType();
+                    var serializedProperties = database.GetProtocolPropertiesByFavorite(this.favorite.Id);
+                    var propertiesType = this.favorite.protocolProperties.GetType();
                     return Serialize.DeSerializeXML(serializedProperties, propertiesType) as ProtocolOptions;
                 }
             }
 
             /// <summary>
-            /// Releases cached lazy loaded properties to force refresh by next access
+            ///     Releases cached lazy loaded properties to force refresh by next access
             /// </summary>
             internal void ReleaseLoadedDetails()
             {
                 // release protocolProperties, icon, other detail properties, not loaded with Entity
                 this.protocolPropertiesLoaded = false;
                 // don't dispose, because there is may be shared default protocol icon, which is still in use
-                this.favorite.toolBarIcon = null;
+                this.favorite.ToolBarIconImage = null;
                 this.ReleaseReferences();
             }
 
@@ -194,7 +198,7 @@ namespace Terminals.Data.DB
             }
 
             /// <summary>
-            /// Doesnt copy intern flags, about loaded state of protocol properties and details
+            ///     Doesnt copy intern flags, about loaded state of protocol properties and details
             /// </summary>
             internal void UpdateFrom(FavoriteDetails source)
             {
@@ -202,12 +206,6 @@ namespace Terminals.Data.DB
                 this.Display.UpdateFrom(source.Display);
                 this.ExecuteBeforeConnect.UpdateFrom(source.ExecuteBeforeConnect);
             }
-        }
-
-        public void ChangeProtocol(string protocol, ProtocolOptions options)
-        {
-            this.protocol = protocol;
-            this.protocolProperties = options;
         }
     }
 }

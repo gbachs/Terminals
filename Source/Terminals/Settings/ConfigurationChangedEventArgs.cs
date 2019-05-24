@@ -6,28 +6,32 @@ namespace Terminals.Configuration
     internal class ConfigurationChangedEventArgs : EventArgs
     {
         /// <summary>
-        /// Use Create methods instead
+        ///     Use Create methods instead
         /// </summary>
-        private ConfigurationChangedEventArgs() {}
+        private ConfigurationChangedEventArgs()
+        {
+        }
 
         internal List<FavoriteConfigurationElement> OldFavorites { get; private set; }
+
         internal List<FavoriteConfigurationElement> NewFavorites { get; private set; }
 
-        internal List<String> OldTags { get; private set; }
-        internal List<String> NewTags { get; private set; }
+        internal List<string> OldTags { get; private set; }
+
+        internal List<string> NewTags { get; private set; }
 
         internal static ConfigurationChangedEventArgs CreateFromSettings(
-          TerminalsConfigurationSection oldSettings,
-          TerminalsConfigurationSection newSettings)
+            TerminalsConfigurationSection oldSettings,
+            TerminalsConfigurationSection newSettings)
         {
-          var args = new ConfigurationChangedEventArgs();
-          
-          args.OldFavorites = oldSettings.Favorites.ToList();
-          args.NewFavorites = newSettings.Favorites.ToList();
-          args.OldTags = oldSettings.Tags.ToList();
-          args.NewTags = newSettings.Tags.ToList();
+            var args = new ConfigurationChangedEventArgs();
 
-          return args;
+            args.OldFavorites = oldSettings.Favorites.ToList();
+            args.NewFavorites = newSettings.Favorites.ToList();
+            args.OldTags = oldSettings.Tags.ToList();
+            args.NewTags = newSettings.Tags.ToList();
+
+            return args;
         }
 
         internal static ConfigurationChangedEventArgs CreateFromButtons()

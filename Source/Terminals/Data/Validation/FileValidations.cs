@@ -6,7 +6,8 @@ namespace Terminals.Data.Validation
     internal class FileValidations : Validations, IDataValidator
     {
         public FileValidations(ConnectionManager connectionManager)
-            : base(new CredentialSetValidator(), new FavoriteValidator(connectionManager), new NamedItemValidator<INamedItem>())
+            : base(new CredentialSetValidator(), new FavoriteValidator(connectionManager),
+                new NamedItemValidator<INamedItem>())
         {
         }
     }

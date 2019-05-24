@@ -1,75 +1,75 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Management;
 using System.Text;
 using System.Windows.Forms;
-using System.Management;
 
 namespace Terminals.Network.WMI
 {
     internal partial class Services : UserControl
     {
+        private readonly List<ManagementObject> list = new List<ManagementObject>();
+
         public Services()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
-
-
-        private List<ManagementObject> list = new List<ManagementObject>();
 
         private void LoadServices(string Username, string Password, string Computer)
         {
-            StringBuilder sb = new StringBuilder();
-            string qry = "select AcceptPause, AcceptStop, Caption, CheckPoint, CreationClassName, Description, DesktopInteract, DisplayName, ErrorControl, ExitCode, InstallDate, Name, PathName, ProcessId,ServiceSpecificExitCode, ServiceType, Started, StartMode, StartName, State, Status, SystemCreationClassName, SystemName, TagId, WaitHint from win32_service";
+            var sb = new StringBuilder();
+            var qry =
+                "select AcceptPause, AcceptStop, Caption, CheckPoint, CreationClassName, Description, DesktopInteract, DisplayName, ErrorControl, ExitCode, InstallDate, Name, PathName, ProcessId,ServiceSpecificExitCode, ServiceType, Started, StartMode, StartName, State, Status, SystemCreationClassName, SystemName, TagId, WaitHint from win32_service";
             ManagementObjectSearcher searcher;
-            ObjectQuery query = new ObjectQuery(qry);
+            var query = new ObjectQuery(qry);
 
             if (Username != "" && Password != "" && Computer != "" && !Computer.StartsWith(@"\\localhost"))
             {
-                System.Management.ConnectionOptions oConn = new System.Management.ConnectionOptions();
+                var oConn = new ConnectionOptions();
                 oConn.Username = Username;
                 oConn.Password = Password;
                 if (!Computer.StartsWith(@"\\")) Computer = @"\\" + Computer;
                 if (!Computer.ToLower().EndsWith(@"\root\cimv2")) Computer = Computer + @"\root\cimv2";
-                System.Management.ManagementScope oMs = new System.Management.ManagementScope(Computer, oConn);
+                var oMs = new ManagementScope(Computer, oConn);
 
-                searcher = new System.Management.ManagementObjectSearcher(oMs, query);
+                searcher = new ManagementObjectSearcher(oMs, query);
             }
             else
             {
-                searcher = new System.Management.ManagementObjectSearcher(query);
+                searcher = new ManagementObjectSearcher(query);
             }
 
-            System.Data.DataTable dt = new DataTable();
-            bool needsSchema = true;
-            int length = 0;
+            var dt = new DataTable();
+            var needsSchema = true;
+            var length = 0;
             object[] values = null;
-            list.Clear();
-            foreach (System.Management.ManagementObject share in searcher.Get())
+            this.list.Clear();
+            foreach (ManagementObject share in searcher.Get())
             {
-                Share s = new Share();
-                list.Add(share);
+                var s = new Share();
+                this.list.Add(share);
                 if (needsSchema)
                 {
-                    foreach (System.Management.PropertyData p in share.Properties)
+                    foreach (var p in share.Properties)
                     {
-                        System.Data.DataColumn col = new DataColumn(p.Name, ConvertCimType(p.Type));
+                        var col = new DataColumn(p.Name, this.ConvertCimType(p.Type));
                         dt.Columns.Add(col);
                     }
+
                     length = share.Properties.Count;
                     needsSchema = false;
                 }
 
                 if (values == null) values = new object[length];
-                int x = 0;
-                foreach (System.Management.PropertyData p in share.Properties)
-                {
+                var x = 0;
+                foreach (var p in share.Properties)
                     if (p != null && x < length)
                     {
                         values[x] = p.Value;
                         x++;
                     }
-                }
+
                 dt.Rows.Add(values);
                 values = null;
             }
@@ -77,135 +77,137 @@ namespace Terminals.Network.WMI
             this.dataGridView1.DataSource = dt;
         }
 
-
         private void Services_Load(object sender, EventArgs e)
         {
-            LoadServices("", "", "");
+            this.LoadServices("", "", "");
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            LoadServices(this.wmiServerCredentials1.Username, this.wmiServerCredentials1.Password, this.wmiServerCredentials1.SelectedServer);
+            this.LoadServices(this.wmiServerCredentials1.Username, this.wmiServerCredentials1.Password,
+                this.wmiServerCredentials1.SelectedServer);
         }
 
-        private System.Type ConvertCimType(CimType ctValue)
+        private Type ConvertCimType(CimType ctValue)
         {
-            System.Type tReturnVal = null;
+            Type tReturnVal = null;
             switch (ctValue)
             {
                 case CimType.Boolean:
-                    tReturnVal = typeof(System.Boolean);
+                    tReturnVal = typeof(bool);
                     break;
                 case CimType.Char16:
-                    tReturnVal = typeof(System.String);
+                    tReturnVal = typeof(string);
                     break;
                 case CimType.DateTime:
-                    tReturnVal = typeof(System.DateTime);
+                    tReturnVal = typeof(DateTime);
                     break;
                 case CimType.Object:
-                    tReturnVal = typeof(System.Object);
+                    tReturnVal = typeof(object);
                     break;
                 case CimType.Real32:
-                    tReturnVal = typeof(System.Decimal);
+                    tReturnVal = typeof(decimal);
                     break;
                 case CimType.Real64:
-                    tReturnVal = typeof(System.Decimal);
+                    tReturnVal = typeof(decimal);
                     break;
                 case CimType.Reference:
-                    tReturnVal = typeof(System.Object);
+                    tReturnVal = typeof(object);
                     break;
                 case CimType.SInt16:
-                    tReturnVal = typeof(System.Int16);
+                    tReturnVal = typeof(short);
                     break;
                 case CimType.SInt32:
-                    tReturnVal = typeof(System.Int32);
+                    tReturnVal = typeof(int);
                     break;
                 case CimType.SInt8:
-                    tReturnVal = typeof(System.Int16);
+                    tReturnVal = typeof(short);
                     break;
                 case CimType.String:
-                    tReturnVal = typeof(System.String);
+                    tReturnVal = typeof(string);
                     break;
                 case CimType.UInt16:
-                    tReturnVal = typeof(System.UInt16);
+                    tReturnVal = typeof(ushort);
                     break;
                 case CimType.UInt32:
-                    tReturnVal = typeof(System.UInt32);
+                    tReturnVal = typeof(uint);
                     break;
                 case CimType.UInt64:
-                    tReturnVal = typeof(System.UInt64);
+                    tReturnVal = typeof(ulong);
                     break;
                 case CimType.UInt8:
-                    tReturnVal = typeof(System.UInt16);
+                    tReturnVal = typeof(ushort);
                     break;
             }
+
             return tReturnVal;
         }
 
-        private System.Management.ManagementObject FindWMIObject(string name, string propname)
+        private ManagementObject FindWMIObject(string name, string propname)
         {
-            System.Management.ManagementObject foundObj = null;
-            foreach (System.Management.ManagementObject obj in list)
-            {
+            ManagementObject foundObj = null;
+            foreach (var obj in this.list)
                 if (obj.Properties[propname].Value.ToString() == name)
                 {
                     foundObj = obj;
                     break;
                 }
-            }
-            return foundObj;
 
+            return foundObj;
         }
+
         private void pauseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string name = this.dataGridView1.Rows[this.dataGridView1.SelectedCells[0].RowIndex].Cells["Name"].Value.ToString();
+            var name = this.dataGridView1.Rows[this.dataGridView1.SelectedCells[0].RowIndex].Cells["Name"].Value
+                .ToString();
             if (name != null && name != "")
             {
-                System.Management.ManagementObject obj = FindWMIObject(name, "Name");
+                var obj = this.FindWMIObject(name, "Name");
                 if (obj != null)
                 {
                     obj.InvokeMethod("PauseService", null);
-                    LoadServices(this.wmiServerCredentials1.Username, this.wmiServerCredentials1.Password, this.wmiServerCredentials1.SelectedServer);
+                    this.LoadServices(this.wmiServerCredentials1.Username, this.wmiServerCredentials1.Password,
+                        this.wmiServerCredentials1.SelectedServer);
                 }
             }
         }
 
         private void stopToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string name = this.dataGridView1.Rows[this.dataGridView1.SelectedCells[0].RowIndex].Cells["Name"].Value.ToString();
+            var name = this.dataGridView1.Rows[this.dataGridView1.SelectedCells[0].RowIndex].Cells["Name"].Value
+                .ToString();
             if (name != null && name != "")
             {
-                System.Management.ManagementObject obj = FindWMIObject(name, "Name");
+                var obj = this.FindWMIObject(name, "Name");
                 if (obj != null)
                 {
                     obj.InvokeMethod("StopService", null);
-                    LoadServices(this.wmiServerCredentials1.Username, this.wmiServerCredentials1.Password, this.wmiServerCredentials1.SelectedServer);
+                    this.LoadServices(this.wmiServerCredentials1.Username, this.wmiServerCredentials1.Password,
+                        this.wmiServerCredentials1.SelectedServer);
                 }
-
             }
         }
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string name = this.dataGridView1.Rows[this.dataGridView1.SelectedCells[0].RowIndex].Cells["Name"].Value.ToString();
+            var name = this.dataGridView1.Rows[this.dataGridView1.SelectedCells[0].RowIndex].Cells["Name"].Value
+                .ToString();
             if (name != null && name != "")
             {
-                System.Management.ManagementObject obj = FindWMIObject(name, "Name");
+                var obj = this.FindWMIObject(name, "Name");
                 if (obj != null)
                 {
                     obj.InvokeMethod("StartService", null);
-                    LoadServices(this.wmiServerCredentials1.Username, this.wmiServerCredentials1.Password, this.wmiServerCredentials1.SelectedServer);
+                    this.LoadServices(this.wmiServerCredentials1.Username, this.wmiServerCredentials1.Password,
+                        this.wmiServerCredentials1.SelectedServer);
                 }
-
             }
         }
 
         private void wmiServerCredentials1_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-            {
-                button1_Click(null, null);
-            }
+                this.button1_Click(null, null);
         }
     }
 }

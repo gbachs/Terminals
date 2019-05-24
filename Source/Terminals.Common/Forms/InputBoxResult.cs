@@ -1,4 +1,3 @@
-using System;
 using System.Windows.Forms;
 
 namespace Terminals.Forms
@@ -10,6 +9,6 @@ namespace Terminals.Forms
     {
         public DialogResult ReturnCode { get; set; }
 
-        public String Text { get; set; }
+        public string Text { get; set; }
     }
 }

@@ -1,15 +1,73 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Terminals.Configuration;
 using Terminals.Converters;
 using Terminals.Data;
 
-namespace Terminals.Network {
-    [Serializable()]
-    public class SharedFavorite {
-        public static Terminals.FavoriteConfigurationElement ConvertFromFavorite(SharedFavorite Favorite) {
-            Terminals.FavoriteConfigurationElement fav = new Terminals.FavoriteConfigurationElement();
+namespace Terminals.Network
+{
+    [Serializable]
+    public class SharedFavorite
+    {
+        public Colors Colors;
+
+        public bool ConnectToConsole;
+
+        public string ConsoleBackColor;
+
+        public int ConsoleCols;
+
+        public string ConsoleCursorColor;
+
+        public string ConsoleFont;
+
+        public int ConsoleRows;
+
+        public string ConsoleTextColor;
+
+        public string DesktopShare;
+
+        public DesktopSize DesktopSize;
+
+        public bool DisableWallPaper;
+
+        public string DomainName;
+
+        public string Name;
+
+        public int Port;
+
+        public string Protocol;
+
+        public bool RedirectClipboard;
+
+        public bool RedirectDevices;
+
+        public bool RedirectDrives;
+
+        public List<string> RedirectedDrives;
+
+        public bool RedirectPorts;
+
+        public bool RedirectPrinters;
+
+        public bool RedirectSmartCards;
+
+        public string ServerName;
+
+        public RemoteSounds Sounds;
+
+        public string Tags;
+
+        public bool Telnet;
+
+        public bool VMRCAdministratorMode;
+
+        public bool VMRCReducedColorsMode;
+
+        public static FavoriteConfigurationElement ConvertFromFavorite(SharedFavorite Favorite)
+        {
+            var fav = new FavoriteConfigurationElement();
             fav.Colors = Favorite.Colors;
             fav.ConnectToConsole = Favorite.ConnectToConsole;
             fav.DesktopShare = Favorite.DesktopShare;
@@ -39,9 +97,12 @@ namespace Terminals.Network {
 
             return fav;
         }
-        internal static SharedFavorite ConvertFromFavorite(IPersistence persistence, FavoriteConfigurationElement Favorite) {
+
+        internal static SharedFavorite ConvertFromFavorite(IPersistence persistence,
+            FavoriteConfigurationElement Favorite)
+        {
             var favoriteSecurity = new FavoriteConfigurationSecurity(persistence, Favorite);
-            SharedFavorite fav = new SharedFavorite();
+            var fav = new SharedFavorite();
             fav.Colors = Favorite.Colors;
             fav.ConnectToConsole = Favorite.ConnectToConsole;
             fav.DesktopShare = Favorite.DesktopShare;
@@ -71,33 +132,5 @@ namespace Terminals.Network {
             fav.VMRCReducedColorsMode = Favorite.VMRCReducedColorsMode;
             return fav;
         }
-        public bool VMRCReducedColorsMode;
-        public bool Telnet;
-        public int ConsoleRows;
-        public int ConsoleCols;
-        public bool VMRCAdministratorMode;
-        public string Protocol;
-        public string ConsoleFont;
-        public string ConsoleBackColor;
-        public string ConsoleTextColor;
-        public string ConsoleCursorColor;
-        public string Name;
-        public string ServerName;
-        public string DomainName;
-        public bool ConnectToConsole;
-        public DesktopSize DesktopSize;
-        public Colors Colors;
-        public RemoteSounds Sounds;
-        public bool RedirectDrives;
-        public List<string> RedirectedDrives;
-        public bool RedirectPorts;
-        public bool RedirectPrinters;
-        public bool RedirectSmartCards;
-        public bool RedirectClipboard;
-        public bool RedirectDevices;
-        public int Port;
-        public string DesktopShare;
-        public bool DisableWallPaper;
-        public string Tags;
     }
 }

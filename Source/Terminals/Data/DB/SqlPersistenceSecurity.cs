@@ -1,21 +1,17 @@
-using System;
 using Terminals.Configuration;
 using Terminals.Security;
 
 namespace Terminals.Data.DB
 {
     /// <summary>
-    /// Distinguish between the application master password and persistence master password.
-    /// Used only by SqlPersistence. 
+    ///     Distinguish between the application master password and persistence master password.
+    ///     Used only by SqlPersistence.
     /// </summary>
     internal class SqlPersistenceSecurity : PersistenceSecurity
     {
         private string persistenceKeyMaterial;
 
-        protected override string PersistenceKeyMaterial
-        {
-            get { return this.persistenceKeyMaterial; }
-        }
+        protected override string PersistenceKeyMaterial => this.persistenceKeyMaterial;
 
         internal bool UpdateDatabaseKey()
         {
@@ -27,8 +23,9 @@ namespace Terminals.Data.DB
         {
             try
             {
-                string databaseStoredKey = DatabaseConnections.TryGetMasterPasswordHash(connectionString);
-                this.persistenceKeyMaterial = PasswordFunctions2.CalculateMasterPasswordKey(databasePassword, databaseStoredKey);
+                var databaseStoredKey = DatabaseConnections.TryGetMasterPasswordHash(connectionString);
+                this.persistenceKeyMaterial =
+                    PasswordFunctions2.CalculateMasterPasswordKey(databasePassword, databaseStoredKey);
                 return true;
             }
             catch

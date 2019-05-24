@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using Microsoft.CSharp;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Reflection;
+using Microsoft.CSharp;
 
 namespace Terminals.Network.WMI
 {
@@ -11,19 +13,18 @@ namespace Terminals.Network.WMI
     {
         public static Dictionary<string, string> ConvertToNameValue(DataTable dataValues, int index)
         {
-            Dictionary<string, string> nv = new Dictionary<string, string>();
+            var nv = new Dictionary<string, string>();
 
-            DataRow row = dataValues.Rows[index];
+            var row = dataValues.Rows[index];
             //columns become the names
             foreach (DataColumn col in dataValues.Columns)
-            {
                 nv.Add(col.ColumnName, row[col].ToString());
-            }
 
             return nv;
         }
 
-        private static void AddPropertyAndField(CodeTypeDeclaration classDec, Type DataType, string DataTypeString, string Name)
+        private static void AddPropertyAndField(CodeTypeDeclaration classDec, Type DataType, string DataTypeString,
+            string Name)
         {
             CodeMemberField field = null;
             if (DataType != null)
@@ -32,7 +33,7 @@ namespace Terminals.Network.WMI
                 field = new CodeMemberField(DataTypeString, Name + "_field");
 
             classDec.Members.Add(field);
-            CodeMemberProperty prop = new CodeMemberProperty();
+            var prop = new CodeMemberProperty();
 
             if (DataType != null)
                 prop.Type = new CodeTypeReference(DataType);
@@ -43,52 +44,53 @@ namespace Terminals.Network.WMI
             prop.HasGet = true;
             prop.HasSet = false;
             prop.Attributes = MemberAttributes.Public;
-            prop.GetStatements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), field.Name)));
+            prop.GetStatements.Add(
+                new CodeMethodReturnStatement(new CodeFieldReferenceExpression(new CodeThisReferenceExpression(),
+                    field.Name)));
             classDec.Members.Add(prop);
         }
 
-        public static System.Reflection.Assembly CreateAssemblyFromDataTable(DataTable DataValues)
+        public static Assembly CreateAssemblyFromDataTable(DataTable DataValues)
         {
-            Random rnd = new Random();
+            var rnd = new Random();
             if (DataValues.TableName == null || DataValues.TableName == string.Empty)
                 DataValues.TableName = rnd.Next().ToString();
 
-            CodeTypeDeclaration classDec = new CodeTypeDeclaration(DataValues.TableName);
+            var classDec = new CodeTypeDeclaration(DataValues.TableName);
             classDec.IsClass = true;
 
-            CodeConstructor constructor = new CodeConstructor();
+            var constructor = new CodeConstructor();
             constructor.Attributes = MemberAttributes.Public;
             classDec.Members.Add(classDec);
 
             foreach (DataColumn col in DataValues.Columns)
-            {
                 AddPropertyAndField(classDec, col.DataType, string.Empty, col.ColumnName);
-            }
 
-            AddPropertyAndField(classDec, null, "System.Collections.Generic.List<" + DataValues.TableName + ">", "ListOf" + DataValues.TableName);
+            AddPropertyAndField(classDec, null, "System.Collections.Generic.List<" + DataValues.TableName + ">",
+                "ListOf" + DataValues.TableName);
 
-            using (CSharpCodeProvider provider = new CSharpCodeProvider())
+            using (var provider = new CSharpCodeProvider())
             {
                 //ICodeGenerator generator = provider.CreateGenerator();
 
-                CodeNamespace ns = new CodeNamespace("Terminals.Generated");
-                ns.Types.Add((CodeTypeDeclaration)classDec);
-                CodeGeneratorOptions options = new CodeGeneratorOptions();
+                var ns = new CodeNamespace("Terminals.Generated");
+                ns.Types.Add(classDec);
+                var options = new CodeGeneratorOptions();
                 //options.BlankLinesBetweenMembers = true;
-                string filename = System.IO.Path.GetTempFileName();
-                using (System.IO.StreamWriter sw = new System.IO.StreamWriter(filename, false))
+                var filename = Path.GetTempFileName();
+                using (var sw = new StreamWriter(filename, false))
                 {
                     //generator.GenerateCodeFromNamespace(ns, sw, options);
                     provider.GenerateCodeFromNamespace(ns, sw, options);
 
                     //ICodeCompiler icc = provider.CreateCompiler();
 
-                    CompilerParameters compileParams = new CompilerParameters();
+                    var compileParams = new CompilerParameters();
                     compileParams.GenerateExecutable = false;
                     compileParams.GenerateInMemory = true;
 
                     //return icc.CompileAssemblyFromSource(compileParams, System.IO.File.ReadAllText(filename)).CompiledAssembly;
-                    CompilerResults icc = provider.CompileAssemblyFromSource(compileParams, System.IO.File.ReadAllText(filename));
+                    var icc = provider.CompileAssemblyFromSource(compileParams, File.ReadAllText(filename));
                     return icc.CompiledAssembly;
                 }
             }
@@ -96,8 +98,8 @@ namespace Terminals.Network.WMI
 
         public static object CreateTypeFromDataTable(DataTable DataValues)
         {
-            System.Reflection.Assembly asm = CreateAssemblyFromDataTable(DataValues);
-            object instance = asm.CreateInstance(DataValues.TableName);
+            var asm = CreateAssemblyFromDataTable(DataValues);
+            var instance = asm.CreateInstance(DataValues.TableName);
             return null;
         }
     }

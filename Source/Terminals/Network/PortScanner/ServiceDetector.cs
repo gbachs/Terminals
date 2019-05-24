@@ -19,7 +19,7 @@ namespace Terminals.Network
                 .ToList();
 
             if (plugins.Count > 1)
-                return ResolveByExtraDetection(iPAddress, port, plugins);
+                return this.ResolveByExtraDetection(iPAddress, port, plugins);
 
             return plugins.First().PortName;
         }
@@ -31,7 +31,7 @@ namespace Terminals.Network
             var firtSuccessfull = extraDetections.FirstOrDefault(p => p.IsValid(iPAddress, port)) as IConnectionPlugin;
             if (firtSuccessfull != null)
                 return firtSuccessfull.PortName;
-            
+
             var standardPlugins = plugins.Except(extraDetections.Cast<IConnectionPlugin>());
             return standardPlugins.First().PortName;
         }

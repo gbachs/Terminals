@@ -9,34 +9,34 @@ using Terminals.Network;
 namespace Terminals.Data.DB
 {
     /// <summary>
-    /// SQl implementation of connections history.
-    /// This doesn't cache the history table in entity framework, because of performance.
+    ///     SQl implementation of connections history.
+    ///     This doesn't cache the history table in entity framework, because of performance.
     /// </summary>
     internal class ConnectionHistory : IConnectionHistory
     {
         /// <summary>
-        /// Access the cached items, instead of retrieving them from database
-        /// </summary>
-        private readonly Favorites favorites;
-
-        private DataDispatcher dispatcher;
-
-        /// <summary>
-        /// Cache older items than today only, because the history cant change.
-        /// The reason is to don't reload these items from database.
+        ///     Cache older items than today only, because the history cant change.
+        ///     The reason is to don't reload these items from database.
         /// </summary>
         private readonly Dictionary<string, SortableList<IFavorite>> cache =
             new Dictionary<string, SortableList<IFavorite>>();
 
-        public event HistoryRecorded HistoryRecorded;
+        /// <summary>
+        ///     Access the cached items, instead of retrieving them from database
+        /// </summary>
+        private readonly Favorites favorites;
 
-        public event Action HistoryClear;
+        private readonly DataDispatcher dispatcher;
 
         internal ConnectionHistory(Favorites favorites, DataDispatcher dispatcher)
         {
             this.favorites = favorites;
             this.dispatcher = dispatcher;
         }
+
+        public event HistoryRecorded HistoryRecorded;
+
+        public event Action HistoryClear;
 
         public SortableList<IFavorite> GetDateItems(string historyDateKey)
         {
@@ -47,11 +47,36 @@ namespace Terminals.Data.DB
             return this.LoadFromCache(historyDateKey);
         }
 
+        public void RecordHistoryItem(IFavorite favorite)
+        {
+            var historyTarget = favorite as DbFavorite;
+            if (historyTarget == null)
+                return;
+
+            // here we don't cache today's items, we always load the current state from database
+            this.AddToDatabase(historyTarget);
+        }
+
+        public void Clear()
+        {
+            try
+            {
+                TryClearHistory();
+                if (this.HistoryClear != null)
+                    this.HistoryClear();
+            }
+            catch (EntityException exception)
+            {
+                this.dispatcher.ReportActionError(this.Clear, this, exception,
+                    "Unable to clear history.\r\nDatabase connection lost.");
+            }
+        }
+
         private SortableList<IFavorite> LoadFromCache(string historyDateKey)
         {
             if (!this.cache.ContainsKey(historyDateKey))
             {
-                SortableList<IFavorite> loaded = this.LoadFromDatabaseByDate(historyDateKey);
+                var loaded = this.LoadFromDatabaseByDate(historyDateKey);
                 this.cache.Add(historyDateKey, loaded);
             }
 
@@ -67,31 +92,21 @@ namespace Terminals.Data.DB
             catch (EntityException exception)
             {
                 return this.dispatcher.ReportFunctionError(this.LoadFromDatabaseByDate, historyDateKey, this,
-                     exception, "Unable to load history part form database.\r\nDatabase connection lost.");
+                    exception, "Unable to load history part form database.\r\nDatabase connection lost.");
             }
         }
 
         private SortableList<IFavorite> TryLodFromDatabase(string historyDateKey)
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
-                HistoryInterval interval = HistoryIntervals.GetIntervalByName(historyDateKey);
+                var interval = HistoryIntervals.GetIntervalByName(historyDateKey);
                 // store holds dates in UTC
                 var favoriteIds = database.GetFavoritesHistoryByDate(interval.From, interval.To).ToList();
-                IEnumerable<DbFavorite> intervalFavorites =
+                var intervalFavorites =
                     this.favorites.Cast<DbFavorite>().Where(favorite => favoriteIds.Contains(favorite.Id));
                 return Data.Favorites.OrderByDefaultSorting(intervalFavorites);
             }
-        }
-
-        public void RecordHistoryItem(IFavorite favorite)
-        {
-            var historyTarget = favorite as DbFavorite;
-            if (historyTarget == null)
-                return;
-
-            // here we don't cache today's items, we always load the current state from database
-            AddToDatabase(historyTarget);
         }
 
         private void AddToDatabase(DbFavorite historyTarget)
@@ -104,16 +119,16 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                this.dispatcher.ReportActionError(AddToDatabase, historyTarget, this, exception,
-                         "Unable to save connection history.\r\nDatabase connection lost.");
+                this.dispatcher.ReportActionError(this.AddToDatabase, historyTarget, this, exception,
+                    "Unable to save connection history.\r\nDatabase connection lost.");
             }
         }
 
         private static void TryAddToDatabase(DbFavorite historyTarget)
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
-                string userSid = WindowsUserIdentifiers.GetCurrentUserSid();
+                var userSid = WindowsUserIdentifiers.GetCurrentUserSid();
                 // store holds dates in UTC
                 database.InsertHistory(historyTarget.Id, Moment.Now, userSid);
             }
@@ -125,21 +140,6 @@ namespace Terminals.Data.DB
             {
                 var args = new HistoryRecordedEventArgs(favorite);
                 this.HistoryRecorded(args);
-            }
-        }
-
-        public void Clear()
-        {
-            try
-            {
-                TryClearHistory();
-                if (HistoryClear != null)
-                    HistoryClear();
-            }
-            catch (EntityException exception)
-            {
-                this.dispatcher.ReportActionError(this.Clear, this, exception,
-                         "Unable to clear history.\r\nDatabase connection lost.");
             }
         }
 

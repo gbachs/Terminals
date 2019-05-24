@@ -10,24 +10,13 @@ using Terminals.Properties;
 namespace Terminals.Data
 {
     /// <summary>
-    /// Loading of icons from files
+    ///     Loading of icons from files
     /// </summary>
     internal class FavoriteIcons
     {
         private const string DEFAULT_ICONKEY = "terminalsicon.png";
 
         private const string ICON_PREFIX = "treeIcon_";
-
-        /// <summary>
-        /// Gets empty bytes array used as empty not assigned image data.
-        /// </summary>
-        internal static byte[] EmptyImageData
-        {
-            get
-            {
-                return new byte[0];
-            }
-        }
 
         private readonly Dictionary<string, Image> pluginIcons;
 
@@ -36,9 +25,14 @@ namespace Terminals.Data
             this.pluginIcons = connectionManager.GetPluginIcons();
         }
 
+        /// <summary>
+        ///     Gets empty bytes array used as empty not assigned image data.
+        /// </summary>
+        internal static byte[] EmptyImageData => new byte[0];
+
         internal IDictionary<string, Image> GetProtocolIcons()
         {
-            Dictionary<string, Image> uiIcons = pluginIcons.ToDictionary(k => CreateIconKey(k.Key), v => v.Value);
+            var uiIcons = this.pluginIcons.ToDictionary(k => CreateIconKey(k.Key), v => v.Value);
             uiIcons.Add(DEFAULT_ICONKEY, Connection.Terminalsicon);
             return uiIcons;
         }
@@ -49,45 +43,41 @@ namespace Terminals.Data
         }
 
         /// <summary>
-        /// Gets the icon file name by icons defined in FavoritesTreeView imageListIcons
+        ///     Gets the icon file name by icons defined in FavoritesTreeView imageListIcons
         /// </summary>
         internal string GetTreeviewImageListKey(string protocol)
         {
-            if (pluginIcons.ContainsKey(protocol))
+            if (this.pluginIcons.ContainsKey(protocol))
                 return CreateIconKey(protocol);
 
             return DEFAULT_ICONKEY;
         }
 
         /// <summary>
-        /// Gets the icon indexes by icons defined in FavoritesTreeView imageListIcons
+        ///     Gets the icon indexes by icons defined in FavoritesTreeView imageListIcons
         /// </summary>
         private Image GetProtocolImage(IFavorite favorite)
         {
-            if (pluginIcons.ContainsKey(favorite.Protocol))
-                return pluginIcons[favorite.Protocol];
-             
+            if (this.pluginIcons.ContainsKey(favorite.Protocol))
+                return this.pluginIcons[favorite.Protocol];
+
             return Connection.Terminalsicon;
         }
 
         internal Image GetFavoriteIcon(Favorite favorite)
         {
-            if (String.IsNullOrEmpty(favorite.ToolBarIconFile))
-            {
-                return GetProtocolImage(favorite);
-            }
+            if (string.IsNullOrEmpty(favorite.ToolBarIconFile))
+                return this.GetProtocolImage(favorite);
 
             return LoadImage(favorite.ToolBarIconFile, Resources.smallterm);
         }
 
-        internal static Image LoadImage(String imageFilePath, Image defaultIcon)
+        internal static Image LoadImage(string imageFilePath, Image defaultIcon)
         {
             try
             {
-                if (!String.IsNullOrEmpty(imageFilePath) && File.Exists(imageFilePath))
-                {
+                if (!string.IsNullOrEmpty(imageFilePath) && File.Exists(imageFilePath))
                     return Image.FromFile(imageFilePath);
-                }
             }
             catch (Exception ex)
             {
@@ -99,8 +89,8 @@ namespace Terminals.Data
 
         internal Image LoadImage(string value, IFavorite favorite)
         {
-            byte[] imageData = LoadImage(value);
-            return LoadImage(imageData, favorite);
+            var imageData = LoadImage(value);
+            return this.LoadImage(imageData, favorite);
         }
 
         internal Image LoadImage(byte[] imageData, IFavorite favorite)
@@ -108,14 +98,14 @@ namespace Terminals.Data
             try
             {
                 // empty or not assign icon replace by default icon
-                if (imageData.Length == 0) 
-                    return GetProtocolImage(favorite);
+                if (imageData.Length == 0)
+                    return this.GetProtocolImage(favorite);
 
                 return LoadFromBinary(imageData);
             }
             catch
             {
-                return GetProtocolImage(favorite);
+                return this.GetProtocolImage(favorite);
             }
         }
 
@@ -143,9 +133,9 @@ namespace Terminals.Data
         {
             using (var file = new FileStream(imageFilePath, FileMode.Open, FileAccess.Read))
             {
-                FileInfo fileInfo = new FileInfo(imageFilePath);
-                int imageLength = (int)fileInfo.Length;
-                byte[] imageData = new byte[imageLength];
+                var fileInfo = new FileInfo(imageFilePath);
+                var imageLength = (int)fileInfo.Length;
+                var imageData = new byte[imageLength];
                 file.Read(imageData, 0, imageLength);
                 return imageData;
             }
@@ -153,8 +143,8 @@ namespace Terminals.Data
 
         internal static string CopySelectedImageToThumbsDir(string newImagefilePath)
         {
-            string newFileName = Path.GetFileName(newImagefilePath);
-            String newFileInThumbsDir = Path.Combine(FileLocations.ThumbsDirectoryFullPath, newFileName);
+            var newFileName = Path.GetFileName(newImagefilePath);
+            var newFileInThumbsDir = Path.Combine(FileLocations.ThumbsDirectoryFullPath, newFileName);
 
             // the file wasn't selected directly from Thumbs dir, otherwise we don't need to copy it
             if (newFileInThumbsDir != newImagefilePath && !File.Exists(newFileInThumbsDir))
@@ -165,10 +155,10 @@ namespace Terminals.Data
 
         internal byte[] ImageToBinary(Image image)
         {
-            if (IsDefaultProtocolImage(image))
+            if (this.IsDefaultProtocolImage(image))
                 return EmptyImageData;
 
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
             {
                 image.Save(memoryStream, image.RawFormat);
                 return memoryStream.ToArray();
@@ -177,7 +167,7 @@ namespace Terminals.Data
 
         internal bool IsDefaultProtocolImage(Image image)
         {
-            return Connection.Terminalsicon == image || pluginIcons.ContainsValue(image);
+            return Connection.Terminalsicon == image || this.pluginIcons.ContainsValue(image);
         }
     }
 }

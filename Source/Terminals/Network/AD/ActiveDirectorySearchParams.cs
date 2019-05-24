@@ -1,29 +1,13 @@
 ﻿namespace Terminals.Network
 {
     /// <summary>
-    /// Crate for search parameters of active directory search
+    ///     Crate for search parameters of active directory search
     /// </summary>
     internal class ActiveDirectorySearchParams
     {
         internal const string DEFAULT_FILTER = "(&(objectclass=computer)(name=*))";
 
         private const int DEFAULT_MAX_RESULTS = 1000;
-
-        /// <summary>
-        /// Gets LDAP search filter. Default is 
-        /// </summary>
-        internal string Filter { get; private set; }
-
-        internal string Domain { get; private set; }
-
-        internal string Searchbase { get; private set; }
-
-        /// <summary>
-        /// Gets maximum number of results parsed from constructor parameter.
-        /// Default is 1000, maximum is 5000.
-        /// http://stackoverflow.com/questions/90652/can-i-get-more-than-1000-records-from-a-directorysearcher-in-asp-net
-        /// </summary>
-        internal int PageSize { get; private set; }
 
         internal ActiveDirectorySearchParams(string domain, string filter, string searchbase)
         {
@@ -32,6 +16,22 @@
             this.ParseFilter(filter);
             this.ParseSearchBase(searchbase);
         }
+
+        /// <summary>
+        ///     Gets LDAP search filter. Default is
+        /// </summary>
+        internal string Filter { get; private set; }
+
+        internal string Domain { get; }
+
+        internal string Searchbase { get; private set; }
+
+        /// <summary>
+        ///     Gets maximum number of results parsed from constructor parameter.
+        ///     Default is 1000, maximum is 5000.
+        ///     http://stackoverflow.com/questions/90652/can-i-get-more-than-1000-records-from-a-directorysearcher-in-asp-net
+        /// </summary>
+        internal int PageSize { get; }
 
         private void ParseFilter(string filter)
         {
@@ -51,8 +51,9 @@
 
         public override string ToString()
         {
-            return string.Format("ActiveDirectorySearchParams:Domain={0},Filter='{1}',MaximumResults={2},Searchbase={3}",
-                                 this.Domain, this.Filter, this.PageSize, this.Searchbase);
+            return string.Format(
+                "ActiveDirectorySearchParams:Domain={0},Filter='{1}',MaximumResults={2},Searchbase={3}",
+                this.Domain, this.Filter, this.PageSize, this.Searchbase);
         }
     }
 }

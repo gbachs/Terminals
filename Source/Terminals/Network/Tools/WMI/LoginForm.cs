@@ -1,61 +1,64 @@
 using System;
-using System.Drawing;
-using System.Collections;
 using System.ComponentModel;
+using System.Management;
 using System.Windows.Forms;
+using Terminals;
 
 namespace WMITestClient
 {
     /// <summary>
-    /// Summary description for LoginForm.
+    ///     Summary description for LoginForm.
     /// </summary>
-    internal class LoginForm : System.Windows.Forms.Form
+    internal class LoginForm : Form
     {
-        private System.Windows.Forms.TextBox MachineNameTextBox;
-        private System.Windows.Forms.TextBox UsernameTextBox;
-        private System.Windows.Forms.TextBox PasswordTextBox;
-        private System.Windows.Forms.Button ButtonCancel;
-        private System.Windows.Forms.Button ButtonLogin;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
+        private Button ButtonCancel;
 
-        private bool isCancelled = true;
+        private Button ButtonLogin;
 
         /// <summary>
-        /// Required designer variable.
+        ///     Required designer variable.
         /// </summary>
-        private System.ComponentModel.Container components = null;
+        private readonly Container components = null;
+
+        private Label label1;
+
+        private Label label2;
+
+        private Label label3;
+
+        private TextBox MachineNameTextBox;
+
+        private TextBox PasswordTextBox;
+
+        private TextBox UsernameTextBox;
 
         public LoginForm()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         /// <summary>
-        /// Clean up any resources being used.
+        ///     Clean up any resources being used.
         /// </summary>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
+                if (this.components != null)
+                    this.components.Dispose();
 
             base.Dispose(disposing);
         }
 
         #region Windows Form Designer generated code
+
         /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
+        ///     Required method for Designer support - do not modify
+        ///     the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
+            System.ComponentModel.ComponentResourceManager resources =
+                new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
             this.ButtonCancel = new System.Windows.Forms.Button();
             this.MachineNameTextBox = new System.Windows.Forms.TextBox();
             this.UsernameTextBox = new System.Windows.Forms.TextBox();
@@ -155,75 +158,18 @@ namespace WMITestClient
             this.Load += new System.EventHandler(this.LoginForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
-
-        }
-        #endregion
-
-        #region Properties
-
-        public bool Cancelled
-        {
-            get
-            {
-                return this.isCancelled;
-            }
-
-            set
-            {
-                this.isCancelled = value;
-            }
-        }
-
-        public string MachineName
-        {
-            get
-            {
-                return this.MachineNameTextBox.Text;
-            }
-
-            set
-            {
-                this.MachineNameTextBox.Text = value;
-            }
-        }
-
-        public string UserName
-        {
-            get
-            {
-                return this.UsernameTextBox.Text;
-            }
-
-            set
-            {
-                this.UsernameTextBox.Text = value;
-            }
-        }
-
-        public string Password
-        {
-            get
-            {
-                return this.PasswordTextBox.Text;
-            }
-
-            set
-            {
-                this.PasswordTextBox.Text = value;
-            }
         }
 
         #endregion
 
-        private void CancelButton_Click(object sender, System.EventArgs e)
+        private void CancelButton_Click(object sender, EventArgs e)
         {
             this.Visible = false;
         }
 
-        private void LoginButton_Click(object sender, System.EventArgs e)
+        private void LoginButton_Click(object sender, EventArgs e)
         {
-
-            bool success = false;
+            var success = false;
 
             if (this.MachineNameTextBox.Text == string.Empty)
             {
@@ -231,30 +177,31 @@ namespace WMITestClient
             }
             else
             {
-                if (!this.MachineNameTextBox.Text.StartsWith(@"\\")) 
+                if (!this.MachineNameTextBox.Text.StartsWith(@"\\"))
                     this.MachineNameTextBox.Text = @"\\" + this.MachineNameTextBox.Text;
             }
 
             if (!this.MachineNameTextBox.Text.StartsWith(@"\\localhost"))
             {
-                if (this.UsernameTextBox.Text != string.Empty && this.PasswordTextBox.Text != string.Empty && this.MachineNameTextBox.Text != string.Empty)
+                if (this.UsernameTextBox.Text != string.Empty && this.PasswordTextBox.Text != string.Empty &&
+                    this.MachineNameTextBox.Text != string.Empty)
                 {
                     try
                     {
-                        System.Management.ConnectionOptions oConn = new System.Management.ConnectionOptions();
+                        var oConn = new ConnectionOptions();
                         oConn.Username = this.UsernameTextBox.Text;
                         oConn.Password = this.PasswordTextBox.Text;
-                        oConn.Impersonation = System.Management.ImpersonationLevel.Impersonate;
+                        oConn.Impersonation = ImpersonationLevel.Impersonate;
                         //oConn.Authority = this.MachineNameTextBox.Text;
-                        oConn.Authentication = System.Management.AuthenticationLevel.Connect;
-                        System.Management.ManagementScope oMs = new System.Management.ManagementScope(this.MachineNameTextBox.Text, oConn);
-                        oMs.Path = new System.Management.ManagementPath( this.MachineNameTextBox.Text );
+                        oConn.Authentication = AuthenticationLevel.Connect;
+                        var oMs = new ManagementScope(this.MachineNameTextBox.Text, oConn);
+                        oMs.Path = new ManagementPath(this.MachineNameTextBox.Text);
                         oMs.Connect();
                         success = oMs.IsConnected;
                     }
                     catch (Exception exc)
                     {
-                        Terminals.Logging.Info("Login Failed", exc);
+                        Logging.Info("Login Failed", exc);
                         MessageBox.Show(exc.Message);
                     }
 
@@ -274,7 +221,6 @@ namespace WMITestClient
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
-
             if (this.MachineNameTextBox.Text == string.Empty)
             {
                 this.MachineNameTextBox.Text = @"\\localhost\root\cimv2";
@@ -285,5 +231,17 @@ namespace WMITestClient
                     this.MachineNameTextBox.Text = @"\\" + this.MachineNameTextBox.Text;
             }
         }
+
+        #region Properties
+
+        public bool Cancelled { get; set; } = true;
+
+        public string MachineName { get => this.MachineNameTextBox.Text; set => this.MachineNameTextBox.Text = value; }
+
+        public string UserName { get => this.UsernameTextBox.Text; set => this.UsernameTextBox.Text = value; }
+
+        public string Password { get => this.PasswordTextBox.Text; set => this.PasswordTextBox.Text = value; }
+
+        #endregion
     }
 }

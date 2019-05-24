@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
@@ -12,11 +11,6 @@ namespace Terminals.Data.DB
 {
     internal partial class Database : DbContext
     {
-        /// <summary>
-        /// Gets this instance connector for cached entities
-        /// </summary>
-        public CacheConnector Cache { get; private set; }
-
         internal Database(DbConnection connection)
             : base(connection, true)
         {
@@ -30,9 +24,14 @@ namespace Terminals.Data.DB
             this.Favorites = this.Set<DbFavorite>();
             this.Groups = this.Set<DbGroup>();
             this.Security = this.Set<DbSecurityOptions>();
-            
+
             this.Cache = new CacheConnector(this);
         }
+
+        /// <summary>
+        ///     Gets this instance connector for cached entities
+        /// </summary>
+        public CacheConnector Cache { get; }
 
         internal void SaveImmediatelyIfRequested()
         {
@@ -42,19 +41,17 @@ namespace Terminals.Data.DB
 
         public override int SaveChanges()
         {
-            IEnumerable<DbFavorite> changedFavorites = this.GetChangedOrAddedFavorites();
+            var changedFavorites = this.GetChangedOrAddedFavorites();
             // add to database first, otherwise the favorite properties cant be committed.
-            int returnValue = base.SaveChanges();
+            var returnValue = base.SaveChanges();
             this.SaveFavoriteDetails(changedFavorites);
             return returnValue;
         }
 
         private void SaveFavoriteDetails(IEnumerable<DbFavorite> changedFavorites)
         {
-            foreach (DbFavorite favorite in changedFavorites)
-            {
+            foreach (var favorite in changedFavorites)
                 favorite.SaveDetails(this);
-            }
         }
 
         private IEnumerable<DbFavorite> GetChangedOrAddedFavorites()
@@ -67,7 +64,7 @@ namespace Terminals.Data.DB
 
         internal byte[] GetFavoriteIcon(int favoriteId)
         {
-            byte[] obtained = this.GetFavoriteIcon((int?)favoriteId).FirstOrDefault();
+            var obtained = this.GetFavoriteIcon((int?)favoriteId).FirstOrDefault();
             if (obtained != null)
                 return obtained;
 
@@ -81,11 +78,11 @@ namespace Terminals.Data.DB
 
         internal string GetMasterPasswordHash()
         {
-            string obtained = this.GetMasterPasswordKey().FirstOrDefault();
+            var obtained = this.GetMasterPasswordKey().FirstOrDefault();
             if (obtained != null)
                 return obtained;
 
-            return String.Empty;
+            return string.Empty;
         }
 
         internal void UpdateMasterPassword(string newMasterPasswordKey)
@@ -96,35 +93,29 @@ namespace Terminals.Data.DB
         internal List<int> GetRdpFavoriteIds()
         {
             return this.Favorites.Where(candidate => candidate.Protocol == KnownConnectionConstants.RDP)
-                       .Select(rdpFavorite => rdpFavorite.Id).ToList();
+                .Select(rdpFavorite => rdpFavorite.Id).ToList();
         }
 
         internal void AddAll(IEnumerable<DbFavorite> favorites)
         {
-            foreach (DbFavorite favorite in favorites)
-            {
+            foreach (var favorite in favorites)
                 this.Favorites.Add(favorite);
-            }
         }
 
         /// <summary>
-        /// we have to delete the credentials base manually, this property uses lazy creation 
-        /// and therefore there is no database constraint
+        ///     we have to delete the credentials base manually, this property uses lazy creation
+        ///     and therefore there is no database constraint
         /// </summary>
         internal void RemoveRedundantCredentialBase(List<DbCredentialBase> redundantCredentialBase)
         {
-            foreach (DbCredentialBase credentialBase in redundantCredentialBase)
-            {
+            foreach (var credentialBase in redundantCredentialBase)
                 this.CredentialBase.Remove(credentialBase);
-            }
         }
 
         internal void DeleteAll(IEnumerable<DbFavorite> favorites)
         {
-            foreach (DbFavorite favorite in favorites)
-            {
+            foreach (var favorite in favorites)
                 this.Favorites.Remove(favorite);
-            }
         }
 
         internal void AddToGroups(DbGroup toAdd)
@@ -138,9 +129,9 @@ namespace Terminals.Data.DB
         internal List<IGroup> AddToDatabase(List<IGroup> groups)
         {
             // not added groups don't have an identifier obtained from database
-            List<IGroup> added = groups.Where(candidate => ((DbGroup)candidate).Id == 0).ToList();
+            var added = groups.Where(candidate => ((DbGroup)candidate).Id == 0).ToList();
             this.AddAll(added);
-            List<DbGroup> toAttach = groups.Where(candidate => ((DbGroup)candidate).Id != 0).Cast<DbGroup>().ToList();
+            var toAttach = groups.Where(candidate => ((DbGroup)candidate).Id != 0).Cast<DbGroup>().ToList();
             this.Cache.AttachAll(toAttach);
             return added;
         }
@@ -148,21 +139,17 @@ namespace Terminals.Data.DB
         private void AddAll(List<IGroup> added)
         {
             foreach (DbGroup group in added)
-            {
                 this.Groups.Add(group);
-            }
         }
 
         internal void DeleteAll(IEnumerable<DbGroup> groups)
         {
-            foreach (DbGroup group in groups)
-            {
+            foreach (var group in groups)
                 this.Groups.Remove(group);
-            }
         }
 
         internal void RefreshEntity<TEntity>(TEntity toUpdate)
-            where TEntity: class
+            where TEntity : class
         {
             this.Entry(toUpdate).Reload();
             ((IObjectContextAdapter)this).ObjectContext.Refresh(RefreshMode.ClientWins, toUpdate);

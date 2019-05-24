@@ -8,56 +8,56 @@ namespace Terminals.Configuration
         private readonly TagsConverter tagsConverter = new TagsConverter();
 
         /// <summary>
-        /// "Since version 2. only for updates. Use new persistence instead."
+        ///     "Since version 2. only for updates. Use new persistence instead."
         /// </summary>
         internal void RemoveAllFavoritesAndTags()
         {
-            DeleteFavorites();
-            DeleteTags();
+            this.DeleteFavorites();
+            this.DeleteTags();
         }
-        
+
         private void DeleteFavorites()
         {
-            List<FavoriteConfigurationElement> favorites = GetFavorites().ToList();
-            List<string> deletedTags = new List<string>();
-            
-            StartDelayedUpdate();
+            List<FavoriteConfigurationElement> favorites = this.GetFavorites().ToList();
+            var deletedTags = new List<string>();
 
-            foreach (FavoriteConfigurationElement favorite in favorites)
+            this.StartDelayedUpdate();
+
+            foreach (var favorite in favorites)
             {
-                DeleteFavoriteFromSettings(favorite.Name);
-                var tagList = tagsConverter.ResolveTagsList(favorite);
-                List<string> difference = DeleteTagsFromSettings(tagList);
+                this.DeleteFavoriteFromSettings(favorite.Name);
+                var tagList = this.tagsConverter.ResolveTagsList(favorite);
+                var difference = this.DeleteTagsFromSettings(tagList);
                 deletedTags.AddRange(difference);
             }
 
-            SaveAndFinishDelayedUpdate();
+            this.SaveAndFinishDelayedUpdate();
         }
 
         private void DeleteFavoriteFromSettings(string name)
         {
-            GetSection().Favorites.Remove(name);
-            SaveImmediatelyIfRequested();
+            this.GetSection().Favorites.Remove(name);
+            this.SaveImmediatelyIfRequested();
         }
 
         private void AddFavorite(FavoriteConfigurationElement favorite)
         {
-            AddFavoriteToSettings(favorite);
-            AddTagsToSettings(tagsConverter.ResolveTagsList(favorite));
+            this.AddFavoriteToSettings(favorite);
+            this.AddTagsToSettings(this.tagsConverter.ResolveTagsList(favorite));
         }
 
         /// <summary>
-        /// Adds favorite to the database, but doesn't fire the changed event
+        ///     Adds favorite to the database, but doesn't fire the changed event
         /// </summary>
         private void AddFavoriteToSettings(FavoriteConfigurationElement favorite)
         {
-            GetSection().Favorites.Add(favorite);
-            SaveImmediatelyIfRequested();
+            this.GetSection().Favorites.Add(favorite);
+            this.SaveImmediatelyIfRequested();
         }
 
         internal FavoriteConfigurationElement GetDefaultFavorite()
         {
-            TerminalsConfigurationSection section = GetSection();
+            var section = this.GetSection();
             if (section != null && section.DefaultFavorite.Count > 0)
                 return section.DefaultFavorite[0];
             return null;
@@ -65,22 +65,22 @@ namespace Terminals.Configuration
 
         internal void SaveDefaultFavorite(FavoriteConfigurationElement favorite)
         {
-            FavoriteConfigurationElementCollection defaultFav = GetSection().DefaultFavorite;
+            var defaultFav = this.GetSection().DefaultFavorite;
             defaultFav.Clear();
             defaultFav.Add(favorite);
-            SaveImmediatelyIfRequested();
+            this.SaveImmediatelyIfRequested();
         }
 
         internal void RemoveDefaultFavorite()
         {
-            FavoriteConfigurationElementCollection defaultFav = GetSection().DefaultFavorite;
+            var defaultFav = this.GetSection().DefaultFavorite;
             defaultFav.Clear();
-            SaveImmediatelyIfRequested();
+            this.SaveImmediatelyIfRequested();
         }
 
         internal FavoriteConfigurationElementCollection GetFavorites()
         {
-            TerminalsConfigurationSection section = GetSection();
+            var section = this.GetSection();
             if (section != null)
                 return section.Favorites;
             return null;

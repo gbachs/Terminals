@@ -2,7 +2,7 @@
 
 namespace Terminals.Data
 {
-    internal class DataErrorEventArgs: EventArgs
+    internal class DataErrorEventArgs : EventArgs
     {
         internal string Message { get; set; }
 

@@ -7,7 +7,7 @@ namespace Terminals.Data.DB
     {
         // for backward compatibility with the file persistence only
         private Guid guid;
-        
+
         internal Guid Guid
         {
             get
@@ -19,18 +19,15 @@ namespace Terminals.Data.DB
             }
         }
 
-        Guid ICredentialSet.Id
-        {
-            get { return this.Guid; }
-        }
+        Guid ICredentialSet.Id => this.Guid;
 
         internal DbCredentialSet Copy()
         {
             var copy = new DbCredentialSet
-                {
-                    Name = this.Name
-                };
-            CopyTo(copy);
+            {
+                Name = this.Name
+            };
+            this.CopyTo(copy);
             return copy;
         }
 

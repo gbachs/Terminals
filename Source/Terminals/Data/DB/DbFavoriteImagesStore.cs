@@ -35,9 +35,9 @@ namespace Terminals.Data.DB
 
         private void TryLoadImageFromDatabase(DbFavorite favorite)
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
-                byte[] imageData = database.GetFavoriteIcon(favorite.Id);
+                var imageData = database.GetFavoriteIcon(favorite.Id);
                 this.AssignImageByLoadedData(favorite, imageData);
             }
         }
@@ -60,7 +60,8 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                this.dispatcher.ReportActionError(db => this.UpdateImageInDatabase(favorite, db), database, favorite, exception,
+                this.dispatcher.ReportActionError(db => this.UpdateImageInDatabase(favorite, db), database, favorite,
+                    exception,
                     "Unable to Save favorite icon to database.\r\nDatabase connection lost.");
             }
         }
@@ -69,11 +70,9 @@ namespace Terminals.Data.DB
         {
             if (this.ShouldSaveIcon(favorite))
             {
-                byte[] imageData = this.favoriteIcons.ImageToBinary(favorite.ToolBarIconImage);
+                var imageData = this.favoriteIcons.ImageToBinary(favorite.ToolBarIconImage);
                 if (imageData.Length > 0)
-                {
                     database.SetFavoriteIcon(favorite.Id, imageData);
-                }
             }
         }
 

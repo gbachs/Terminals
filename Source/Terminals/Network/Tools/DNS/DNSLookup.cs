@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Windows.Forms;
 using Bdev.Net.Dns;
-using System.Net;
+using Terminals.Network.DNS;
 
 namespace Terminals.Network
 {
@@ -10,7 +11,7 @@ namespace Terminals.Network
     {
         public DNSLookup()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         public void ForceDNS(string Host)
@@ -21,20 +22,20 @@ namespace Terminals.Network
 
         private void lookupButton_Click(object sender, EventArgs e)
         {
-            string serverIP = serverComboBox.Text.Trim();
-            if(serverIP == "") serverIP = "128.8.10.90";
-            serverComboBox.Text = serverIP.Trim();
-            string domain = this.hostnameTextBox.Text.Trim();
-            if(domain == "") domain = "codeplex.com";
+            var serverIP = this.serverComboBox.Text.Trim();
+            if (serverIP == "") serverIP = "128.8.10.90";
+            this.serverComboBox.Text = serverIP.Trim();
+            var domain = this.hostnameTextBox.Text.Trim();
+            if (domain == "") domain = "codeplex.com";
             this.hostnameTextBox.Text = domain.Trim();
 
             try
             {
-                List<Answer> responses = new List<Answer>();
+                var responses = new List<Answer>();
 
-                IPAddress dnsServer = IPAddress.Parse(serverIP);
+                var dnsServer = IPAddress.Parse(serverIP);
                 // create a DNS request
-                Request request = new Request();
+                var request = new Request();
                 request.AddQuestion(new Question(domain, DnsType.ANAME, DnsClass.IN));
                 responses.Add(Resolver.Lookup(request, dnsServer).Answers[0]);
 
@@ -55,68 +56,47 @@ namespace Terminals.Network
                 // send it to the DNS server and get the response
                 //
                 //this.dataGridView1.DataSource = response.Answers;
-
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 Logging.Info("Could not resolve host.", exc);
                 MessageBox.Show("Could not resolve host.");
             }
-
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-
         }
 
         private void DNSLookup_Load(object sender, EventArgs e)
         {
-            this.serverComboBox.DataSource = Terminals.Network.DNS.AdapterInfo.DNSServers;
-            
+            this.serverComboBox.DataSource = AdapterInfo.DNSServers;
         }
 
         private void hostnameTextBox_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-            {
-                lookupButton_Click(null, null);
-            }
+                this.lookupButton_Click(null, null);
         }
     }
+
     public class IPRender
     {
-        public System.Net.IPAddress address;
-        public string Address
-        {
-            get { return address.ToString(); }
-        }
-        public string AddressFamily
-        {
-            get { return address.AddressFamily.ToString();  }
-        }
-        public bool IsIPv6LinkLocal
-        {
-            get { return address.IsIPv6LinkLocal; }
-        }
-        public bool IsIPv6Multicast
-        {
-            get { return address.IsIPv6Multicast; }
-        }
-        public bool IsIPv6SiteLocal
-        {
-            get { return address.IsIPv6SiteLocal; }
-        }
+        public IPAddress address;
+
+        public string Address => this.address.ToString();
+
+        public string AddressFamily => this.address.AddressFamily.ToString();
+
+        public bool IsIPv6LinkLocal => this.address.IsIPv6LinkLocal;
+
+        public bool IsIPv6Multicast => this.address.IsIPv6Multicast;
+
+        public bool IsIPv6SiteLocal => this.address.IsIPv6SiteLocal;
     }
+
     public class KnownAlias
     {
-        private string alias;
-
-        public string Alias
-        {
-            get { return alias; }
-            set { alias = value; }
-        }
-	
+        public string Alias { get; set; }
     }
 }

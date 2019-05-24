@@ -6,11 +6,11 @@ namespace Terminals.Data
 {
     internal class SerializationContextBuilder
     {
-        private readonly Groups groups;
+        private readonly DataDispatcher dispatcher;
 
         private readonly Favorites favorites;
 
-        private readonly DataDispatcher dispatcher;
+        private readonly Groups groups;
 
         public SerializationContextBuilder(Groups groups, Favorites favorites, DataDispatcher dispatcher)
         {
@@ -32,10 +32,10 @@ namespace Terminals.Data
 
         private FavoritesInGroup[] GetFavoriteInGroups()
         {
-            List<FavoritesInGroup> references = new List<FavoritesInGroup>();
+            var references = new List<FavoritesInGroup>();
             foreach (Group group in this.groups)
             {
-                FavoritesInGroup groupReferences = group.GetGroupReferences();
+                var groupReferences = group.GetGroupReferences();
                 references.Add(groupReferences);
             }
 
@@ -50,17 +50,14 @@ namespace Terminals.Data
 
         private void AssignServices(Group[] fileGroups)
         {
-            foreach (Group group in fileGroups)
-            {
+            foreach (var group in fileGroups)
                 group.AssignStores(this.groups, this.dispatcher);
-            }
         }
+
         private void AssignServices(Favorite[] fileFavorites)
         {
-            foreach (Favorite favorite in fileFavorites)
-            {
+            foreach (var favorite in fileFavorites)
                 favorite.AssignStores(this.groups);
-            }
         }
     }
 }

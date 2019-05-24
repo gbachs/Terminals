@@ -14,80 +14,44 @@ namespace Terminals.Data
     internal class FilePersistence : IPersistence
     {
         /// <summary>
-        /// Gets unique id of the persistence to be stored in settings (0)
+        ///     Gets unique id of the persistence to be stored in settings (0)
         /// </summary>
         internal const int TYPE_ID = 0;
 
-        public int TypeId { get { return TYPE_ID; } }
-
-        public string Name { get { return "Files"; } }
-
-        private readonly FileLocations fileLocations;
-        private readonly Favorites favorites;
-        public IFavorites Favorites
-        {
-            get
-            {
-                return this.favorites;
-            }
-        }
-
-        private readonly Groups groups;
-        internal Groups GroupsStore
-        {
-            get { return this.groups; }
-        }
-
-        public IGroups Groups
-        {
-            get
-            {
-                return this.groups;
-            }
-        }
-
-        private readonly Factory factory;
-        public IFactory Factory
-        {
-            get { return this.factory; }
-        }
-
-        private readonly StoredCredentials storedCredentials;
-        public ICredentials Credentials
-        {
-            get { return this.storedCredentials; }
-        }
-
         private readonly ConnectionHistory connectionHistory;
-        public IConnectionHistory ConnectionHistory
-        {
-            get { return this.connectionHistory; }
-        }
-
-        public DataDispatcher Dispatcher { get; private set; }
-
-        public PersistenceSecurity Security { get; private set; }
-
-        private readonly Mutex fileLock = new Mutex(false, "Terminals.CodePlex.com.FilePersistence");
-        private IDataFileWatcher fileWatcher;
-        private bool delaySave;
-
-        private readonly FavoritesFileSerializer serializer;
 
         private readonly SerializationContextBuilder contextBuilder;
 
+        private readonly Factory factory;
+
+        private readonly Favorites favorites;
+
+        private readonly FileLocations fileLocations;
+
+        private readonly Mutex fileLock = new Mutex(false, "Terminals.CodePlex.com.FilePersistence");
+
+        private readonly FavoritesFileSerializer serializer;
+
+        private readonly StoredCredentials storedCredentials;
+
         private UnknonwPluginElements cachedUnknown = new UnknonwPluginElements();
 
-        /// <summary>
-        /// Try to reuse current security in case of changing persistence, because user is already authenticated
-        /// </summary>
-        internal FilePersistence(PersistenceSecurity security, FavoriteIcons favoriteIcons, ConnectionManager connectionManager)
-            : this(security, new DataFileWatcher(Settings.Instance.FileLocations.Favorites),
-                  favoriteIcons, connectionManager)
-        {}
+        private bool delaySave;
+
+        private IDataFileWatcher fileWatcher;
 
         /// <summary>
-        /// For testing purpose allowes to inject internaly used services
+        ///     Try to reuse current security in case of changing persistence, because user is already authenticated
+        /// </summary>
+        internal FilePersistence(PersistenceSecurity security, FavoriteIcons favoriteIcons,
+            ConnectionManager connectionManager)
+            : this(security, new DataFileWatcher(Settings.Instance.FileLocations.Favorites),
+                favoriteIcons, connectionManager)
+        {
+        }
+
+        /// <summary>
+        ///     For testing purpose allowes to inject internaly used services
         /// </summary>
         internal FilePersistence(PersistenceSecurity security, IDataFileWatcher fileWatcher,
             FavoriteIcons favoriteIcons, ConnectionManager connectionManager)
@@ -97,35 +61,33 @@ namespace Terminals.Data
             this.Security = security;
             this.Dispatcher = new DataDispatcher();
             this.storedCredentials = new StoredCredentials(security);
-            this.groups = new Groups(this);
+            this.GroupsStore = new Groups(this);
             this.favorites = new Favorites(this, favoriteIcons, connectionManager);
             this.connectionHistory = new ConnectionHistory(this.favorites);
-            this.factory = new Factory(this.groups, this.Dispatcher,  connectionManager);
-            this.contextBuilder = new SerializationContextBuilder(this.groups, this.favorites, this.Dispatcher);
+            this.factory = new Factory(this.GroupsStore, this.Dispatcher, connectionManager);
+            this.contextBuilder = new SerializationContextBuilder(this.GroupsStore, this.favorites, this.Dispatcher);
             this.InitializeFileWatch(fileWatcher);
         }
 
-        private void InitializeFileWatch(IDataFileWatcher fileWatcher)
-        {
-            this.fileWatcher = fileWatcher;
-            this.fileWatcher.FileChanged += new EventHandler(this.FavoritesFileChanged);
-            this.fileWatcher.StartObservation();
-        }
+        internal Groups GroupsStore { get; }
 
-        private void FavoritesFileChanged(object sender, EventArgs e)
-        {
-            FavoritesFile file = this.LoadFile();
-            // dont report changes immediately, we have to wait till memberships are refreshed properly
-            this.Dispatcher.StartDelayedUpdate();
-            List<IGroup> addedGroups = this.groups.Merge(file.Groups.Cast<IGroup>().ToList());
-            this.favorites.Merge(file.Favorites.Cast<IFavorite>().ToList());
-            // first update also present groups assignment,
-            // than send the favorite update also for present favorites
-            List<IGroup> updated = this.UpdateFavoritesInGroups(file.FavoritesInGroups);
-            updated = ListsHelper.GetMissingSourcesInTarget(updated, addedGroups);
-            this.Dispatcher.ReportGroupsUpdated(updated);
-            this.Dispatcher.EndDelayedUpdate();
-        }
+        public int TypeId => TYPE_ID;
+
+        public string Name => "Files";
+
+        public IFavorites Favorites => this.favorites;
+
+        public IGroups Groups => this.GroupsStore;
+
+        public IFactory Factory => this.factory;
+
+        public ICredentials Credentials => this.storedCredentials;
+
+        public IConnectionHistory ConnectionHistory => this.connectionHistory;
+
+        public DataDispatcher Dispatcher { get; }
+
+        public PersistenceSecurity Security { get; }
 
         public void AssignSynchronizationObject(ISynchronizeInvoke synchronizer)
         {
@@ -151,12 +113,34 @@ namespace Terminals.Data
         public bool Initialize()
         {
             this.storedCredentials.Initialize();
-            FavoritesFile file = this.LoadFile();
-            this.groups.AddAllToCache(file.Groups.Cast<IGroup>().ToList());
+            var file = this.LoadFile();
+            this.GroupsStore.AddAllToCache(file.Groups.Cast<IGroup>().ToList());
             this.favorites.AddAllToCache(file.Favorites.Cast<IFavorite>().ToList());
             this.UpdateFavoritesInGroups(file.FavoritesInGroups);
             this.Security.OnUpdatePasswordsByNewMasterPassword += this.UpdatePasswordsByNewMasterPassword;
             return true;
+        }
+
+        private void InitializeFileWatch(IDataFileWatcher fileWatcher)
+        {
+            this.fileWatcher = fileWatcher;
+            this.fileWatcher.FileChanged += this.FavoritesFileChanged;
+            this.fileWatcher.StartObservation();
+        }
+
+        private void FavoritesFileChanged(object sender, EventArgs e)
+        {
+            var file = this.LoadFile();
+            // dont report changes immediately, we have to wait till memberships are refreshed properly
+            this.Dispatcher.StartDelayedUpdate();
+            var addedGroups = this.GroupsStore.Merge(file.Groups.Cast<IGroup>().ToList());
+            this.favorites.Merge(file.Favorites.Cast<IFavorite>().ToList());
+            // first update also present groups assignment,
+            // than send the favorite update also for present favorites
+            var updated = this.UpdateFavoritesInGroups(file.FavoritesInGroups);
+            updated = ListsHelper.GetMissingSourcesInTarget(updated, addedGroups);
+            this.Dispatcher.ReportGroupsUpdated(updated);
+            this.Dispatcher.EndDelayedUpdate();
         }
 
         internal void UpdatePasswordsByNewMasterPassword(string newMasterKey)
@@ -169,9 +153,7 @@ namespace Terminals.Data
         internal void SaveImmediatelyIfRequested()
         {
             if (!this.delaySave)
-            {
                 this.Save();
-            }
         }
 
         private FavoritesFile LoadFile()
@@ -187,7 +169,7 @@ namespace Terminals.Data
             try
             {
                 this.fileLock.WaitOne();
-                string fileLocation = this.fileLocations.Favorites;
+                var fileLocation = this.fileLocations.Favorites;
                 return this.serializer.Deserialize(fileLocation);
             }
             catch (Exception exception)
@@ -204,12 +186,12 @@ namespace Terminals.Data
 
         private List<IGroup> UpdateFavoritesInGroups(FavoritesInGroup[] favoritesInGroups)
         {
-            List<IGroup> updatedGroups = new List<IGroup>();
+            var updatedGroups = new List<IGroup>();
 
-            foreach (FavoritesInGroup favoritesInGroup in favoritesInGroups)
+            foreach (var favoritesInGroup in favoritesInGroups)
             {
-                var group = this.groups[favoritesInGroup.GroupId] as Group;
-                bool groupUpdated = this.UpdateFavoritesInGroup(group, favoritesInGroup.Favorites);
+                var group = this.GroupsStore[favoritesInGroup.GroupId] as Group;
+                var groupUpdated = this.UpdateFavoritesInGroup(group, favoritesInGroup.Favorites);
                 if (groupUpdated)
                     updatedGroups.Add(group);
             }
@@ -221,7 +203,7 @@ namespace Terminals.Data
         {
             if (group != null)
             {
-                List<IFavorite> newFavorites = this.GetFavoritesInGroup(favoritesInGroup);
+                var newFavorites = this.GetFavoritesInGroup(favoritesInGroup);
                 return group.UpdateFavorites(newFavorites);
             }
 
@@ -237,7 +219,7 @@ namespace Terminals.Data
 
         private void Save()
         {
-            SerializationContext context = this.contextBuilder.CreateDataFromCache(this.cachedUnknown);
+            var context = this.contextBuilder.CreateDataFromCache(this.cachedUnknown);
             this.TrySave(context);
         }
 
@@ -247,7 +229,7 @@ namespace Terminals.Data
             {
                 this.fileLock.WaitOne();
                 this.fileWatcher.StopObservation();
-                string fileLocation = this.fileLocations.Favorites;
+                var fileLocation = this.fileLocations.Favorites;
                 this.serializer.Serialize(context, fileLocation);
             }
             catch (Exception exception)

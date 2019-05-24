@@ -1,58 +1,49 @@
 using System;
 using System.Collections.Generic;
 using System.Management;
-using System.Text;
 
 namespace Terminals.Network.DNS
 {
     internal class AdapterInfo
     {
-        public static List<Adapter> GetAdapters()
-        {
-            List<Adapter> adapterList = new List<Adapter>();
-
-            ManagementObjectSearcher searcher;
-            ObjectQuery q = new ObjectQuery("SELECT * FROM Win32_NetworkAdapterConfiguration");
-            searcher = new ManagementObjectSearcher(q);
-            foreach (ManagementObject share in searcher.Get())
-            {
-                Adapter ad = new Adapter();
-                ad.PropertyData = share;
-                adapterList.Add(ad);
-            }
-
-            return adapterList;
-        }
-
-        public static List<String> DNSServers
+        public static List<string> DNSServers
         {
             get
             {
-                List<string> servers = new List<String>();
+                var servers = new List<string>();
                 try
                 {
-                    List<Adapter> adapters = AdapterInfo.GetAdapters();
-                    foreach (Adapter a in adapters)
-                    {
+                    var adapters = GetAdapters();
+                    foreach (var a in adapters)
                         if (a.IPEnabled)
-                        {
                             if (a.DNSServerSearchOrder != null)
-                            {
-                                foreach (String server in a.DNSServerSearchOrder)
-                                {
+                                foreach (var server in a.DNSServerSearchOrder)
                                     servers.Add(server);
-                                }
-                            }
-                        }
-                    }
                 }
-                catch(Exception exc)
+                catch (Exception exc)
                 {
                     Logging.Error("DNS Server Lookup Failed (WMI)", exc);
                 }
 
                 return servers;
             }
+        }
+
+        public static List<Adapter> GetAdapters()
+        {
+            var adapterList = new List<Adapter>();
+
+            ManagementObjectSearcher searcher;
+            var q = new ObjectQuery("SELECT * FROM Win32_NetworkAdapterConfiguration");
+            searcher = new ManagementObjectSearcher(q);
+            foreach (ManagementObject share in searcher.Get())
+            {
+                var ad = new Adapter();
+                ad.PropertyData = share;
+                adapterList.Add(ad);
+            }
+
+            return adapterList;
         }
     }
 }

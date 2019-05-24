@@ -9,24 +9,40 @@ namespace Terminals.Data.DB
 {
     internal partial class DbFavorite : IFavorite, IIntegerKeyEnityty
     {
-        private Groups groups;
-
         private StoredCredentials credentials;
 
-        /// <summary>
-        /// cant be set in constructor, because the constructor is used by EF when loading the entities
-        /// </summary>
-        private bool isNewlyCreated;
-
-        internal FavoriteDetails Details { get; private set; }
-
-        /// <summary>
-        /// Should be never null to prevent access violations
-        /// </summary>
-        private ProtocolOptions protocolProperties;
+        private Groups groups;
 
         // for backward compatibility with the file persistence only
         private Guid guid;
+
+        private int id;
+
+        /// <summary>
+        ///     cant be set in constructor, because the constructor is used by EF when loading the entities
+        /// </summary>
+        private bool isNewlyCreated;
+
+        /// <summary>
+        ///     Should be never null to prevent access violations
+        /// </summary>
+        private ProtocolOptions protocolProperties;
+
+        // because of the disposable image, favorite should implement IDisposable
+
+        /// <summary>
+        ///     Initializes new instance of a favorite and sets its properties to default values,
+        ///     which aren't defined by database.
+        /// </summary>
+        public DbFavorite()
+        {
+            this.Groups = new HashSet<DbGroup>();
+            this.Port = KnownConnectionConstants.RDPPort;
+            this.ChangeProtocol(KnownConnectionConstants.RDP, new EmptyOptions());
+            this.Details = new FavoriteDetails(this);
+        }
+
+        internal FavoriteDetails Details { get; }
 
         internal Guid Guid
         {
@@ -39,10 +55,15 @@ namespace Terminals.Data.DB
             }
         }
 
-        Guid IFavorite.Id
-        {
-            get { return this.Guid; }
-        }
+        /// <summary>
+        ///     Gets empty string. Set loads the image from file and updates the icon reference in database.
+        ///     The string get/set image file path to import/export favorite icon isn't supported in database persistence.
+        /// </summary>
+        public string ToolBarIconFile { get => string.Empty; set { } }
+
+        public Image ToolBarIconImage { get; set; }
+
+        Guid IFavorite.Id => this.Guid;
 
         IBeforeConnectExecuteOptions IFavorite.ExecuteBeforeConnect
         {
@@ -62,11 +83,71 @@ namespace Terminals.Data.DB
             }
         }
 
-        ISecurityOptions IFavorite.Security
+        ISecurityOptions IFavorite.Security => this.GetSecurity();
+
+        List<IGroup> IFavorite.Groups => this.GetInvariantGroups();
+
+        /// <summary>
+        ///     Gets or sets the protocol specific container. This isn't a part of an entity,
+        ///     because we are using lazy loading of this property and we don't want to cache
+        ///     its xml persisted content.
+        /// </summary>
+        public ProtocolOptions ProtocolProperties
         {
             get
             {
-                return this.GetSecurity();
+                this.Details.LoadProtocolProperties();
+                return this.protocolProperties;
+            }
+        }
+
+        public string GroupNames
+        {
+            get
+            {
+                var loadedGroups = this.GetInvariantGroups();
+                return Favorite.GroupsListToString(loadedGroups);
+            }
+        }
+
+        public string Protocol { get; set; }
+
+        IFavorite IFavorite.Copy()
+        {
+            var copy = Factory.CreateFavorite(this.groups, this.credentials, this.Details.Dispatcher);
+            copy.UpdateFrom(this);
+            return copy;
+        }
+
+        void IFavorite.UpdateFrom(IFavorite source)
+        {
+            var sourceFavorite = source as DbFavorite;
+            if (sourceFavorite == null)
+                return;
+            this.UpdateFrom(sourceFavorite);
+        }
+
+        bool IStoreIdEquals<IFavorite>.StoreIdEquals(IFavorite oponent)
+        {
+            var oponentFavorite = oponent as DbFavorite;
+            if (oponentFavorite == null)
+                return false;
+
+            return oponentFavorite.Id == this.Id;
+        }
+
+        public int GetStoreIdHash()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        public int Id
+        {
+            get => this.id;
+            set
+            {
+                this.id = value;
+                this.guid = GuidConverter.ToGuid(value);
             }
         }
 
@@ -78,121 +159,10 @@ namespace Terminals.Data.DB
             return this.Details.Security;
         }
 
-        List<IGroup> IFavorite.Groups
-        {
-            get { return GetInvariantGroups(); }
-        }
-
-        /// <summary>
-        /// Gets or sets the protocol specific container. This isn't a part of an entity,
-        /// because we are using lazy loading of this property and we don't want to cache
-        /// its xml persisted content.
-        /// </summary>
-        public ProtocolOptions ProtocolProperties
-        {
-            get
-            {
-                this.Details.LoadProtocolProperties();
-                return this.protocolProperties;
-            }
-        }
-
-        /// <summary>
-        /// Gets empty string. Set loads the image from file and updates the icon reference in database.
-        /// The string get/set image file path to import/export favorite icon isn't supported in database persistence.
-        /// </summary>
-        public string ToolBarIconFile
-        {
-            get
-            {
-                return string.Empty;
-            }
-            set
-            {
-            }
-        }
-
-        // because of the disposable image, favorite should implement IDisposable
-        private Image toolBarIcon;
-
-        public Image ToolBarIconImage
-        {
-            get
-            {
-                return this.toolBarIcon;
-            }
-            set
-            {
-                this.toolBarIcon = value;
-            }
-        }
-
-        public string GroupNames
-        {
-            get
-            {
-                List<IGroup> loadedGroups = GetInvariantGroups();
-                return Favorite.GroupsListToString(loadedGroups);
-            }
-        }
-
-        private int id;
-
-        public int Id
-        {
-            get
-            {
-                return this.id;
-            }
-            set
-            {
-                this.id = value;
-                this.guid = GuidConverter.ToGuid(value); 
-            }
-        }
-
-        private string protocol;
-
-        public string Protocol
-        {
-            get { return this.protocol; }
-            set
-            {
-                this.protocol = value;
-            }
-        }
-
-        /// <summary>
-        /// Initializes new instance of a favorite and sets its properties to default values,
-        /// which aren't defined by database.
-        /// </summary>
-        public DbFavorite()
-        {
-            this.Groups = new HashSet<DbGroup>();
-            this.Port = KnownConnectionConstants.RDPPort;
-            this.ChangeProtocol(KnownConnectionConstants.RDP, new EmptyOptions());
-            this.Details = new FavoriteDetails(this);
-        }
-
         internal void MarkAsNewlyCreated()
         {
             this.isNewlyCreated = true;
             this.Details.LoadFieldsFromReferences();
-        }
-
-        IFavorite IFavorite.Copy()
-        {
-            DbFavorite copy = Factory.CreateFavorite(this.groups, this.credentials, this.Details.Dispatcher);
-            copy.UpdateFrom(this);
-            return copy;
-        }
-
-        void IFavorite.UpdateFrom(IFavorite source)
-        {
-            var sourceFavorite = source as DbFavorite;
-            if (sourceFavorite == null)
-                return;
-            this.UpdateFrom(sourceFavorite);
         }
 
         private void UpdateFrom(DbFavorite source)
@@ -213,23 +183,9 @@ namespace Terminals.Data.DB
             this.ServerName = source.ServerName;
             this.ToolBarIconImage = source.ToolBarIconImage;
             // protocolProperties don't have a favorite Id reference, so we can overwrite complete content
-            ProtocolOptions sourceProperties = source.protocolProperties.Copy();
+            var sourceProperties = source.protocolProperties.Copy();
             this.ChangeProtocol(source.Protocol, sourceProperties);
             this.AssignStores(source.groups, source.credentials, source.Details.Dispatcher);
-        }
-
-        bool IStoreIdEquals<IFavorite>.StoreIdEquals(IFavorite oponent)
-        {
-            var oponentFavorite = oponent as DbFavorite;
-            if (oponentFavorite == null)
-                return false;
-
-            return oponentFavorite.Id == this.Id;
-        }
-
-        public int GetStoreIdHash()
-        {
-            return this.Id.GetHashCode();
         }
 
         private List<IGroup> GetInvariantGroups()
@@ -258,7 +214,7 @@ namespace Terminals.Data.DB
             this.Details.ReleaseLoadedDetails();
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return Favorite.ToString(this);
         }

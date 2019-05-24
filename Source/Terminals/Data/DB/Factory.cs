@@ -5,21 +5,21 @@ using Terminals.Data.Validation;
 namespace Terminals.Data.DB
 {
     /// <summary>
-    /// Unified creation of Entity framework entities
+    ///     Unified creation of Entity framework entities
     /// </summary>
     internal class Factory : IFactory
     {
-        private readonly Groups groups;
-
-        private readonly Favorites favorites;
+        private readonly ConnectionManager connectionManager;
 
         private readonly StoredCredentials credentials;
 
         private readonly DataDispatcher dispatcher;
 
-        private readonly ConnectionManager connectionManager;
+        private readonly Favorites favorites;
 
-        internal Factory(Groups groups, Favorites favorites, 
+        private readonly Groups groups;
+
+        internal Factory(Groups groups, Favorites favorites,
             StoredCredentials credentials, DataDispatcher dispatcher,
             ConnectionManager connectionManager)
         {
@@ -37,24 +37,10 @@ namespace Terminals.Data.DB
             return favorite;
         }
 
-        /// <summary>
-        /// Does not set the protocol options.
-        /// </summary>
-        internal static DbFavorite CreateFavorite(Groups groups, StoredCredentials credentials, DataDispatcher dispatcher)
-        {
-            var favorite = new DbFavorite();
-            favorite.Display = new DbDisplayOptions();
-            favorite.Security = new DbSecurityOptions();
-            favorite.ExecuteBeforeConnect = new DbBeforeConnectExecute();
-            favorite.AssignStores(groups, credentials, dispatcher);
-            favorite.MarkAsNewlyCreated();
-            return favorite;
-        }
-
         public IGroup CreateGroup(string groupName)
         {
             // call this constructor doesn't fire the group changed event
-            DbGroup createdGroup = new DbGroup(groupName);
+            var createdGroup = new DbGroup(groupName);
             createdGroup.AssignStores(this.groups, this.dispatcher, this.favorites);
             return createdGroup;
         }
@@ -67,6 +53,21 @@ namespace Terminals.Data.DB
         public IDataValidator CreateValidator()
         {
             return new DbValidations(this.connectionManager);
+        }
+
+        /// <summary>
+        ///     Does not set the protocol options.
+        /// </summary>
+        internal static DbFavorite CreateFavorite(Groups groups, StoredCredentials credentials,
+            DataDispatcher dispatcher)
+        {
+            var favorite = new DbFavorite();
+            favorite.Display = new DbDisplayOptions();
+            favorite.Security = new DbSecurityOptions();
+            favorite.ExecuteBeforeConnect = new DbBeforeConnectExecute();
+            favorite.AssignStores(groups, credentials, dispatcher);
+            favorite.MarkAsNewlyCreated();
+            return favorite;
         }
     }
 }

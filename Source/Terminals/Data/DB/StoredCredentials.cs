@@ -8,29 +8,19 @@ using System.Linq;
 namespace Terminals.Data.DB
 {
     /// <summary>
-    /// SQL database implementation of managing credentials
+    ///     SQL database implementation of managing credentials
     /// </summary>
     internal class StoredCredentials : ICredentials
     {
-        private readonly DataDispatcher dispatcher;
-
-        public event EventHandler CredentialsChanged;
-
         private readonly EntitiesCache<DbCredentialSet> cache = new EntitiesCache<DbCredentialSet>();
+
+        private readonly DataDispatcher dispatcher;
 
         private bool isLoaded;
 
         public StoredCredentials(DataDispatcher dispatcher)
         {
             this.dispatcher = dispatcher;
-        }
-
-        ICredentialSet ICredentials.this[Guid id]
-        {
-            get
-            {
-                return this[id];
-            }
         }
 
         internal DbCredentialSet this[Guid id]
@@ -51,13 +41,17 @@ namespace Terminals.Data.DB
             }
         }
 
+        public event EventHandler CredentialsChanged;
+
+        ICredentialSet ICredentials.this[Guid id] => this[id];
+
         ICredentialSet ICredentials.this[string name]
         {
             get
             {
                 this.EnsureCache();
                 return this.cache.FirstOrDefault(candidate => candidate.Name
-                   .Equals(name, StringComparison.CurrentCultureIgnoreCase));
+                    .Equals(name, StringComparison.CurrentCultureIgnoreCase));
             }
         }
 
@@ -69,24 +63,8 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                this.dispatcher.ReportActionError(Add, toAdd, this, exception, "Unable to add credential to database");
-            }
-        }
-
-        private void TryAdd(ICredentialSet toAdd)
-        {
-            var credentialToAdd = toAdd as DbCredentialSet;
-            AddToDatabase(credentialToAdd);
-            this.cache.Add(credentialToAdd);
-        }
-
-        private static void AddToDatabase(DbCredentialSet credentialToAdd)
-        {
-            using (Database database = DatabaseConnections.CreateInstance())
-            {
-                database.CredentialBase.Add(credentialToAdd);
-                database.SaveImmediatelyIfRequested();
-                database.Cache.Detach(credentialToAdd);
+                this.dispatcher.ReportActionError(this.Add, toAdd, this, exception,
+                    "Unable to add credential to database");
             }
         }
 
@@ -102,25 +80,8 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                this.dispatcher.ReportActionError(Remove, toRemove, this, exception,
-                                                  "Unable to remove credential from database.");
-            }
-        }
-
-        private void TryRemove(ICredentialSet toRemove)
-        {
-            var credentailToRemove = toRemove as DbCredentialSet;
-            DeleteFromDatabase(credentailToRemove);
-            this.cache.Delete(credentailToRemove);
-        }
-
-        private static void DeleteFromDatabase(DbCredentialSet credentailToRemove)
-        {
-            using (Database database = DatabaseConnections.CreateInstance())
-            {
-                database.CredentialBase.Attach(credentailToRemove);
-                database.CredentialBase.Remove(credentailToRemove);
-                database.SaveImmediatelyIfRequested();
+                this.dispatcher.ReportActionError(this.Remove, toRemove, this, exception,
+                    "Unable to remove credential from database.");
             }
         }
 
@@ -136,13 +97,53 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                this.dispatcher.ReportActionError(Update, toUpdate, this, exception, "Unable to update credential set.");
+                this.dispatcher.ReportActionError(this.Update, toUpdate, this, exception,
+                    "Unable to update credential set.");
+            }
+        }
+
+        public void UpdatePasswordsByNewKeyMaterial(string newKeyMaterial)
+        {
+            this.RefreshCache();
+        }
+
+        private void TryAdd(ICredentialSet toAdd)
+        {
+            var credentialToAdd = toAdd as DbCredentialSet;
+            AddToDatabase(credentialToAdd);
+            this.cache.Add(credentialToAdd);
+        }
+
+        private static void AddToDatabase(DbCredentialSet credentialToAdd)
+        {
+            using (var database = DatabaseConnections.CreateInstance())
+            {
+                database.CredentialBase.Add(credentialToAdd);
+                database.SaveImmediatelyIfRequested();
+                database.Cache.Detach(credentialToAdd);
+            }
+        }
+
+        private void TryRemove(ICredentialSet toRemove)
+        {
+            var credentailToRemove = toRemove as DbCredentialSet;
+            DeleteFromDatabase(credentailToRemove);
+            this.cache.Delete(credentailToRemove);
+        }
+
+        private static void DeleteFromDatabase(DbCredentialSet credentailToRemove)
+        {
+            using (var database = DatabaseConnections.CreateInstance())
+            {
+                database.CredentialBase.Attach(credentailToRemove);
+                database.CredentialBase.Remove(credentailToRemove);
+                database.SaveImmediatelyIfRequested();
             }
         }
 
         private void TryUpdate(ICredentialSet toUpdate)
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
                 var credentialToUpdate = toUpdate as DbCredentialSet;
                 database.CredentialBase.Attach(credentialToUpdate);
@@ -151,11 +152,6 @@ namespace Terminals.Data.DB
                 database.Cache.Detach(credentialToUpdate);
                 this.cache.Update(credentialToUpdate);
             }
-        }
-
-        public void UpdatePasswordsByNewKeyMaterial(string newKeyMaterial)
-        {
-            this.RefreshCache();
         }
 
         private void EnsureCache()
@@ -171,13 +167,13 @@ namespace Terminals.Data.DB
         {
             this.cache.Clear();
             this.ReloadCache();
-            if (CredentialsChanged != null)
-                CredentialsChanged(this, new EventArgs());
+            if (this.CredentialsChanged != null)
+                this.CredentialsChanged(this, new EventArgs());
         }
 
         private void ReloadCache()
         {
-            List<DbCredentialSet> loaded = LoadFromDatabase();
+            var loaded = this.LoadFromDatabase();
             this.cache.Add(loaded);
         }
 
@@ -189,17 +185,22 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                return this.dispatcher.ReportFunctionError(LoadFromDatabase, this, exception,
+                return this.dispatcher.ReportFunctionError(this.LoadFromDatabase, this, exception,
                     "Unable to load credentials from database.");
             }
         }
 
         private static List<DbCredentialSet> TryLoadFromDatabase()
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
                 return database.CredentialBase.OfType<DbCredentialSet>().ToList();
             }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("StoredCredentials:Cached={0}", this.cache.Count());
         }
 
         #region IEnumerable members
@@ -212,14 +213,9 @@ namespace Terminals.Data.DB
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return this.GetEnumerator();
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            return string.Format("StoredCredentials:Cached={0}", this.cache.Count());
-        }
     }
 }

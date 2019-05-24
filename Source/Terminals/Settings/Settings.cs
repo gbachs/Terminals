@@ -12,202 +12,190 @@ namespace Terminals.Configuration
         {
             get
             {
-                string configVersion = GetSection().ConfigVersion;
-                if (configVersion != String.Empty)
+                var configVersion = this.GetSection().ConfigVersion;
+                if (configVersion != string.Empty)
                     return new Version(configVersion);
 
                 return null;
             }
-
             set
             {
-                GetSection().ConfigVersion = value.ToString();
-                SaveImmediatelyIfRequested();
+                this.GetSection().ConfigVersion = value.ToString();
+                this.SaveImmediatelyIfRequested();
             }
+        }
+
+        #region Flickr tab settings
+
+        public string FlickrToken
+        {
+            get => this.GetSection().FlickrToken;
+            set
+            {
+                this.GetSection().FlickrToken = value;
+                this.SaveImmediatelyIfRequested();
+            }
+        }
+
+        #endregion
+
+        public bool AskToReconnect
+        {
+            get => this.GetSection().AskToReconnect;
+            set
+            {
+                this.GetSection().AskToReconnect = value;
+                this.SaveImmediatelyIfRequested();
+            }
+        }
+
+        public string[] DisabledPlugins
+        {
+            get => this.GetSection().DisabledPlugins.ToSortedArray();
+            set => this.UpdateEnabledPlugins(value);
+        }
+
+        public void UpdateEnabledPlugins(string[] disabledPlugins)
+        {
+            var pluginsSection = this.GetSection().DisabledPlugins;
+            pluginsSection.Clear();
+
+            foreach (var disabledPlugin in disabledPlugins)
+                pluginsSection.AddByName(disabledPlugin);
+
+            this.SaveImmediatelyIfRequested();
         }
 
         #region General tab settings
 
         public bool NeverShowTerminalsWindow
         {
-            get
-            {
-                return GetSection().NeverShowTerminalsWindow;
-            }
-
+            get => this.GetSection().NeverShowTerminalsWindow;
             set
             {
-                GetSection().NeverShowTerminalsWindow = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().NeverShowTerminalsWindow = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool ShowUserNameInTitle
         {
-            get
-            {
-                return GetSection().ShowUserNameInTitle;
-            }
-
+            get => this.GetSection().ShowUserNameInTitle;
             set
             {
-                GetSection().ShowUserNameInTitle = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ShowUserNameInTitle = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool ShowInformationToolTips
         {
-            get
-            {
-                return GetSection().ShowInformationToolTips;
-            }
-
+            get => this.GetSection().ShowInformationToolTips;
             set
             {
-                GetSection().ShowInformationToolTips = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ShowInformationToolTips = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool ShowFullInformationToolTips
         {
-            get
-            {
-                return GetSection().ShowFullInformationToolTips;
-            }
-
+            get => this.GetSection().ShowFullInformationToolTips;
             set
             {
-                GetSection().ShowFullInformationToolTips = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ShowFullInformationToolTips = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool SingleInstance
         {
-            get
-            {
-                return GetSection().SingleInstance;
-            }
-
+            get => this.GetSection().SingleInstance;
             set
             {
-                GetSection().SingleInstance = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().SingleInstance = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool ShowConfirmDialog
         {
-            get
-            {
-                return GetSection().ShowConfirmDialog;
-            }
-
+            get => this.GetSection().ShowConfirmDialog;
             set
             {
-                GetSection().ShowConfirmDialog = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ShowConfirmDialog = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool SaveConnectionsOnClose
         {
-            get
-            {
-                return GetSection().SaveConnectionsOnClose;
-            }
-
+            get => this.GetSection().SaveConnectionsOnClose;
             set
             {
-                GetSection().SaveConnectionsOnClose = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().SaveConnectionsOnClose = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool MinimizeToTray
         {
-            get
-            {
-                return GetSection().MinimizeToTray;
-            }
-
+            get => this.GetSection().MinimizeToTray;
             set
             {
-                GetSection().MinimizeToTray = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().MinimizeToTray = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         // Validate server names
         public bool ForceComputerNamesAsURI
         {
-            get
-            {
-                return GetSection().ForceComputerNamesAsURI;
-            }
-
+            get => this.GetSection().ForceComputerNamesAsURI;
             set
             {
-                GetSection().ForceComputerNamesAsURI = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ForceComputerNamesAsURI = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool WarnOnConnectionClose
         {
-            get
-            {
-                return GetSection().WarnOnConnectionClose;
-            }
-
+            get => this.GetSection().WarnOnConnectionClose;
             set
             {
-                GetSection().WarnOnConnectionClose = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().WarnOnConnectionClose = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool AutoCaseTags
         {
-            get
-            {
-                return GetSection().AutoCaseTags;
-            }
-
+            get => this.GetSection().AutoCaseTags;
             set
             {
-                GetSection().AutoCaseTags = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().AutoCaseTags = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public string DefaultDesktopShare
         {
-            get
-            {
-                return GetSection().DefaultDesktopShare;
-            }
-
+            get => this.GetSection().DefaultDesktopShare;
             set
             {
-                GetSection().DefaultDesktopShare = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().DefaultDesktopShare = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public int PortScanTimeoutSeconds
         {
-            get
-            {
-                return GetSection().PortScanTimeoutSeconds;
-            }
-
+            get => this.GetSection().PortScanTimeoutSeconds;
             set
             {
-                GetSection().PortScanTimeoutSeconds = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().PortScanTimeoutSeconds = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -217,71 +205,51 @@ namespace Terminals.Configuration
 
         public bool Execute
         {
-            get
-            {
-                return GetSection().ExecuteBeforeConnect;
-            }
-
+            get => this.GetSection().ExecuteBeforeConnect;
             set
             {
-                GetSection().ExecuteBeforeConnect = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ExecuteBeforeConnect = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public string Command
         {
-            get
-            {
-                return GetSection().ExecuteBeforeConnectCommand;
-            }
-
+            get => this.GetSection().ExecuteBeforeConnectCommand;
             set
             {
-                GetSection().ExecuteBeforeConnectCommand = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ExecuteBeforeConnectCommand = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public string CommandArguments
         {
-            get
-            {
-                return GetSection().ExecuteBeforeConnectArgs;
-            }
-
+            get => this.GetSection().ExecuteBeforeConnectArgs;
             set
             {
-                GetSection().ExecuteBeforeConnectArgs = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ExecuteBeforeConnectArgs = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public string InitialDirectory
         {
-            get
-            {
-                return GetSection().ExecuteBeforeConnectInitialDirectory;
-            }
-
+            get => this.GetSection().ExecuteBeforeConnectInitialDirectory;
             set
             {
-                GetSection().ExecuteBeforeConnectInitialDirectory = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ExecuteBeforeConnectInitialDirectory = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool WaitForExit
         {
-            get
-            {
-                return GetSection().ExecuteBeforeConnectWaitForExit;
-            }
-
+            get => this.GetSection().ExecuteBeforeConnectWaitForExit;
             set
             {
-                GetSection().ExecuteBeforeConnectWaitForExit = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ExecuteBeforeConnectWaitForExit = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -290,38 +258,37 @@ namespace Terminals.Configuration
         #region Security
 
         /// <summary>
-        /// Gets or sets the stored master password key, getter and setter don't make any encryption.
+        ///     Gets or sets the stored master password key, getter and setter don't make any encryption.
         /// </summary>
         internal string MasterPasswordHash
         {
-            get
-            {
-                return GetSection().TerminalsPassword;
-            }
-            private set
-            {
-                GetSection().TerminalsPassword = value;
-            }
+            get => this.GetSection().TerminalsPassword;
+            private set => this.GetSection().TerminalsPassword = value;
         }
 
         /// <summary>
-        /// This updates all stored passwords and assigns new key material in config section.
+        ///     This updates all stored passwords and assigns new key material in config section.
         /// </summary>
         internal void UpdateConfigurationPasswords(string newMasterKey, string newStoredMasterKey)
         {
-            MasterPasswordHash = newStoredMasterKey;
-            UpdateStoredPasswords(newMasterKey);
-            SaveImmediatelyIfRequested();
+            this.MasterPasswordHash = newStoredMasterKey;
+            this.UpdateStoredPasswords(newMasterKey);
+            this.SaveImmediatelyIfRequested();
         }
 
         private void UpdateStoredPasswords(string newKeyMaterial)
         {
-            TerminalsConfigurationSection configSection = GetSection();
-            configSection.EncryptedDefaultPassword = PasswordFunctions2.EncryptPassword(DefaultPassword, newKeyMaterial);
-            configSection.EncryptedAmazonAccessKey = PasswordFunctions2.EncryptPassword(AmazonAccessKey, newKeyMaterial);
-            configSection.EncryptedAmazonSecretKey = PasswordFunctions2.EncryptPassword(AmazonSecretKey, newKeyMaterial);
-            configSection.EncryptedConnectionString = PasswordFunctions2.EncryptPassword(ConnectionString, newKeyMaterial);
-            configSection.DatabaseMasterPasswordHash = PasswordFunctions2.EncryptPassword(DatabaseMasterPassword, newKeyMaterial);
+            var configSection = this.GetSection();
+            configSection.EncryptedDefaultPassword =
+                PasswordFunctions2.EncryptPassword(this.DefaultPassword, newKeyMaterial);
+            configSection.EncryptedAmazonAccessKey =
+                PasswordFunctions2.EncryptPassword(this.AmazonAccessKey, newKeyMaterial);
+            configSection.EncryptedAmazonSecretKey =
+                PasswordFunctions2.EncryptPassword(this.AmazonSecretKey, newKeyMaterial);
+            configSection.EncryptedConnectionString =
+                PasswordFunctions2.EncryptPassword(this.ConnectionString, newKeyMaterial);
+            configSection.DatabaseMasterPasswordHash =
+                PasswordFunctions2.EncryptPassword(this.DatabaseMasterPassword, newKeyMaterial);
         }
 
         #endregion
@@ -332,13 +299,13 @@ namespace Terminals.Configuration
         {
             get
             {
-                string encryptedDefaultDomain = GetSection().DefaultDomain;
-                return PersistenceSecurity.DecryptPassword(encryptedDefaultDomain);
+                var encryptedDefaultDomain = this.GetSection().DefaultDomain;
+                return this.PersistenceSecurity.DecryptPassword(encryptedDefaultDomain);
             }
             set
             {
-                GetSection().DefaultDomain = PersistenceSecurity.EncryptPassword(value);
-                SaveImmediatelyIfRequested();
+                this.GetSection().DefaultDomain = this.PersistenceSecurity.EncryptPassword(value);
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -346,13 +313,13 @@ namespace Terminals.Configuration
         {
             get
             {
-                string encryptedDefaultUserName = GetSection().DefaultUsername;
-                return PersistenceSecurity.DecryptPassword(encryptedDefaultUserName);
+                var encryptedDefaultUserName = this.GetSection().DefaultUsername;
+                return this.PersistenceSecurity.DecryptPassword(encryptedDefaultUserName);
             }
             set
             {
-                GetSection().DefaultUsername = PersistenceSecurity.EncryptPassword(value);
-                SaveImmediatelyIfRequested();
+                this.GetSection().DefaultUsername = this.PersistenceSecurity.EncryptPassword(value);
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -360,33 +327,29 @@ namespace Terminals.Configuration
         {
             get
             {
-                string encryptedDefaultPassword = GetSection().EncryptedDefaultPassword;
-                return PersistenceSecurity.DecryptPassword(encryptedDefaultPassword);
+                var encryptedDefaultPassword = this.GetSection().EncryptedDefaultPassword;
+                return this.PersistenceSecurity.DecryptPassword(encryptedDefaultPassword);
             }
             set
             {
-                GetSection().EncryptedDefaultPassword = PersistenceSecurity.EncryptPassword(value);
-                SaveImmediatelyIfRequested();
+                this.GetSection().EncryptedDefaultPassword = this.PersistenceSecurity.EncryptPassword(value);
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         /// <summary>
-        /// Gets or sets authentication instance used to encrypt and decrypt secured settings.
-        /// Set only initialized and authenticated instance before access to any data. 
+        ///     Gets or sets authentication instance used to encrypt and decrypt secured settings.
+        ///     Set only initialized and authenticated instance before access to any data.
         /// </summary>
         internal PersistenceSecurity PersistenceSecurity { get; set; }
 
         internal bool UseAmazon
         {
-            get
-            {
-                return GetSection().UseAmazon;
-            }
-
+            get => this.GetSection().UseAmazon;
             set
             {
-                GetSection().UseAmazon = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().UseAmazon = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -394,14 +357,13 @@ namespace Terminals.Configuration
         {
             get
             {
-                string encryptedAmazonAccessKey = GetSection().EncryptedAmazonAccessKey;
-                return PersistenceSecurity.DecryptPassword(encryptedAmazonAccessKey);
+                var encryptedAmazonAccessKey = this.GetSection().EncryptedAmazonAccessKey;
+                return this.PersistenceSecurity.DecryptPassword(encryptedAmazonAccessKey);
             }
-
             set
             {
-                GetSection().EncryptedAmazonAccessKey = PersistenceSecurity.EncryptPassword(value);
-                SaveImmediatelyIfRequested();
+                this.GetSection().EncryptedAmazonAccessKey = this.PersistenceSecurity.EncryptPassword(value);
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -409,46 +371,23 @@ namespace Terminals.Configuration
         {
             get
             {
-                string encryptedAmazonSecretKey = GetSection().EncryptedAmazonSecretKey;
-                return PersistenceSecurity.DecryptPassword(encryptedAmazonSecretKey);
+                var encryptedAmazonSecretKey = this.GetSection().EncryptedAmazonSecretKey;
+                return this.PersistenceSecurity.DecryptPassword(encryptedAmazonSecretKey);
             }
-
             set
             {
-                GetSection().EncryptedAmazonSecretKey = PersistenceSecurity.EncryptPassword(value);
-                SaveImmediatelyIfRequested();
+                this.GetSection().EncryptedAmazonSecretKey = this.PersistenceSecurity.EncryptPassword(value);
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         internal string AmazonBucketName
         {
-            get
-            {
-                return GetSection().AmazonBucketName;
-            }
-
+            get => this.GetSection().AmazonBucketName;
             set
             {
-                GetSection().AmazonBucketName = value;
-                SaveImmediatelyIfRequested();
-            }
-        }
-
-        #endregion
-
-        #region Flickr tab settings
-
-        public string FlickrToken
-        {
-            get
-            {
-                return GetSection().FlickrToken;
-            }
-
-            set
-            {
-                GetSection().FlickrToken = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().AmazonBucketName = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -458,43 +397,31 @@ namespace Terminals.Configuration
 
         public bool UseProxy
         {
-            get
-            {
-                return GetSection().UseProxy;
-            }
-
+            get => this.GetSection().UseProxy;
             set
             {
-                GetSection().UseProxy = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().UseProxy = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public string ProxyAddress
         {
-            get
-            {
-                return GetSection().ProxyAddress;
-            }
-
+            get => this.GetSection().ProxyAddress;
             set
             {
-                GetSection().ProxyAddress = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ProxyAddress = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public int ProxyPort
         {
-            get
-            {
-                return GetSection().ProxyPort;
-            }
-
+            get => this.GetSection().ProxyPort;
             set
             {
-                GetSection().ProxyPort = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ProxyPort = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -504,48 +431,33 @@ namespace Terminals.Configuration
 
         public bool EnableCaptureToClipboard
         {
-            get
-            {
-                return GetSection().EnableCaptureToClipboard;
-            }
-
+            get => this.GetSection().EnableCaptureToClipboard;
             set
             {
-                GetSection().EnableCaptureToClipboard = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().EnableCaptureToClipboard = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool EnableCaptureToFolder
         {
-            get
-            {
-                return GetSection().EnableCaptureToFolder;
-            }
-
+            get => this.GetSection().EnableCaptureToFolder;
             set
             {
-                GetSection().EnableCaptureToFolder = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().EnableCaptureToFolder = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
-        internal bool EnabledCaptureToFolderAndClipBoard
-        {
-            get { return EnableCaptureToClipboard || EnableCaptureToFolder; }
-        }
+        internal bool EnabledCaptureToFolderAndClipBoard => this.EnableCaptureToClipboard || this.EnableCaptureToFolder;
 
         public bool AutoSwitchOnCapture
         {
-            get
-            {
-                return GetSection().AutoSwitchOnCapture;
-            }
-
+            get => this.GetSection().AutoSwitchOnCapture;
             set
             {
-                GetSection().AutoSwitchOnCapture = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().AutoSwitchOnCapture = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -553,17 +465,16 @@ namespace Terminals.Configuration
         {
             get
             {
-                string root = GetSection().CaptureRoot;
-                if (String.IsNullOrEmpty(root))
+                var root = this.GetSection().CaptureRoot;
+                if (string.IsNullOrEmpty(root))
                     root = FileLocations.DefaultCaptureRootDirectory;
 
                 return root;
             }
-
             set
             {
-                GetSection().CaptureRoot = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().CaptureRoot = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -573,57 +484,41 @@ namespace Terminals.Configuration
 
         public bool RestoreWindowOnLastTerminalDisconnect
         {
-            get
-            {
-                return GetSection().RestoreWindowOnLastTerminalDisconnect;
-            }
-
+            get => this.GetSection().RestoreWindowOnLastTerminalDisconnect;
             set
             {
-                GetSection().RestoreWindowOnLastTerminalDisconnect = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().RestoreWindowOnLastTerminalDisconnect = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool EnableFavoritesPanel
         {
-            get
-            {
-                return GetSection().EnableFavoritesPanel;
-            }
-
+            get => this.GetSection().EnableFavoritesPanel;
             set
             {
-                GetSection().EnableFavoritesPanel = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().EnableFavoritesPanel = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool EnableGroupsMenu
         {
-            get
-            {
-                return GetSection().EnableGroupsMenu;
-            }
-
+            get => this.GetSection().EnableGroupsMenu;
             set
             {
-                GetSection().EnableGroupsMenu = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().EnableGroupsMenu = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool AutoExapandTagsPanel
         {
-            get
-            {
-                return GetSection().AutoExapandTagsPanel;
-            }
-
+            get => this.GetSection().AutoExapandTagsPanel;
             set
             {
-                GetSection().AutoExapandTagsPanel = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().AutoExapandTagsPanel = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -631,49 +526,40 @@ namespace Terminals.Configuration
         {
             get
             {
-                TerminalsConfigurationSection config = GetSection();
+                var config = this.GetSection();
                 if (config != null)
                 {
-                    string dsp = config.DefaultSortProperty;
-                    SortProperties prop = (SortProperties)Enum.Parse(typeof(SortProperties), dsp);
+                    var dsp = config.DefaultSortProperty;
+                    var prop = (SortProperties)Enum.Parse(typeof(SortProperties), dsp);
                     return prop;
                 }
 
                 return SortProperties.ConnectionName;
             }
-
             set
             {
-                GetSection().DefaultSortProperty = value.ToString();
-                SaveImmediatelyIfRequested();
+                this.GetSection().DefaultSortProperty = value.ToString();
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool Office2007BlackFeel
         {
-            get
-            {
-                return GetSection().Office2007BlackFeel;
-            }
-
+            get => this.GetSection().Office2007BlackFeel;
             set
             {
-                GetSection().Office2007BlackFeel = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().Office2007BlackFeel = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool Office2007BlueFeel
         {
-            get
-            {
-                return GetSection().Office2007BlueFeel;
-            }
-
+            get => this.GetSection().Office2007BlueFeel;
             set
             {
-                GetSection().Office2007BlueFeel = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().Office2007BlueFeel = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -683,43 +569,31 @@ namespace Terminals.Configuration
 
         public bool VncAutoScale
         {
-            get
-            {
-                return GetSection().VncAutoScale;
-            }
-
+            get => this.GetSection().VncAutoScale;
             set
             {
-                GetSection().VncAutoScale = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().VncAutoScale = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool VncViewOnly
         {
-            get
-            {
-                return GetSection().VncViewOnly;
-            }
-
+            get => this.GetSection().VncViewOnly;
             set
             {
-                GetSection().VncViewOnly = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().VncViewOnly = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public int VncDisplayNumber
         {
-            get
-            {
-                return GetSection().VncDisplayNumber;
-            }
-
+            get => this.GetSection().VncDisplayNumber;
             set
             {
-                GetSection().VncDisplayNumber = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().VncDisplayNumber = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -729,43 +603,31 @@ namespace Terminals.Configuration
 
         public int FavoritePanelWidth
         {
-            get
-            {
-                return GetSection().FavoritePanelWidth;
-            }
-
+            get => this.GetSection().FavoritePanelWidth;
             set
             {
-                GetSection().FavoritePanelWidth = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().FavoritePanelWidth = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool ShowFavoritePanel
         {
-            get
-            {
-                return GetSection().ShowFavoritePanel;
-            }
-
+            get => this.GetSection().ShowFavoritePanel;
             set
             {
-                GetSection().ShowFavoritePanel = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ShowFavoritePanel = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool ToolbarsLocked
         {
-            get
-            {
-                return GetSection().ToolbarsLocked;
-            }
-
+            get => this.GetSection().ToolbarsLocked;
             set
             {
-                GetSection().ToolbarsLocked = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ToolbarsLocked = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -775,71 +637,51 @@ namespace Terminals.Configuration
 
         public string UpdateSource
         {
-            get
-            {
-                return GetSection().UpdateSource;
-            }
-
+            get => this.GetSection().UpdateSource;
             set
             {
-                GetSection().UpdateSource = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().UpdateSource = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public bool ShowWizard
         {
-            get
-            {
-                return GetSection().ShowWizard;
-            }
-
+            get => this.GetSection().ShowWizard;
             set
             {
-                GetSection().ShowWizard = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ShowWizard = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public string PsexecLocation
         {
-            get
-            {
-                return GetSection().PsexecLocation;
-            }
-
+            get => this.GetSection().PsexecLocation;
             set
             {
-                GetSection().PsexecLocation = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().PsexecLocation = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public string SavedCredentialsLocation
         {
-            get
-            {
-                return GetSection().SavedCredentialsLocation;
-            }
-
+            get => this.GetSection().SavedCredentialsLocation;
             set
             {
-                GetSection().SavedCredentialsLocation = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().SavedCredentialsLocation = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public string SavedFavoritesFileLocation
         {
-            get
-            {
-                return GetSection().SavedFavoritesFileLocation;
-            }
-
+            get => this.GetSection().SavedFavoritesFileLocation;
             set
             {
-                GetSection().SavedFavoritesFileLocation = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().SavedFavoritesFileLocation = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -847,40 +689,19 @@ namespace Terminals.Configuration
 
         #region MRU lists
 
-        public string[] MRUServerNames
-        {
-            get
-            {
-                return GetSection().ServersMRU.ToSortedArray();
-            }
-        }
+        public string[] MRUServerNames => this.GetSection().ServersMRU.ToSortedArray();
 
-        public string[] MRUDomainNames
-        {
-            get
-            {
-                return GetSection().DomainsMRU.ToSortedArray();
-            }
-        }
+        public string[] MRUDomainNames => this.GetSection().DomainsMRU.ToSortedArray();
 
-        public string[] MRUUserNames
-        {
-            get
-            {
-                return GetSection().UsersMRU.ToSortedArray();
-            }
-        }
+        public string[] MRUUserNames => this.GetSection().UsersMRU.ToSortedArray();
 
         public string[] SavedSearches
         {
-            get
-            {
-                return GetSection().SearchesMRU.ToSortedArray();
-            }
+            get => this.GetSection().SearchesMRU.ToSortedArray();
             set
             {
                 var newSearches = new MRUItemConfigurationElementCollection(value.Distinct());
-                GetSection().SearchesMRU = newSearches;
+                this.GetSection().SearchesMRU = newSearches;
             }
         }
 
@@ -890,87 +711,74 @@ namespace Terminals.Configuration
 
         public string ExpandedFavoriteNodes
         {
-            get
-            {
-                return GetSection().ExpandedFavoriteNodes;
-            }
-
+            get => this.GetSection().ExpandedFavoriteNodes;
             set
             {
-                GetSection().ExpandedFavoriteNodes = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ExpandedFavoriteNodes = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public string ExpandedHistoryNodes
         {
-            get
-            {
-                return GetSection().ExpandedHistoryNodes;
-            }
-
+            get => this.GetSection().ExpandedHistoryNodes;
             set
             {
-                GetSection().ExpandedHistoryNodes = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().ExpandedHistoryNodes = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
-        
+
         #endregion
 
         #region Persistence File/Sql database
 
         /// <summary>
-        /// Gets or sets encrypted entity framework connection string
+        ///     Gets or sets encrypted entity framework connection string
         /// </summary>
         internal string ConnectionString
         {
             get
             {
-                string encryptedConnectionString = GetSection().EncryptedConnectionString;
+                var encryptedConnectionString = this.GetSection().EncryptedConnectionString;
                 return this.PersistenceSecurity.DecryptPassword(encryptedConnectionString);
             }
-
             set
             {
-                GetSection().EncryptedConnectionString = this.PersistenceSecurity.EncryptPassword(value);
-                SaveImmediatelyIfRequested();
+                this.GetSection().EncryptedConnectionString = this.PersistenceSecurity.EncryptPassword(value);
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         /// <summary>
-        /// Gets or sets bidirectional encrypted database password. We need it in unencrypted form 
-        /// to be able authenticate against the database and don't prompt user for it.
+        ///     Gets or sets bidirectional encrypted database password. We need it in unencrypted form
+        ///     to be able authenticate against the database and don't prompt user for it.
         /// </summary>
         internal string DatabaseMasterPassword
         {
             get
             {
-                string databaseMasterPasswordHash = GetSection().DatabaseMasterPasswordHash;
+                var databaseMasterPasswordHash = this.GetSection().DatabaseMasterPasswordHash;
                 return this.PersistenceSecurity.DecryptPassword(databaseMasterPasswordHash);
             }
             set
             {
-                GetSection().DatabaseMasterPasswordHash = this.PersistenceSecurity.EncryptPassword(value);
-                SaveImmediatelyIfRequested();
+                this.GetSection().DatabaseMasterPasswordHash = this.PersistenceSecurity.EncryptPassword(value);
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         /// <summary>
-        /// Gets or sets the value identifying the persistence.
-        /// 0 by default - file persisted data, 1 - SQL database
+        ///     Gets or sets the value identifying the persistence.
+        ///     0 by default - file persisted data, 1 - SQL database
         /// </summary>
         internal byte PersistenceType
         {
-            get
-            {
-                return GetSection().PersistenceType;
-            }
-
+            get => this.GetSection().PersistenceType;
             set
             {
-                GetSection().PersistenceType = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().PersistenceType = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
@@ -980,76 +788,64 @@ namespace Terminals.Configuration
 
         public void AddServerMRUItem(string name)
         {
-            GetSection().ServersMRU.AddByName(name);
-            SaveImmediatelyIfRequested();
+            this.GetSection().ServersMRU.AddByName(name);
+            this.SaveImmediatelyIfRequested();
         }
 
         public void AddDomainMRUItem(string name)
         {
-            GetSection().DomainsMRU.AddByName(name);
-            SaveImmediatelyIfRequested();
+            this.GetSection().DomainsMRU.AddByName(name);
+            this.SaveImmediatelyIfRequested();
         }
 
         public void AddUserMRUItem(string name)
         {
-            GetSection().UsersMRU.AddByName(name);
-            SaveImmediatelyIfRequested();
+            this.GetSection().UsersMRU.AddByName(name);
+            this.SaveImmediatelyIfRequested();
         }
 
         public void AddConnection(string name)
         {
-            GetSection().SavedConnections.AddByName(name);
-            SaveImmediatelyIfRequested();
+            this.GetSection().SavedConnections.AddByName(name);
+            this.SaveImmediatelyIfRequested();
         }
 
         public SpecialCommandConfigurationElementCollection SpecialCommands
         {
-            get
-            {
-                return GetSection().SpecialCommands;
-            }
-
+            get => this.GetSection().SpecialCommands;
             set
             {
-                GetSection().SpecialCommands = value;
-                SaveImmediatelyIfRequested();
+                this.GetSection().SpecialCommands = value;
+                this.SaveImmediatelyIfRequested();
             }
         }
 
         public void CreateSavedConnectionsList(string[] names)
         {
-            GetSection().SavedConnections.Clear();
-            SaveImmediatelyIfRequested();
-            foreach (string name in names)
-            {
-                AddConnection(name);
-            }
+            this.GetSection().SavedConnections.Clear();
+            this.SaveImmediatelyIfRequested();
+            foreach (var name in names)
+                this.AddConnection(name);
         }
 
         public void ClearSavedConnectionsList()
         {
-            GetSection().SavedConnections.Clear();
-            SaveImmediatelyIfRequested();
+            this.GetSection().SavedConnections.Clear();
+            this.SaveImmediatelyIfRequested();
         }
 
-        public string[] SavedConnections
-        {
-            get
-            {
-                return GetSection().SavedConnections.ToList().ToArray();
-            }
-        }
+        public string[] SavedConnections => this.GetSection().SavedConnections.ToList().ToArray();
 
         public KeysSection SSHKeys
         {
             get
             {
-                KeysSection keys = Config.Sections["SSH"] as KeysSection;
+                var keys = this.Config.Sections["SSH"] as KeysSection;
                 if (keys == null)
                 {
                     // The section wasn't found, so add it.
                     keys = new KeysSection();
-                    Config.Sections.Add("SSH", keys);
+                    this.Config.Sections.Add("SSH", keys);
                 }
 
                 return keys;
@@ -1060,12 +856,12 @@ namespace Terminals.Configuration
         {
             get
             {
-                FormsSection formsSection = Config.Sections[FormsSection.FORMS] as FormsSection;
+                var formsSection = this.Config.Sections[FormsSection.FORMS] as FormsSection;
                 if (formsSection == null)
                 {
                     // The section wasn't found, so add it.
                     formsSection = new FormsSection();
-                    Config.Sections.Add(FormsSection.FORMS, formsSection);
+                    this.Config.Sections.Add(FormsSection.FORMS, formsSection);
                 }
 
                 return formsSection;
@@ -1073,43 +869,5 @@ namespace Terminals.Configuration
         }
 
         #endregion
-
-        public bool AskToReconnect
-        {
-            get
-            {
-                return GetSection().AskToReconnect;
-            }
-            set
-            {
-                GetSection().AskToReconnect = value;
-                SaveImmediatelyIfRequested();
-            }
-        }
-
-        public string[] DisabledPlugins
-        {
-            get
-            {
-                return this.GetSection().DisabledPlugins.ToSortedArray();
-            }
-            set
-            {
-                this.UpdateEnabledPlugins(value);
-            }
-        }
-
-        public void UpdateEnabledPlugins(string[] disabledPlugins)
-        {
-            MRUItemConfigurationElementCollection pluginsSection = this.GetSection().DisabledPlugins;
-            pluginsSection.Clear();
-
-            foreach (string disabledPlugin in disabledPlugins)
-            {
-                pluginsSection.AddByName(disabledPlugin);
-            }
-
-            this.SaveImmediatelyIfRequested();
-        }
     }
 }

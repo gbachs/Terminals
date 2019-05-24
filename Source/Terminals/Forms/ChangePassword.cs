@@ -3,40 +3,23 @@
 namespace Terminals.Forms
 {
     /// <summary>
-    /// General purpose password change dialog,
-    /// where user enters old and two times new password. Checks, if the new password confirm matches
+    ///     General purpose password change dialog,
+    ///     where user enters old and two times new password. Checks, if the new password confirm matches
     /// </summary>
     internal partial class ChangePassword : Form
     {
-        internal string OldPassword
-        {
-            get
-            {
-                return this.txtOldPassword.Text;
-            }
-        }
-
-        internal string NewPassword
-        {
-            get
-            {
-                return this.txtNewPassword.Text;
-            }
-        }
-
-        private bool ConfirmedPasswordMatch
-        {
-            get
-            {
-                return this.DialogResult == DialogResult.OK &&
-                       this.txtConfirmPassword.Text == this.txtNewPassword.Text;
-            }
-        }
-
         public ChangePassword()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
+
+        internal string OldPassword => this.txtOldPassword.Text;
+
+        internal string NewPassword => this.txtNewPassword.Text;
+
+        private bool ConfirmedPasswordMatch =>
+            this.DialogResult == DialogResult.OK &&
+            this.txtConfirmPassword.Text == this.txtNewPassword.Text;
 
         private void ChangePassword_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -47,7 +30,7 @@ namespace Terminals.Forms
             {
                 e.Cancel = true;
                 MessageBox.Show("New password doesn't match", "Database password change",
-                                MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
         }
     }

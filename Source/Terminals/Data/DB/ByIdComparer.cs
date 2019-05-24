@@ -3,7 +3,7 @@
 namespace Terminals.Data.DB
 {
     /// <summary>
-    /// Comparer implementation, to check two Favorite items by their Ids
+    ///     Comparer implementation, to check two Favorite items by their Ids
     /// </summary>
     internal class ByIdComparer<TItem> : EqualityComparer<TItem>
         where TItem : class, IStoreIdEquals<TItem>

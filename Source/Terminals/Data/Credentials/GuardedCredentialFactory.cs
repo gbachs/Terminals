@@ -1,6 +1,6 @@
 namespace Terminals.Data.Credentials
 {
-    internal class GuardedCredentialFactory: IGuardedCredentialFactory
+    internal class GuardedCredentialFactory : IGuardedCredentialFactory
     {
         private readonly IPersistence persistence;
 

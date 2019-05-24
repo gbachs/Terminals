@@ -7,11 +7,11 @@ namespace Terminals.Data
 {
     internal class PersistenceFactory
     {
-        private readonly Settings settings;
+        private readonly ConnectionManager connectionManager;
 
         private readonly FavoriteIcons favoriteIcons;
 
-        private readonly ConnectionManager connectionManager;
+        private readonly Settings settings;
 
         public PersistenceFactory(Settings settings, ConnectionManager connectionManager, FavoriteIcons favoriteIcons)
         {
@@ -45,24 +45,22 @@ namespace Terminals.Data
 
         internal IPersistence AuthenticateByMasterPassword(IPersistence persistence, IStartupUi startupUi)
         {
-            bool authenticated = persistence.Security.Authenticate(startupUi.KnowsUserPassword);
+            var authenticated = persistence.Security.Authenticate(startupUi.KnowsUserPassword);
 
             if (!authenticated)
                 startupUi.Exit();
 
-            bool initialized = persistence.Initialize();
+            var initialized = persistence.Initialize();
 
             if (!initialized)
-            {
-               return this.TryFallbackToPrimaryPersistence(persistence, startupUi);
-            }
+                return this.TryFallbackToPrimaryPersistence(persistence, startupUi);
 
             return persistence;
         }
 
         private IPersistence TryFallbackToPrimaryPersistence(IPersistence persistence, IStartupUi startupUi)
         {
-            bool fallbackInitialized = false;
+            var fallbackInitialized = false;
             IPersistence newPersistence = null;
 
             if (persistence.TypeId != FilePersistence.TYPE_ID && startupUi.UserWantsFallback())
@@ -78,7 +76,7 @@ namespace Terminals.Data
         }
 
         /// <summary>
-        /// Fall back to file persistence, in case of not available database
+        ///     Fall back to file persistence, in case of not available database
         /// </summary>
         private FilePersistence FallBackToPrimaryPersistence(PersistenceSecurity security)
         {

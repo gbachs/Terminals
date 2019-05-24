@@ -31,8 +31,8 @@ namespace Terminals.Data
 
         Guid ISecurityOptions.Credential
         {
-            get { return this.credential; }
-            set { this.credential = value; }
+            get => this.credential;
+            set => this.credential = value;
         }
 
         public SecurityOptions()
@@ -48,7 +48,7 @@ namespace Terminals.Data
 
         public override string ToString()
         {
-            return string.Format("SecurityOptions:Credential='{0}'", this.Credential);
+            return $"SecurityOptions:Credential='{this.Credential}'";
         }
     }
 }

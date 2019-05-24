@@ -1,13 +1,12 @@
-﻿using System;
-
-namespace Terminals.Network
+﻿namespace Terminals.Network
 {
     /// <summary>
-    /// Represents data from ping reply.
+    ///     Represents data from ping reply.
     /// </summary>
     internal class PingReplyData
     {
-        public PingReplyData(Int64 count, String status, String hostname, String destination, Int32 bytes, Int32 ttl, Int64 roundTripTime)
+        public PingReplyData(long count, string status, string hostname, string destination, int bytes, int ttl,
+            long roundTripTime)
         {
             this.Count = count;
             this.Status = status;
@@ -18,12 +17,18 @@ namespace Terminals.Network
             this.RoundTripTime = roundTripTime;
         }
 
-        public Int64 Count { get; set; }
-        public String Status { get; set; }
-        public String Hostname { get; set; }
-        public String Destination { get; set; }
-        public Int32 Bytes { get; set; }
-        public Int32 TimeToLive { get; set; }
-        public Int64 RoundTripTime { get; set; }
+        public long Count { get; set; }
+
+        public string Status { get; set; }
+
+        public string Hostname { get; set; }
+
+        public string Destination { get; set; }
+
+        public int Bytes { get; set; }
+
+        public int TimeToLive { get; set; }
+
+        public long RoundTripTime { get; set; }
     }
 }

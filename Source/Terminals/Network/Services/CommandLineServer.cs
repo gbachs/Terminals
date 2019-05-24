@@ -7,23 +7,18 @@ namespace Terminals.Network
     {
         private const string BASE_ADDRESS = "net.pipe://localhost/Terminals.Codeplex.com/CommandLineService";
 
-        /// <summary>
-        /// necessary to isolate user server instances on terminal server
-        /// </summary>
-        private static string UserSpecificAddress
-        {
-            get
-            {
-                return string.Format("{0}/{1}", BASE_ADDRESS, WindowsUserIdentifiers.GetCurrentUserSid());
-            }
-        }
-
         internal CommandLineServer(MainForm mainForm)
             : base(new CommandLineService(mainForm), new Uri(BASE_ADDRESS))
-        
+
         {
-            AddServiceEndpoint(typeof(ICommandLineService), new NetNamedPipeBinding(), UserSpecificAddress);
+            this.AddServiceEndpoint(typeof(ICommandLineService), new NetNamedPipeBinding(), UserSpecificAddress);
         }
+
+        /// <summary>
+        ///     necessary to isolate user server instances on terminal server
+        /// </summary>
+        private static string UserSpecificAddress =>
+            string.Format("{0}/{1}", BASE_ADDRESS, WindowsUserIdentifiers.GetCurrentUserSid());
 
         internal static ICommandLineService CreateClient()
         {

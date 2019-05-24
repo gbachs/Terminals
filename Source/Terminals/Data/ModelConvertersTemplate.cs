@@ -6,12 +6,6 @@ namespace Terminals.Data
 {
     internal class ModelConvertersTemplate
     {
-        protected ConnectionManager ConnectionManager { get; private set; }
-
-        protected IPersistence Persistence { get; private set; }
-
-        protected IGuardedCredentialFactory CredentialFactory { get; private set; }
-
         protected ModelConvertersTemplate(IPersistence persistence, ConnectionManager connectionManager)
         {
             this.Persistence = persistence;
@@ -19,9 +13,15 @@ namespace Terminals.Data
             this.ConnectionManager = connectionManager;
         }
 
+        protected ConnectionManager ConnectionManager { get; }
+
+        protected IPersistence Persistence { get; }
+
+        protected IGuardedCredentialFactory CredentialFactory { get; }
+
         protected IOptionsConverter CreateOptionsConverter(string protocolName)
         {
-            IOptionsConverterFactory converterFactory = this.ConnectionManager.GetOptionsConverterFactory(protocolName);
+            var converterFactory = this.ConnectionManager.GetOptionsConverterFactory(protocolName);
             return converterFactory.CreatOptionsConverter();
         }
     }

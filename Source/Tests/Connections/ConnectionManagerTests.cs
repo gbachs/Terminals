@@ -6,10 +6,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Terminals.Common.Connections;
 using Terminals.Connections;
-using Terminals.Connections.ICA;
 using Terminals.Connections.VMRC;
 using Terminals.Connections.VNC;
-using Terminals.Connections.Web;
 using Terminals.Data;
 using Terminals.Integration.Export;
 using Tests.Helpers;
@@ -54,9 +52,6 @@ namespace Tests.Connections
                 //new Tuple<string, Type>(VmrcConnectionPlugin.VMRC, typeof(VMRCConnection)),
                 new Tuple<string, Type>(TelnetConnectionPlugin.TELNET, typeof(PuttyConnection)),
                 new Tuple<string, Type>(SshConnectionPlugin.SSH, typeof(PuttyConnection)),
-                new Tuple<string, Type>(KnownConnectionConstants.HTTP, typeof(HTTPConnection)),
-                new Tuple<string, Type>(KnownConnectionConstants.HTTPS, typeof(HTTPConnection)),
-                new Tuple<string, Type>(ICAConnectionPlugin.ICA_CITRIX, typeof(ICAConnection))
             };
 
             var allValid = testData.All(this.AssertCreatedConnection);
@@ -107,8 +102,6 @@ namespace Tests.Connections
                 new Tuple<string, int>(TelnetConnectionPlugin.TELNET, TelnetConnectionPlugin.TelnetPort),
                 new Tuple<string, int>(SshConnectionPlugin.SSH, SshConnectionPlugin.SSHPort),
                 new Tuple<string, int>(KnownConnectionConstants.HTTP, KnownConnectionConstants.HTTPPort),
-                new Tuple<string, int>(KnownConnectionConstants.HTTPS, HttpsConnectionPlugin.HTTPSPort),
-                new Tuple<string, int>(ICAConnectionPlugin.ICA_CITRIX, ICAConnectionPlugin.ICAPort)
             };
 
             var allValid = testData.All(this.AssertResolvedPort);
@@ -144,8 +137,6 @@ namespace Tests.Connections
                 new Tuple<int, string>(TelnetConnectionPlugin.TelnetPort, TelnetConnectionPlugin.TELNET),
                 new Tuple<int, string>(SshConnectionPlugin.SSHPort, SshConnectionPlugin.SSH),
                 new Tuple<int, string>(KnownConnectionConstants.HTTPPort, KnownConnectionConstants.HTTP),
-                new Tuple<int, string>(HttpsConnectionPlugin.HTTPSPort, KnownConnectionConstants.HTTPS),
-                new Tuple<int, string>(ICAConnectionPlugin.ICAPort, ICAConnectionPlugin.ICA_CITRIX)
             };
 
             var allValid = testData.All(this.AssertPortName);
@@ -247,7 +238,6 @@ namespace Tests.Connections
                 new Tuple<string, int, string>(VmrcConnectionPlugin.VMRC, 1, "Terminals.Forms.EditFavorite.VmrcControl"),
                 new Tuple<string, int, string>(TelnetConnectionPlugin.TELNET, 1, "Terminals.Plugins.Putty.PuttyOptionsControl"),
                 new Tuple<string, int, string>(SshConnectionPlugin.SSH, 1, "Terminals.Plugins.Putty.SshOptionsControl"),
-                new Tuple<string, int, string>(ICAConnectionPlugin.ICA_CITRIX, 1, "Terminals.Forms.EditFavorite.CitrixControl")
             };
         }
 
@@ -341,8 +331,6 @@ namespace Tests.Connections
                     new List<string>() { "Terminals.Plugins.Putty.SshConnectionPlugin"}),
                 new Tuple<int, IEnumerable<string>>(KnownConnectionConstants.HTTPPort, 
                     new List<string>() { "Terminals.Connections.Web.HttpConnectionPlugin"}),
-                new Tuple<int, IEnumerable<string>>(HttpsConnectionPlugin.HTTPSPort, 
-                    new List<string>() { "Terminals.Connections.Web.HttpsConnectionPlugin"}),
             };
 
             bool allPortsResolved = testCases.All(this.AssertAllPortPluginsResolved);

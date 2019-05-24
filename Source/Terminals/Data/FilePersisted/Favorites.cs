@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Terminals.Configuration;
 using Terminals.Connections;
 using Terminals.Data.Credentials;
@@ -12,26 +12,29 @@ namespace Terminals.Data
 {
     internal class Favorites : IFavorites
     {
-        private readonly DataDispatcher dispatcher;
-        private readonly FilePersistence persistence;
+        private readonly FavoriteBatchUpdates batchUpdates;
 
-        private readonly FavoriteIcons favoriteIcons;
+        private readonly Dictionary<Guid, IFavorite> cache;
 
         private readonly ConnectionManager connectionManager;
 
+        private readonly DataDispatcher dispatcher;
+
+        private readonly FavoriteIcons favoriteIcons;
+
         private readonly Groups groups;
-        private readonly Dictionary<Guid, IFavorite> cache;
 
-        private readonly FavoriteBatchUpdates batchUpdates;
+        private readonly FilePersistence persistence;
 
-        internal Favorites(FilePersistence persistence, FavoriteIcons favoriteIcons, ConnectionManager connectionManager)
+        internal Favorites(FilePersistence persistence, FavoriteIcons favoriteIcons,
+            ConnectionManager connectionManager)
         {
             this.persistence = persistence;
             this.favoriteIcons = favoriteIcons;
             this.connectionManager = connectionManager;
             this.dispatcher = persistence.Dispatcher;
             this.groups = this.persistence.GroupsStore;
-            this.cache = new Dictionary<Guid,IFavorite>();
+            this.cache = new Dictionary<Guid, IFavorite>();
             this.batchUpdates = new FavoriteBatchUpdates(persistence);
         }
 
@@ -49,23 +52,21 @@ namespace Terminals.Data
             var added = new List<IFavorite>();
             var onlyKnownProtocols = this.FilterOnlyKnownProtocols(favorites);
 
-            foreach (IFavorite favorite in onlyKnownProtocols)
-            {
+            foreach (var favorite in onlyKnownProtocols)
                 if (this.AddToCache(favorite))
                     added.Add(favorite);
-            }
             return added;
         }
 
         private IEnumerable<IFavorite> FilterOnlyKnownProtocols(List<IFavorite> favorites)
         {
-            string[] availableProtocols = this.connectionManager.GetAvailableProtocols();
+            var availableProtocols = this.connectionManager.GetAvailableProtocols();
             return favorites.Where(f => availableProtocols.Contains(f.Protocol));
         }
 
         private bool DeleteFromCache(IFavorite favorite)
         {
-            if (IsNotCached(favorite))
+            if (this.IsNotCached(favorite))
                 return false;
 
             this.cache.Remove(favorite.Id);
@@ -75,17 +76,15 @@ namespace Terminals.Data
         private List<IFavorite> DeleteAllFavoritesFromCache(List<IFavorite> favorites)
         {
             var deleted = new List<IFavorite>();
-            foreach (IFavorite favorite in favorites)
-            {
+            foreach (var favorite in favorites)
                 if (this.DeleteFromCache(favorite))
                     deleted.Add(favorite);
-            }
             return deleted;
         }
 
         private bool UpdateInCache(IFavorite favorite)
         {
-            if (IsNotCached(favorite))
+            if (this.IsNotCached(favorite))
                 return false;
 
             this.cache[favorite.Id] = favorite;
@@ -100,14 +99,14 @@ namespace Terminals.Data
         internal void Merge(List<IFavorite> newFavorites)
         {
             var oldFavorites = new List<IFavorite>(this);
-            List<IFavorite> missingFavorites = ListsHelper.GetMissingSourcesInTarget(newFavorites, oldFavorites);
-            List<IFavorite> redundantFavorites = ListsHelper.GetMissingSourcesInTarget(oldFavorites, newFavorites);
+            var missingFavorites = ListsHelper.GetMissingSourcesInTarget(newFavorites, oldFavorites);
+            var redundantFavorites = ListsHelper.GetMissingSourcesInTarget(oldFavorites, newFavorites);
             this.AddToCacheAndReport(missingFavorites);
-            List<IFavorite> deleted = this.DeleteAllFavoritesFromCache(redundantFavorites);
+            var deleted = this.DeleteAllFavoritesFromCache(redundantFavorites);
             // dont remove favorites from groups, because we are expecting, that the loaded file already contains correct membership
             this.dispatcher.ReportFavoritesDeleted(deleted);
             // Simple update without ensuring, if the favorite was changes or not - possible performance issue);
-            List<IFavorite> notReported = ListsHelper.GetMissingSourcesInTarget(this.ToList(), missingFavorites);
+            var notReported = ListsHelper.GetMissingSourcesInTarget(this.ToList(), missingFavorites);
             this.dispatcher.ReportFavoritesUpdated(notReported);
         }
 
@@ -138,9 +137,9 @@ namespace Terminals.Data
         private void UpdateFavoriteInGroups(IFavorite favorite, List<IGroup> newGroups)
         {
             var oldGroups = this.groups.GetGroupsContainingFavorite(favorite.Id);
-            List<IGroup> addedGroups = this.AddIntoMissingGroups(favorite, newGroups, oldGroups);
-            List<IGroup> redundantGroups = ListsHelper.GetMissingSourcesInTarget(oldGroups, newGroups);
-            Groups.RemoveFavoritesFromGroups(new List<IFavorite> { favorite }, redundantGroups);
+            var addedGroups = this.AddIntoMissingGroups(favorite, newGroups, oldGroups);
+            var redundantGroups = ListsHelper.GetMissingSourcesInTarget(oldGroups, newGroups);
+            Groups.RemoveFavoritesFromGroups(new List<IFavorite> {favorite}, redundantGroups);
             this.dispatcher.ReportGroupsAdded(addedGroups);
         }
 
@@ -148,17 +147,15 @@ namespace Terminals.Data
         {
             // First create new groups, which aren't in persistence yet
             var addedGroups = this.groups.AddAllToCache(newGroups);
-            List<IGroup> missingGroups = ListsHelper.GetMissingSourcesInTarget(newGroups, oldGroups);
+            var missingGroups = ListsHelper.GetMissingSourcesInTarget(newGroups, oldGroups);
             AddIntoMissingGroups(favorite, missingGroups);
             return addedGroups;
         }
 
         internal static void AddIntoMissingGroups(IFavorite favorite, List<IGroup> missingGroups)
         {
-            foreach (IGroup group in missingGroups)
-            {
+            foreach (var group in missingGroups)
                 group.AddFavorite(favorite);
-            }
         }
 
         internal void UpdatePasswordsByNewMasterPassword(string newKeyMaterial)
@@ -176,7 +173,7 @@ namespace Terminals.Data
             var options = protocolProperties as IContainsCredentials;
             if (options != null)
             {
-                SecurityOptions securityOptions = options.GetSecurity();
+                var securityOptions = options.GetSecurity();
                 var guarded = this.CreateGuardedSecurity(securityOptions);
                 guarded.UpdatePasswordByNewKeyMaterial(newKeyMaterial);
             }
@@ -204,13 +201,13 @@ namespace Terminals.Data
             get
             {
                 return this.FirstOrDefault(favorite => favorite.Name
-                        .Equals(favoriteName, StringComparison.CurrentCultureIgnoreCase));
+                    .Equals(favoriteName, StringComparison.CurrentCultureIgnoreCase));
             }
         }
 
         public void Add(IFavorite favorite)
         {
-            if (AddToCache(favorite))
+            if (this.AddToCache(favorite))
             {
                 this.dispatcher.ReportFavoriteAdded(favorite);
                 this.persistence.SaveImmediatelyIfRequested();
@@ -222,33 +219,33 @@ namespace Terminals.Data
             if (favorites == null)
                 return;
 
-            List<IFavorite> added = this.AddToCacheAndReport(favorites);
+            var added = this.AddToCacheAndReport(favorites);
             if (added.Count > 0)
                 this.persistence.SaveImmediatelyIfRequested();
         }
 
         private List<IFavorite> AddToCacheAndReport(List<IFavorite> favorites)
         {
-            List<IFavorite> added = this.AddAllToCache(favorites);
+            var added = this.AddAllToCache(favorites);
             this.dispatcher.ReportFavoritesAdded(added);
             return added;
         }
 
         public void Update(IFavorite favorite)
         {
-            if (!UpdateInCache(favorite))
+            if (!this.UpdateInCache(favorite))
                 return;
 
-            SaveAndReportFavoriteUpdate(favorite);
+            this.SaveAndReportFavoriteUpdate(favorite);
         }
 
         public void UpdateFavorite(IFavorite favorite, List<IGroup> newGroups)
         {
-            if (!UpdateInCache(favorite))
+            if (!this.UpdateInCache(favorite))
                 return;
 
-            UpdateFavoriteInGroups(favorite, newGroups);
-            SaveAndReportFavoriteUpdate(favorite);
+            this.UpdateFavoriteInGroups(favorite, newGroups);
+            this.SaveAndReportFavoriteUpdate(favorite);
         }
 
         private void SaveAndReportFavoriteUpdate(IFavorite favorite)
@@ -259,9 +256,9 @@ namespace Terminals.Data
 
         public void Delete(IFavorite favorite)
         {
-            if (DeleteFromCache(favorite))
+            if (this.DeleteFromCache(favorite))
             {
-                var favoritesToRemove = new List<IFavorite> { favorite };
+                var favoritesToRemove = new List<IFavorite> {favorite};
                 this.groups.DeleteFavoritesFromAllGroups(favoritesToRemove);
                 this.dispatcher.ReportFavoriteDeleted(favorite);
                 this.persistence.SaveImmediatelyIfRequested();
@@ -279,7 +276,7 @@ namespace Terminals.Data
 
         private void DeleteFromCacheAndReport(List<IFavorite> favorites)
         {
-            List<IFavorite> deleted = this.DeleteAllFavoritesFromCache(favorites);
+            var deleted = this.DeleteAllFavoritesFromCache(favorites);
             this.groups.DeleteFavoritesFromAllGroups(deleted);
             this.dispatcher.ReportFavoritesDeleted(deleted);
         }
@@ -297,7 +294,7 @@ namespace Terminals.Data
         public void ApplyCredentialsToAllFavorites(List<IFavorite> selectedFavorites, ICredentialSet credential)
         {
             ApplyCredentialsToFavorites(selectedFavorites, credential);
-            SaveAndReportFavoritesUpdate(selectedFavorites);
+            this.SaveAndReportFavoritesUpdate(selectedFavorites);
         }
 
         private void SaveAndReportFavoritesUpdate(List<IFavorite> selectedFavorites)
@@ -308,10 +305,8 @@ namespace Terminals.Data
 
         internal static void ApplyCredentialsToFavorites(List<IFavorite> selectedFavorites, ICredentialSet credential)
         {
-            foreach (IFavorite favorite in selectedFavorites)
-            {
+            foreach (var favorite in selectedFavorites)
                 favorite.Security.Credential = credential.Id;
-            }
         }
 
         public void SetPasswordToAllFavorites(List<IFavorite> selectedFavorites, string newPassword)
@@ -342,7 +337,7 @@ namespace Terminals.Data
         {
             var toUpdate = favorite as Favorite;
             if (toUpdate.ToolBarIconImage == null)
-                toUpdate.ToolBarIconImage = favoriteIcons.GetFavoriteIcon(toUpdate);
+                toUpdate.ToolBarIconImage = this.favoriteIcons.GetFavoriteIcon(toUpdate);
             return toUpdate.ToolBarIconImage;
         }
 

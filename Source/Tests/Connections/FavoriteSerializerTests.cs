@@ -5,7 +5,6 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Terminals.Common.Connections;
-using Terminals.Connections.ICA;
 using Terminals.Connections.VMRC;
 using Terminals.Connections.VNC;
 using Terminals.Data;
@@ -70,10 +69,7 @@ namespace Tests.Connections
             new Tuple<string, Type>(VncConnectionPlugin.VNC, typeof(VncOptions)),
             new Tuple<string, Type>(VmrcConnectionPlugin.VMRC, typeof(VMRCOptions)),
             new Tuple<string, Type>(TelnetConnectionPlugin.TELNET, typeof(TelnetOptions)),
-            new Tuple<string, Type>(SshConnectionPlugin.SSH, typeof(SshOptions)),
-            new Tuple<string, Type>(KnownConnectionConstants.HTTP, typeof(WebOptions)),
-            new Tuple<string, Type>(KnownConnectionConstants.HTTPS, typeof(WebOptions)),
-            new Tuple<string, Type>(ICAConnectionPlugin.ICA_CITRIX, typeof(ICAOptions))
+            new Tuple<string, Type>(SshConnectionPlugin.SSH, typeof(SshOptions))
         };
 
         [TestMethod]

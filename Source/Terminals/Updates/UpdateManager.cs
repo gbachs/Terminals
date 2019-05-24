@@ -11,7 +11,8 @@ namespace Terminals.Updates
     {
         private readonly Func<string> readReleases;
 
-        public UpdateManager() : this(DownloadReleases)
+        public UpdateManager()
+            : this(DownloadReleases)
         {
         }
 
@@ -32,19 +33,20 @@ namespace Terminals.Updates
         }
 
         /// <summary>
-        /// Check for available application updates.
+        ///     Check for available application updates.
         /// </summary>
         internal Task<ReleaseInfo> CheckForUpdates(bool automaticallyUpdate)
         {
-            return Task<ReleaseInfo>.Factory.StartNew(autoUpdate => this.PerformCheck((bool)autoUpdate), automaticallyUpdate);
+            return Task<ReleaseInfo>.Factory.StartNew(autoUpdate => this.PerformCheck((bool)autoUpdate),
+                automaticallyUpdate);
         }
 
         private ReleaseInfo PerformCheck(bool automaticallyUpdate)
         {
-            ReleaseInfo downLoaded = this.CheckForPublishedRelease(Program.Info.Version);
+            var downLoaded = this.CheckForPublishedRelease(Program.Info.Version);
 
             // todo the automatic updates point to wrong URL this feature is not working
-            bool autoUpdate = automaticallyUpdate; // obtain from command line arguments
+            var autoUpdate = automaticallyUpdate; // obtain from command line arguments
             if (autoUpdate)
             {
                 // DownloadLatestRelease();
@@ -67,9 +69,9 @@ namespace Terminals.Updates
         }
 
         /// <summary>
-        /// check codeplex's rss feed to see if we have a new release available.
-        /// Returns not null info about obtained current release.
-        /// ReleaseInfo.NotAvailable in a case, new version was not checked or current version is the latest.
+        ///     check codeplex's rss feed to see if we have a new release available.
+        ///     Returns not null info about obtained current release.
+        ///     ReleaseInfo.NotAvailable in a case, new version was not checked or current version is the latest.
         /// </summary>
         private ReleaseInfo TryCheckForPublishedRelease(Version currentVersion)
         {
@@ -77,19 +79,19 @@ namespace Terminals.Updates
             if (!checksFile.ShouldCheckForUpdate)
                 return ReleaseInfo.NotAvailable;
 
-            ReleaseInfo downLoaded = this.DownLoadLatestReleaseInfo(currentVersion);
+            var downLoaded = this.DownLoadLatestReleaseInfo(currentVersion);
             checksFile.WriteLastCheck();
             return downLoaded;
         }
 
         private ReleaseInfo DownLoadLatestReleaseInfo(Version currentVersion)
         {
-            string downloaded = this.readReleases();
-            Release[] feed = JsonConvert.DeserializeObject<Release[]>(downloaded);
+            var downloaded = this.readReleases();
+            var feed = JsonConvert.DeserializeObject<Release[]>(downloaded);
 
             if (feed != null)
             {
-                Release newvestRssItem = SelectNewvestRssItem(feed, currentVersion);
+                var newvestRssItem = SelectNewvestRssItem(feed, currentVersion);
                 if (newvestRssItem != null)
                     return new ReleaseInfo(newvestRssItem.Published, newvestRssItem.Version.ToString());
             }
@@ -100,8 +102,8 @@ namespace Terminals.Updates
         private static Release SelectNewvestRssItem(Release[] feed, Version currentVersion)
         {
             return feed.Where(item => item.Version > currentVersion)
-                       .OrderByDescending(selected => selected.Version)
-                       .FirstOrDefault();
+                .OrderByDescending(selected => selected.Version)
+                .FirstOrDefault();
         }
     }
 }

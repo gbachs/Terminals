@@ -4,7 +4,7 @@ using System.Data;
 namespace Terminals.Data.DB
 {
     /// <summary>
-    /// Connects or disconnects the cached entities to the database context
+    ///     Connects or disconnects the cached entities to the database context
     /// </summary>
     internal class CacheConnector
     {
@@ -16,16 +16,14 @@ namespace Terminals.Data.DB
         }
 
         /// <summary>
-        /// Attaches all groups in toAttach to this context.
-        /// Does not check, if the entities are already in the context.
+        ///     Attaches all groups in toAttach to this context.
+        ///     Does not check, if the entities are already in the context.
         /// </summary>
         /// <param name="toAttach">Not null collection of items from this model</param>
         internal void AttachAll(IEnumerable<DbGroup> toAttach)
         {
-            foreach (DbGroup group in toAttach)
-            {
+            foreach (var group in toAttach)
                 this.Attach(group);
-            }
         }
 
         internal void Attach(DbGroup group)
@@ -36,10 +34,8 @@ namespace Terminals.Data.DB
 
         internal void AttachAll(IEnumerable<DbFavorite> favorites)
         {
-            foreach (DbFavorite favorite in favorites)
-            {
+            foreach (var favorite in favorites)
                 this.AttachFavorite(favorite);
-            }
         }
 
         internal void AttachFavorite(DbFavorite favorite)
@@ -67,7 +63,7 @@ namespace Terminals.Data.DB
 
         private void AttachCredentialSet(DbSecurityOptions security)
         {
-            DbCredentialSet credentialSet = security.ResolveCredentailFromStore();
+            var credentialSet = security.ResolveCredentailFromStore();
             if (credentialSet == null)
                 return;
 
@@ -85,10 +81,8 @@ namespace Terminals.Data.DB
 
         internal void MarkAsModified(List<DbFavorite> toUpdate)
         {
-            foreach (DbFavorite favorite in toUpdate)
-            {
+            foreach (var favorite in toUpdate)
                 this.MarkFavoriteAsModified(favorite);
-            }
         }
 
         internal void MarkFavoriteAsModified(DbFavorite favorite)
@@ -117,7 +111,7 @@ namespace Terminals.Data.DB
         }
 
         /// <summary>
-        /// Because of CachedCredentialBase lazy loading, we have to distinguish, how to save the property manually
+        ///     Because of CachedCredentialBase lazy loading, we have to distinguish, how to save the property manually
         /// </summary>
         private void MarkCachedCredentials(DbSecurityOptions security)
         {
@@ -128,7 +122,7 @@ namespace Terminals.Data.DB
         }
 
         /// <summary>
-        /// Switch toUpdate entity state to Modified. 
+        ///     Switch toUpdate entity state to Modified.
         /// </summary>
         internal void MarkAsModified<TEntity>(TEntity toUpdate)
             where TEntity : class
@@ -138,10 +132,8 @@ namespace Terminals.Data.DB
 
         internal void DetachAll(IEnumerable<DbFavorite> favorites)
         {
-            foreach (DbFavorite favorite in favorites)
-            {
+            foreach (var favorite in favorites)
                 this.DetachFavorite(favorite);
-            }
         }
 
         internal void DetachAll(List<DbGroup> entitiesToDetach)
@@ -150,29 +142,25 @@ namespace Terminals.Data.DB
             // So we have to backup all first, before detach them.
             LoadFieldsFromReferences(entitiesToDetach);
 
-            foreach (DbGroup group in entitiesToDetach)
-            {
+            foreach (var group in entitiesToDetach)
                 this.Detach(group);
-            }
         }
 
         private static void LoadFieldsFromReferences(IEnumerable<DbGroup> entitiesToDetach)
         {
-            foreach (DbGroup group in entitiesToDetach)
-            {
+            foreach (var group in entitiesToDetach)
                 group.LoadFieldsFromReferences();
-            }
         }
-        
+
         internal void DetachGoup(DbGroup group)
         {
             if (group.ParentGroup != null)
-                database.Cache.Detach(group.ParentGroup);
+                this.database.Cache.Detach(group.ParentGroup);
             this.Detach(group);
         }
 
         internal void Detach<TEntity>(TEntity entity)
-             where TEntity : class
+            where TEntity : class
         {
             this.database.Entry(entity).State = EntityState.Detached;
         }

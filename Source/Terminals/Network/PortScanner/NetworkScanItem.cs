@@ -12,64 +12,66 @@ namespace Terminals.Scanner
 {
     internal class NetworkScanItem
     {
-        // dont use events, otherwise we have to unregister
-        internal NetworkScanHandler OnScanHit { get; set; }
-        internal NetworkScanHandler OnScanFinished { get; set; }
-        internal String HostName { get; private set; }
-        
-        private String iPAddress;
-        private List<Int32> ports;
-
-        private Boolean cancelationPending;
-
         private readonly ConnectionManager connectionManager;
 
-        private Boolean CancelationPending
-        {
-            get
-            {
-                lock (ports)
-                {
-                    return this.cancelationPending;
-                }
-            }
-        }
+        private bool cancelationPending;
 
-        internal NetworkScanItem(ConnectionManager connectionManager, String iPAddress, List<Int32> ports)
+        private readonly string iPAddress;
+
+        private readonly List<int> ports;
+
+        internal NetworkScanItem(ConnectionManager connectionManager, string iPAddress, List<int> ports)
         {
             this.iPAddress = iPAddress;
             this.ports = ports;
             this.connectionManager = connectionManager;
         }
 
+        // dont use events, otherwise we have to unregister
+        internal NetworkScanHandler OnScanHit { get; set; }
+
+        internal NetworkScanHandler OnScanFinished { get; set; }
+
+        internal string HostName { get; private set; }
+
+        private bool CancelationPending
+        {
+            get
+            {
+                lock (this.ports)
+                {
+                    return this.cancelationPending;
+                }
+            }
+        }
+
         public override string ToString()
         {
-            string portsText = String.Empty;
-            foreach (Int32 port in ports)
-            {
-                portsText += port.ToString() + ",";
-            }
-            return String.Format("NeworkScanItem:{0},{1}{{{2}}}", this.iPAddress, this.HostName, portsText);
+            var portsText = string.Empty;
+            foreach (var port in this.ports)
+                portsText += port + ",";
+            return string.Format("NeworkScanItem:{0},{1}{{{2}}}", this.iPAddress, this.HostName, portsText);
         }
 
         internal void Scan(object data)
         {
-            ResolveHostname();
-            foreach (int port in this.ports)
+            this.ResolveHostname();
+            foreach (var port in this.ports)
             {
                 if (this.CancelationPending)
                     return;
 
-                ScanPort(port);
+                this.ScanPort(port);
             }
-            FireOnScanFinished();
+
+            this.FireOnScanFinished();
         }
 
         internal void Stop()
         {
-            lock (ports)
+            lock (this.ports)
             {
-               this.cancelationPending = true; 
+                this.cancelationPending = true;
             }
         }
 
@@ -80,7 +82,7 @@ namespace Terminals.Scanner
                 if (this.CancelationPending)
                     return;
 
-                IPHostEntry entry = Dns.GetHostEntry(this.iPAddress);
+                var entry = Dns.GetHostEntry(this.iPAddress);
                 this.HostName = entry.HostName;
             }
             catch (Exception exc)
@@ -93,11 +95,11 @@ namespace Terminals.Scanner
         {
             try
             {
-                using (TcpClient client = new TcpClient())
+                using (var client = new TcpClient())
                 {
                     var connectionState = new ConnectionState(port, client);
-                    client.BeginConnect(this.iPAddress, port, new AsyncCallback(this.AttemptConnect), connectionState);
-                    WaitUntilTimeOut(connectionState);
+                    client.BeginConnect(this.iPAddress, port, this.AttemptConnect, connectionState);
+                    this.WaitUntilTimeOut(connectionState);
                     client.Client.Close();
                 }
             }
@@ -110,16 +112,14 @@ namespace Terminals.Scanner
         private void FireOnScanFinished()
         {
             if (this.OnScanFinished != null)
-            {
                 // we dont have cancel here, because it already has no more work to do);
                 this.OnScanFinished(this.CreateNewEventArguments());
-            }
         }
 
         private void WaitUntilTimeOut(ConnectionState connectionState)
         {
-            Int32 timeout = 0;
-            Int32 maxTimeOut = Settings.Instance.PortScanTimeoutSeconds * 1000 / 50; // in seconds not in miliseconds
+            var timeout = 0;
+            var maxTimeOut = Settings.Instance.PortScanTimeoutSeconds * 1000 / 50; // in seconds not in miliseconds
             while (timeout <= maxTimeOut && !this.CancelationPending && !connectionState.Done)
             {
                 Thread.Sleep(50);
@@ -129,14 +129,14 @@ namespace Terminals.Scanner
 
         private void AttemptConnect(IAsyncResult result)
         {
-            ConnectionState connectionState = result.AsyncState as ConnectionState;
-            Socket socket = connectionState.Client.Client;
+            var connectionState = result.AsyncState as ConnectionState;
+            var socket = connectionState.Client.Client;
 
             if (socket != null && socket.Connected)
             {
                 var detector = new ServiceDetector(this.connectionManager);
                 var serviceName = detector.ResolveServiceName(this.iPAddress, connectionState.Port);
-                FireOnScanHit(connectionState.Port, serviceName);
+                this.FireOnScanHit(connectionState.Port, serviceName);
             }
             else
             {
@@ -146,26 +146,26 @@ namespace Terminals.Scanner
             connectionState.Done = true;
         }
 
-        private void FireOnScanHit(Int32 port, string serviceName)
+        private void FireOnScanHit(int port, string serviceName)
         {
             if (this.OnScanHit != null)
             {
-                ScanItemEventArgs args = this.CreateNewEventArguments(port, serviceName);
+                var args = this.CreateNewEventArguments(port, serviceName);
                 this.OnScanHit(args);
             }
         }
 
-        private ScanItemEventArgs CreateNewEventArguments(Int32 port = 0, string serviceName = "")
+        private ScanItemEventArgs CreateNewEventArguments(int port = 0, string serviceName = "")
         {
-            ScanItemEventArgs args = new ScanItemEventArgs();
+            var args = new ScanItemEventArgs();
             args.DateTime = DateTime.Now;
             args.ScanResult = new NetworkScanResult
-                {
-                    HostName = this.HostName,
-                    IPAddress = this.iPAddress,
-                    Port = port,
-                    ServiceName = serviceName
-                };
+            {
+                HostName = this.HostName,
+                IPAddress = this.iPAddress,
+                Port = port,
+                ServiceName = serviceName
+            };
 
             return args;
         }

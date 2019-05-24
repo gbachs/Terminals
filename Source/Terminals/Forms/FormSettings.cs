@@ -1,33 +1,38 @@
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using System.Drawing;
 using Terminals.Configuration;
 
 namespace Terminals.Forms
 {
     /// <summary>
-    /// Manages saving and reloading Windows Form state in the configuration file
+    ///     Manages saving and reloading Windows Form state in the configuration file
     /// </summary>
     internal class FormSettings
     {
-        private readonly Settings settings = Configuration.Settings.Instance;
         private readonly Form form;
-        private Boolean saveSettings;
-        private Boolean loadCalled;
-        private Size lastNormalSize;
+
+        private readonly Settings settings = Configuration.Settings.Instance;
+
         private Point lastNormalLocation;
+
+        private Size lastNormalSize;
+
+        private bool loadCalled;
+
+        private bool saveSettings;
 
         #region Constructors
 
         internal FormSettings(Form form)
         {
             this.form = form;
-            this.form.HandleDestroyed += FormHandleDestroyed;
-            this.form.HandleCreated += FormHandleCreated;
-            this.form.Load += FormLoad;
-            this.form.Resize += FormResize;
-            this.form.Move += FormMove;
+            this.form.HandleDestroyed += this.FormHandleDestroyed;
+            this.form.HandleCreated += this.FormHandleCreated;
+            this.form.Load += this.FormLoad;
+            this.form.Resize += this.FormResize;
+            this.form.Move += this.FormMove;
             this.Enabled = true;
         }
 
@@ -35,23 +40,11 @@ namespace Terminals.Forms
 
         #region Properties
 
-        internal Boolean Enabled { get; set; }
+        internal bool Enabled { get; set; }
 
-        private FormsSection Settings
-        {
-            get
-            {
-                return settings.Forms;
-            }
-        }
+        private FormsSection Settings => this.settings.Forms;
 
-        private FormStateConfigElement SavedState
-        {
-            get
-            {
-                return this.Settings.Forms[this.form.Name];
-            }
-        }
+        private FormStateConfigElement SavedState => this.Settings.Forms[this.form.Name];
 
         #endregion
 
@@ -60,31 +53,29 @@ namespace Terminals.Forms
         private void FormHandleDestroyed(object sender, EventArgs e)
         {
             if (!this.form.RecreatingHandle)
-            {
-                SaveFormState();
-            }
+                this.SaveFormState();
         }
 
         private void FormHandleCreated(object sender, EventArgs e)
         {
-            LoadFormSize();
+            this.LoadFormSize();
         }
 
         private void FormMove(object sender, EventArgs e)
         {
-            SaveSizeAndLocation();
-            SaveFormState();
+            this.SaveSizeAndLocation();
+            this.SaveFormState();
         }
 
         private void FormLoad(object sender, EventArgs e)
         {
-            LoadFormState();
+            this.LoadFormState();
         }
 
         private void FormResize(object sender, EventArgs e)
         {
-            SaveSizeAndLocation();
-            SaveFormState();
+            this.SaveSizeAndLocation();
+            this.SaveFormState();
         }
 
         #endregion
@@ -93,23 +84,24 @@ namespace Terminals.Forms
 
         internal void LoadFormSize()
         {
-            if (this.loadCalled) 
+            if (this.loadCalled)
                 return;
 
             this.loadCalled = true;
-            FormStateConfigElement lastFormState = this.SavedState;
+            var lastFormState = this.SavedState;
             if (this.Enabled && lastFormState != null)
             {
                 this.LoadFormState();
                 this.ReloadSize(lastFormState);
                 this.ReloadLocation(lastFormState);
             }
+
             this.saveSettings = true;
         }
 
         /// <summary>
-        /// Restores form position to primary screen, if both of its check points 
-        /// in window caption is out of visible bounds
+        ///     Restores form position to primary screen, if both of its check points
+        ///     in window caption is out of visible bounds
         /// </summary>
         internal void EnsureVisibleScreenArea()
         {
@@ -117,10 +109,10 @@ namespace Terminals.Forms
             if (this.form.WindowState == FormWindowState.Minimized)
                 return;
 
-            Screen lastScreen = LastScreenOfCaptionPoint(GetLeftCaptionPoint());
+            var lastScreen = LastScreenOfCaptionPoint(this.GetLeftCaptionPoint());
 
             if (lastScreen == null)
-                lastScreen = LastScreenOfCaptionPoint(GetRightCaptionPoint());
+                lastScreen = LastScreenOfCaptionPoint(this.GetRightCaptionPoint());
 
             if (lastScreen == null)
                 this.form.Location = new Point(100, 100);
@@ -134,9 +126,9 @@ namespace Terminals.Forms
         {
             // If form is MainForm, check if it's switching between fullscreen mode.
             // Then don't save changes to the form size.
-            Boolean mainFormFullScreen = false;
-            if (form.GetType() == typeof (MainForm))
-                mainFormFullScreen = ((MainForm)form).SwitchingFullScreen;
+            var mainFormFullScreen = false;
+            if (this.form.GetType() == typeof(MainForm))
+                mainFormFullScreen = ((MainForm)this.form).SwitchingFullScreen;
 
             if (this.form.WindowState != FormWindowState.Normal || mainFormFullScreen)
                 return;
@@ -150,8 +142,8 @@ namespace Terminals.Forms
             if (!this.Enabled)
                 return;
 
-            FormStateConfigElement lastFormState = this.SavedState;
-            if(lastFormState != null)
+            var lastFormState = this.SavedState;
+            if (lastFormState != null)
                 this.form.WindowState = lastFormState.State;
 
             if (this.form.WindowState == FormWindowState.Minimized)
@@ -179,16 +171,16 @@ namespace Terminals.Forms
         }
 
         /// <summary>
-        /// Consider dont use on move and resize because of performance
+        ///     Consider dont use on move and resize because of performance
         /// </summary>
         private void SaveFormState()
         {
             if (!this.saveSettings || !this.Enabled)
                 return;
 
-            FormStateConfigElement formSettings = this.PrepareStateToSave();
+            var formSettings = this.PrepareStateToSave();
             this.Settings.AddForm(formSettings);
-            settings.SaveAndFinishDelayedUpdate();
+            this.settings.SaveAndFinishDelayedUpdate();
         }
 
         private FormStateConfigElement PrepareStateToSave()
@@ -197,9 +189,7 @@ namespace Terminals.Forms
             this.SetFormSizeAndLocation(formSettings);
 
             if (this.form.WindowState != FormWindowState.Minimized)
-            {
                 formSettings.State = this.form.WindowState;
-            }
             return formSettings;
         }
 
@@ -218,24 +208,24 @@ namespace Terminals.Forms
         }
 
         /// <summary>
-        /// Gets the screen location of point in midle of form caption height,
-        /// five buttons left from right side
+        ///     Gets the screen location of point in midle of form caption height,
+        ///     five buttons left from right side
         /// </summary>
         private Point GetRightCaptionPoint()
         {
-            int captionButtonsWidth = SystemInformation.CaptionButtonSize.Width * 5;
+            var captionButtonsWidth = SystemInformation.CaptionButtonSize.Width * 5;
             return new Point(this.form.Location.X + this.form.Width - captionButtonsWidth,
-                             this.form.Location.Y + GetCaptionHeightMidle());
+                this.form.Location.Y + GetCaptionHeightMidle());
         }
 
         /// <summary>
-        /// Gets the screen location of point in midle of form caption height,
-        ///  five buttons left from side
+        ///     Gets the screen location of point in midle of form caption height,
+        ///     five buttons left from side
         /// </summary>
         private Point GetLeftCaptionPoint()
         {
             return new Point(this.form.Location.X + GetCaptionHeightMidle(),
-                             this.form.Location.Y + GetCaptionHeightMidle());
+                this.form.Location.Y + GetCaptionHeightMidle());
         }
 
         private static int GetCaptionHeightMidle()
@@ -244,15 +234,16 @@ namespace Terminals.Forms
         }
 
         /// <summary>
-        /// Finds first screen on which checked point appears; or null if doesnt belong to any screen
+        ///     Finds first screen on which checked point appears; or null if doesnt belong to any screen
         /// </summary>
         private static Screen LastScreenOfCaptionPoint(Point captionPoint)
         {
-            return Screen.AllScreens.
-                FirstOrDefault(candidate => candidate.Bounds.X <= captionPoint.X &&
-                               captionPoint.X < candidate.Bounds.X + candidate.Bounds.Width &&
-                               candidate.Bounds.Y <= captionPoint.Y &&
-                               captionPoint.Y < candidate.Bounds.Y + candidate.Bounds.Height);
+            return Screen.AllScreens.FirstOrDefault(candidate => candidate.Bounds.X <= captionPoint.X &&
+                                                                 captionPoint.X < candidate.Bounds.X +
+                                                                 candidate.Bounds.Width &&
+                                                                 candidate.Bounds.Y <= captionPoint.Y &&
+                                                                 captionPoint.Y < candidate.Bounds.Y +
+                                                                 candidate.Bounds.Height);
         }
 
         #endregion

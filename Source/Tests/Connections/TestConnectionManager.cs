@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using Moq;
 using Terminals.Connections;
-using Terminals.Connections.ICA;
 using Terminals.Connections.Rdp;
 using Terminals.Connections.VMRC;
 using Terminals.Connections.VNC;
-using Terminals.Connections.Web;
 using Terminals.Data;
 using Terminals.Plugins.Putty;
 
@@ -16,13 +14,10 @@ namespace Tests.Connections
         private static readonly List<IConnectionPlugin> connectionPlugins = new List<IConnectionPlugin>()
         {
             new RdpConnectionPlugin(),
-            new HttpConnectionPlugin(),
-            new HttpsConnectionPlugin(),
             new VncConnectionPlugin(),
             new VmrcConnectionPlugin(),
             new TelnetConnectionPlugin(),
-            new SshConnectionPlugin(),
-            new ICAConnectionPlugin()
+            new SshConnectionPlugin()
         };
 
         private static readonly ConnectionManager instance = CreateConnectionManager(connectionPlugins);

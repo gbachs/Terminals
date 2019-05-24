@@ -1,28 +1,30 @@
 using System;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 using Unified.Encryption;
 using Unified.Encryption.Hash;
 
 namespace Terminals.Security
 {
     /// <summary>
-    /// Security encryption/decryption logic for stored passwords till version 2.0.
-    /// Use only for upgrades from previous version.
-    /// Implementation problems:
-    /// - master password hash is stored in config file
-    /// - rfbk2 wasn't used to make the key stronger
-    /// - key generated from identical master password is always the same
+    ///     Security encryption/decryption logic for stored passwords till version 2.0.
+    ///     Use only for upgrades from previous version.
+    ///     Implementation problems:
+    ///     - master password hash is stored in config file
+    ///     - rfbk2 wasn't used to make the key stronger
+    ///     - key generated from identical master password is always the same
     /// </summary>
     internal static class PasswordFunctions
     {
         private const int KEY_LENGTH = 24;
+
         internal const int IV_LENGTH = 16;
+
         private const EncryptionAlgorithm ENCRYPTION_ALGORITHM = EncryptionAlgorithm.Rijndael;
 
         internal static bool MasterPasswordIsValid(string password, string storedPassword)
         {
-            string hashToCheck = string.Empty;
+            var hashToCheck = string.Empty;
             if (!string.IsNullOrEmpty(password))
                 hashToCheck = ComputeMasterPasswordHash(password);
             return hashToCheck == storedPassword;
@@ -30,25 +32,25 @@ namespace Terminals.Security
 
         internal static string CalculateMasterPasswordKey(string password)
         {
-            if (String.IsNullOrEmpty(password))
-                return String.Empty;
-            String hashToCheck = ComputeMasterPasswordHash(password);
+            if (string.IsNullOrEmpty(password))
+                return string.Empty;
+            var hashToCheck = ComputeMasterPasswordHash(password);
             return ComputeMasterPasswordHash(password + hashToCheck);
         }
 
         internal static string ComputeMasterPasswordHash(string password)
         {
-          return Hash.GetHash(password, Hash.HashType.SHA512);
+            return Hash.GetHash(password, Hash.HashType.SHA512);
         }
 
         internal static string DecryptPassword(string encryptedPassword, string keyMaterial)
         {
             try
             {
-                if (String.IsNullOrEmpty(encryptedPassword))
+                if (string.IsNullOrEmpty(encryptedPassword))
                     return encryptedPassword;
 
-                if (keyMaterial == String.Empty)
+                if (keyMaterial == string.Empty)
                     return DecryptByEmptyKey(encryptedPassword);
 
                 return DecryptByKey(encryptedPassword, keyMaterial);
@@ -56,16 +58,16 @@ namespace Terminals.Security
             catch (Exception e)
             {
                 Logging.Error("Error Decrypting Password", e);
-                return String.Empty;
+                return string.Empty;
             }
         }
 
         private static string DecryptByKey(string encryptedPassword, string keyMaterial)
         {
-            byte[] initializationVector = GetInitializationVector(keyMaterial);
-            byte[] passwordKey = GetPasswordKey(keyMaterial);
-            byte[] passwordBytes = Convert.FromBase64String(encryptedPassword);
-            byte[] data = DecryptByKey(passwordBytes, initializationVector, passwordKey);
+            var initializationVector = GetInitializationVector(keyMaterial);
+            var passwordKey = GetPasswordKey(keyMaterial);
+            var passwordBytes = Convert.FromBase64String(encryptedPassword);
+            var data = DecryptByKey(passwordBytes, initializationVector, passwordKey);
 
             if (data != null && data.Length > 0)
                 return Encoding.Default.GetString(data);
@@ -82,9 +84,9 @@ namespace Terminals.Security
 
         private static string DecryptByEmptyKey(string encryptedPassword)
         {
-            byte[] cyphertext = Convert.FromBase64String(encryptedPassword);
-            byte[] entropy = Encoding.UTF8.GetBytes(String.Empty);
-            byte[] plaintext = ProtectedData.Unprotect(cyphertext, entropy, DataProtectionScope.CurrentUser);
+            var cyphertext = Convert.FromBase64String(encryptedPassword);
+            var entropy = Encoding.UTF8.GetBytes(string.Empty);
+            var plaintext = ProtectedData.Unprotect(cyphertext, entropy, DataProtectionScope.CurrentUser);
             return Encoding.UTF8.GetString(plaintext);
         }
 
@@ -92,10 +94,10 @@ namespace Terminals.Security
         {
             try
             {
-                if (String.IsNullOrEmpty(decryptedPassword))
+                if (string.IsNullOrEmpty(decryptedPassword))
                     return decryptedPassword;
 
-                if (keyMaterial == String.Empty)
+                if (keyMaterial == string.Empty)
                     return EncryptByEmptyKey(decryptedPassword);
 
                 return EncryptByKey(decryptedPassword, keyMaterial);
@@ -103,35 +105,35 @@ namespace Terminals.Security
             catch (Exception ec)
             {
                 Logging.Error("Error Encrypting Password", ec);
-                return String.Empty;
+                return string.Empty;
             }
         }
 
         private static string EncryptByKey(string decryptedPassword, string keyMaterial)
         {
             var initializationVector = GetInitializationVector(keyMaterial);
-            byte[] passwordKey = GetPasswordKey(keyMaterial);
-            byte[] passwordBytes = Encoding.Default.GetBytes(decryptedPassword);
-            byte[] data = EncryptByKey(passwordBytes, initializationVector, passwordKey);
+            var passwordKey = GetPasswordKey(keyMaterial);
+            var passwordBytes = Encoding.Default.GetBytes(decryptedPassword);
+            var data = EncryptByKey(passwordBytes, initializationVector, passwordKey);
 
             if (data != null && data.Length > 0)
                 return Convert.ToBase64String(data);
 
-            return String.Empty;
+            return string.Empty;
         }
 
         internal static byte[] EncryptByKey(byte[] decryptedPassword, byte[] initializationVector, byte[] passwordKey)
         {
-            Encryptor enc = new Encryptor(ENCRYPTION_ALGORITHM);
+            var enc = new Encryptor(ENCRYPTION_ALGORITHM);
             enc.IV = initializationVector;
             return enc.Encrypt(decryptedPassword, passwordKey);
         }
 
         private static string EncryptByEmptyKey(string decryptedPassword)
         {
-            byte[] plaintext = Encoding.UTF8.GetBytes(decryptedPassword);
-            byte[] entropy = Encoding.UTF8.GetBytes(String.Empty);
-            byte[] cyphertext = ProtectedData.Protect(plaintext, entropy, DataProtectionScope.CurrentUser);
+            var plaintext = Encoding.UTF8.GetBytes(decryptedPassword);
+            var entropy = Encoding.UTF8.GetBytes(string.Empty);
+            var cyphertext = ProtectedData.Protect(plaintext, entropy, DataProtectionScope.CurrentUser);
             return Convert.ToBase64String(cyphertext);
         }
 
@@ -143,7 +145,7 @@ namespace Terminals.Security
 
         private static byte[] GetPasswordKey(string keyMaterial)
         {
-            string keyChars = keyMaterial.Substring(0, KEY_LENGTH);
+            var keyChars = keyMaterial.Substring(0, KEY_LENGTH);
             return Encoding.Default.GetBytes(keyChars);
         }
     }

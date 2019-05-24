@@ -1,15 +1,12 @@
 using System;
+using System.Windows.Forms;
 using FalafelSoftware.TransPort;
-using Terminals.Data;
 
 namespace Terminals.Connections
 {
     internal class RASConnection : Connection
     {
-        public override bool Connected
-        {
-            get { return ras.Connected; }
-        }
+        public override bool Connected => this.ras.Connected;
 
         public Ras ras { get; set; }
 
@@ -17,12 +14,12 @@ namespace Terminals.Connections
         {
             try
             {
-                ras = new Ras();
-                RASProperties p = new RASProperties();
+                this.ras = new Ras();
+                var p = new RASProperties();
                 p.RASConnection = this;
-                p.Dock = System.Windows.Forms.DockStyle.Fill;
-                this.Dock = System.Windows.Forms.DockStyle.Fill;
-                Controls.Add(p);
+                p.Dock = DockStyle.Fill;
+                this.Dock = DockStyle.Fill;
+                this.Controls.Add(p);
                 p.BringToFront();
                 this.BringToFront();
                 p.Parent = this.Parent;
@@ -30,34 +27,33 @@ namespace Terminals.Connections
                 this.ras.SetModemSpeaker = false;
                 this.ras.SetSoftwareCompression = false;
                 this.ras.UsePrefixSuffix = false;
-                ras.HangUpOnDestroy = true;
+                this.ras.HangUpOnDestroy = true;
 
-                ras.DialError += new DialErrorEventHandler(ras_DialError);
-                ras.DialStatus += new DialStatusEventHandler(ras_DialStatus);
-                ras.ConnectionChanged += new ConnectionChangedEventHandler(ras_ConnectionChanged);
-                ras.EntryName = Favorite.ServerName;
+                this.ras.DialError += this.ras_DialError;
+                this.ras.DialStatus += this.ras_DialStatus;
+                this.ras.ConnectionChanged += this.ras_ConnectionChanged;
+                this.ras.EntryName = this.Favorite.ServerName;
 
                 var security = this.ResolveFavoriteCredentials();
                 RasError error;
                 if (!string.IsNullOrEmpty(security.UserName) && !string.IsNullOrEmpty(security.Password))
                 {
-                    Log("Using Terminals Credentials, Dialing...");
-                    ras.UserName = security.UserName;
-                    ras.Password = security.Password;
-                    ras.Domain = security.Domain;
-                    error = ras.Dial();
+                    this.Log("Using Terminals Credentials, Dialing...");
+                    this.ras.UserName = security.UserName;
+                    this.ras.Password = security.Password;
+                    this.ras.Domain = security.Domain;
+                    error = this.ras.Dial();
                 }
                 else
                 {
-                    Log("Terminals has no credentials, Showing Dial Dialog...");
-                    error = ras.DialDialog();
+                    this.Log("Terminals has no credentials, Showing Dial Dialog...");
+                    error = this.ras.DialDialog();
                 }
 
-                Log("Dial Result:" + error.ToString());
-                return (error == RasError.Success);
-
+                this.Log("Dial Result:" + error);
+                return error == RasError.Success;
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 Logging.Fatal("Connecting to RAS", exc);
                 return false;
@@ -66,21 +62,21 @@ namespace Terminals.Connections
 
         private void ras_DialStatus(object sender, DialStatusEventArgs e)
         {
-            Log("Status:" + e.ConnectionState.ToString());
+            this.Log("Status:" + e.ConnectionState);
         }
 
         private void ras_DialError(object sender, DialErrorEventArgs e)
         {
-            if(e.RasError != RasError.Success)
+            if (e.RasError != RasError.Success)
             {
-                Log("Error:" + e.RasError.ToString());
-                System.Windows.Forms.MessageBox.Show("Could not connect to the server. Reason:" + e.RasError.ToString());
+                this.Log("Error:" + e.RasError);
+                MessageBox.Show("Could not connect to the server. Reason:" + e.RasError);
             }
         }
 
         private void ras_ConnectionChanged(object sender, ConnectionChangedEventArgs e)
         {
-            Log("Connected:" + e.Connected.ToString());
+            this.Log("Connected:" + e.Connected);
 
             if (!e.Connected)
                 this.FireDisconnected();
@@ -88,7 +84,7 @@ namespace Terminals.Connections
 
         public void Disconnect()
         {
-            Log("Hanging Up:" + ras.HangUp().ToString());
+            this.Log("Hanging Up:" + this.ras.HangUp());
         }
     }
 }

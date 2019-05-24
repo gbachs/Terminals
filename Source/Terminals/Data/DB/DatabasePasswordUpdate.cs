@@ -10,24 +10,25 @@ namespace Terminals.Data.DB
 {
     internal class DatabasePasswordUpdate
     {
-        private SqlPersistenceSecurity persistenceSecurity;
-
-        private string newStoredKey = string.Empty;
+        private Database database;
 
         private string newKeyMaterial;
 
-        private Database database;
+        private string newStoredKey = string.Empty;
+
+        private SqlPersistenceSecurity persistenceSecurity;
 
         /// <summary>
-        /// Only for security reasons
+        ///     Only for security reasons
         /// </summary>
         private DatabasePasswordUpdate()
         {
         }
 
-        internal static TestConnectionResult UpdateMastrerPassord(string connectionString, string oldPassword, string newPassword)
+        internal static TestConnectionResult UpdateMastrerPassord(string connectionString, string oldPassword,
+            string newPassword)
         {
-            TestConnectionResult oldPasswordCheck = DatabaseConnections.TestConnection(connectionString, oldPassword);
+            var oldPasswordCheck = DatabaseConnections.TestConnection(connectionString, oldPassword);
             if (!oldPasswordCheck.Successful)
                 return oldPasswordCheck;
 
@@ -75,27 +76,28 @@ namespace Terminals.Data.DB
         {
             using (this.database = DatabaseConnections.CreateInstance(connectionString))
             {
-                UpdateStoredPasswords();
+                this.UpdateStoredPasswords();
                 this.database.UpdateMasterPassword(this.newStoredKey);
                 this.database.SaveChanges();
             }
+
             this.database = null;
         }
 
         private void UpdateStoredPasswords()
         {
             this.UpdateCredentialBasePasswords();
-            List<int> rdpFavoriteIds = this.database.GetRdpFavoriteIds();
+            var rdpFavoriteIds = this.database.GetRdpFavoriteIds();
             this.UpdateFavoriteProtocolPasswords(rdpFavoriteIds);
         }
 
         private void UpdateFavoriteProtocolPasswords(List<int> rdpFavorites)
         {
-            foreach (int favoriteId in rdpFavorites)
+            foreach (var favoriteId in rdpFavorites)
             {
                 // there is no other choice, we have to download the properties content
                 // end replace the passwords xml element content
-                string rdpOptions = this.database.GetProtocolPropertiesByFavorite(favoriteId);
+                var rdpOptions = this.database.GetProtocolPropertiesByFavorite(favoriteId);
                 rdpOptions = this.UpdateThePropertiesPassword(rdpOptions);
                 this.database.UpdateFavoriteProtocolProperties(favoriteId, rdpOptions);
             }
@@ -107,18 +109,18 @@ namespace Terminals.Data.DB
             if (document.Root == null)
                 return rdpOptions;
 
-            XElement tsgwPasswordHash = document.Root.Descendants("EncryptedPassword").First();
-            string oldPassword = this.persistenceSecurity.DecryptPersistencePassword(tsgwPasswordHash.Value);
+            var tsgwPasswordHash = document.Root.Descendants("EncryptedPassword").First();
+            var oldPassword = this.persistenceSecurity.DecryptPersistencePassword(tsgwPasswordHash.Value);
             tsgwPasswordHash.Value = PasswordFunctions2.EncryptPassword(oldPassword, this.newKeyMaterial);
             return document.ToString();
         }
 
         /// <summary>
-        /// both Credential and security passwords are in the same table, updated by this method
+        ///     both Credential and security passwords are in the same table, updated by this method
         /// </summary>
         private void UpdateCredentialBasePasswords()
         {
-            foreach (DbCredentialBase credentials in this.database.CredentialBase)
+            foreach (var credentials in this.database.CredentialBase)
             {
                 var guarded = new GuardedCredential(credentials, this.persistenceSecurity);
                 guarded.UpdatePasswordByNewKeyMaterial(this.newKeyMaterial);

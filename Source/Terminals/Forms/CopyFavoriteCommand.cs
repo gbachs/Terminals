@@ -10,11 +10,11 @@ namespace Terminals
     {
         private readonly Func<InputBoxResult> copyPrompt;
 
-        private IFavorite source;
-
         private readonly IFavorites favorites;
 
         private readonly FavoriteRenameCommand renameCommand;
+
+        private IFavorite source;
 
         internal CopyFavoriteCommand(IPersistence persistence, Func<InputBoxResult> copyPrompt = null)
         {
@@ -30,9 +30,9 @@ namespace Terminals
         }
 
         /// <summary>
-        /// Creates deep copy of provided favorite in persistence including its toolbar button and groups memebership.
-        /// The copy is already added to the persistence.
-        /// Returns newly created favorite copy if operation was successfull; otherwise null.
+        ///     Creates deep copy of provided favorite in persistence including its toolbar button and groups memebership.
+        ///     The copy is already added to the persistence.
+        ///     Returns newly created favorite copy if operation was successfull; otherwise null.
         /// </summary>
         internal IFavorite Copy(IFavorite favorite)
         {
@@ -44,7 +44,7 @@ namespace Terminals
 
         private IFavorite CopyUsingPrompt(IFavorite favorite)
         {
-            InputBoxResult result = this.copyPrompt();
+            var result = this.copyPrompt();
             if (result.ReturnCode == DialogResult.OK && !string.IsNullOrEmpty(result.Text))
                 return this.CopySelectedFavorite(favorite, result.Text);
 
@@ -54,11 +54,11 @@ namespace Terminals
         private IFavorite CopySelectedFavorite(IFavorite favorite, string newName)
         {
             this.source = favorite;
-            IFavorite copy = favorite.Copy();
+            var copy = favorite.Copy();
             // expecting the copy it self is valid, let validate only the name
             copy.Name = newName;
-            
-            bool valid = this.renameCommand.ValidateNewName(favorite, newName);
+
+            var valid = this.renameCommand.ValidateNewName(favorite, newName);
             if (!valid)
                 return null;
 

@@ -5,17 +5,14 @@ using System.Linq;
 namespace Terminals.Data.DB
 {
     /// <summary>
-    /// Represents caching of entities based on their integer unique identifier
+    ///     Represents caching of entities based on their integer unique identifier
     /// </summary>
     internal class EntitiesCache<TEntity> : IEnumerable<TEntity>
         where TEntity : class, IIntegerKeyEnityty
     {
         private readonly Dictionary<int, TEntity> cache = new Dictionary<int, TEntity>();
 
-        internal bool IsEmpty
-        {
-            get { return this.cache.Count == 0; }
-        }
+        internal bool IsEmpty => this.cache.Count == 0;
 
         internal TEntity this[int id]
         {
@@ -24,7 +21,7 @@ namespace Terminals.Data.DB
                 if (this.cache.ContainsKey(id))
                     return this.cache[id];
 
-                return default(TEntity);
+                return default;
             }
         }
 
@@ -39,11 +36,9 @@ namespace Terminals.Data.DB
 
         internal void Add(List<TEntity> toAdd)
         {
-            IEnumerable<TEntity> notInCache = toAdd.Where(item => !this.cache.ContainsKey(item.Id));
-            foreach (TEntity item in notInCache)
-            {
+            var notInCache = toAdd.Where(item => !this.cache.ContainsKey(item.Id));
+            foreach (var item in notInCache)
                 this.cache.Add(item.Id, item);
-            }
         }
 
         internal bool Delete(TEntity toDelete)
@@ -57,11 +52,9 @@ namespace Terminals.Data.DB
 
         internal void Delete(List<TEntity> toDelete)
         {
-            IEnumerable<TEntity> inCache = toDelete.Where(item => this.cache.ContainsKey(item.Id));
-            foreach (TEntity item in inCache)
-            {
+            var inCache = toDelete.Where(item => this.cache.ContainsKey(item.Id));
+            foreach (var item in inCache)
                 this.cache.Remove(item.Id);
-            }
         }
 
         internal void Clear()
@@ -71,10 +64,8 @@ namespace Terminals.Data.DB
 
         internal void Update(List<TEntity> toUpdate)
         {
-            foreach (TEntity item in toUpdate)
-            {
+            foreach (var item in toUpdate)
                 this.Update(item);
-            }
         }
 
         internal void Update(TEntity item)
@@ -83,6 +74,11 @@ namespace Terminals.Data.DB
                 this.cache[item.Id] = item;
             else
                 this.cache.Add(item.Id, item);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("EntitiesCache:Count={0}", this.cache.Count);
         }
 
         #region IEnumerable members
@@ -98,10 +94,5 @@ namespace Terminals.Data.DB
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            return string.Format("EntitiesCache:Count={0}", this.cache.Count);
-        }
     }
 }

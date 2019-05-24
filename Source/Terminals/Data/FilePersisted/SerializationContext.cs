@@ -2,10 +2,6 @@
 {
     internal class SerializationContext
     {
-        internal FavoritesFile File { get; private set; }
-
-        internal UnknonwPluginElements Unknown { get; private set; }
-
         public SerializationContext()
             : this(new FavoritesFile(), new UnknonwPluginElements())
         {
@@ -17,10 +13,14 @@
             this.Unknown = unknown;
         }
 
+        internal FavoritesFile File { get; }
+
+        internal UnknonwPluginElements Unknown { get; }
+
         public override string ToString()
         {
-            int favoritesCount = this.File.Favorites.Length;
-            int unknownCount = this.Unknown.Favorites.Count;
+            var favoritesCount = this.File.Favorites.Length;
+            var unknownCount = this.Unknown.Favorites.Count;
             return string.Format("SerializationContext:Unknowns='{0}',Known='{1}'", unknownCount, favoritesCount);
         }
     }

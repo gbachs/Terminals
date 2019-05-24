@@ -7,12 +7,18 @@ using System.Windows.Forms;
 namespace Terminals
 {
     /// <summary>
-    /// Extended generic list, which allows to sort by property name
+    ///     Extended generic list, which allows to sort by property name
     /// </summary>
-    internal class SortableList<TItemType>: List<TItemType>
+    internal class SortableList<TItemType> : List<TItemType>
     {
-        internal SortableList() { }
-        internal SortableList(IEnumerable<TItemType> collection) : base(collection) { }
+        internal SortableList()
+        {
+        }
+
+        internal SortableList(IEnumerable<TItemType> collection)
+            : base(collection)
+        {
+        }
 
         internal SortableList<TItemType> SortByProperty(string propertyName, SortOrder direction)
         {
@@ -24,9 +30,7 @@ namespace Terminals
                 .Lambda<Func<TItemType, object>>(Expression.Property(param, propertyName), param);
 
             if (direction == SortOrder.Ascending)
-            {
                 return new SortableList<TItemType>(this.AsQueryable().OrderBy(mySortExpression));
-            }
 
             return new SortableList<TItemType>(this.AsQueryable().OrderByDescending(mySortExpression));
         }

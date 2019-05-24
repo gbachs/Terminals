@@ -10,11 +10,12 @@ using Unified;
 namespace Terminals.Network
 {
     internal delegate void ServerConnectionHandler(ShareFavoritesEventArgs args);
-    
+
     internal class Client
     {
-        public static event ServerConnectionHandler OnServerConnection;
         private static TcpClient client;
+
+        public static event ServerConnectionHandler OnServerConnection;
 
         public static void Stop()
         {
@@ -31,16 +32,16 @@ namespace Terminals.Network
 
         public static void Start(string server)
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(StartClient), server);
+            ThreadPool.QueueUserWorkItem(StartClient, server);
         }
 
         private static void StartClient(object data)
         {
             try
             {
-                string server = data as string;
+                var server = data as string;
                 client = new TcpClient(server, Server.SERVER_PORT);
-                NetworkStream networkStream = client.GetStream();
+                var networkStream = client.GetStream();
                 SendUserName(networkStream);
                 ReceiveData(networkStream);
             }
@@ -54,24 +55,22 @@ namespace Terminals.Network
         private static void ReceiveData(NetworkStream networkStream)
         {
             while (networkStream.CanRead)
-            {
                 if (networkStream.DataAvailable)
                 {
-                    byte[] received = new byte[4096];
-                    int dataLength = networkStream.Read(received, 0, received.Length);
-                    MemoryStream memoryStream = new MemoryStream(received, 0, dataLength);
+                    var received = new byte[4096];
+                    var dataLength = networkStream.Read(received, 0, received.Length);
+                    var memoryStream = new MemoryStream(received, 0, dataLength);
                     networkStream.Close();
                     FireDataReceived(memoryStream);
                 }
-            }
         }
 
         private static void FireDataReceived(MemoryStream stream)
         {
             if (OnServerConnection != null)
             {
-               SortableList<FavoriteConfigurationElement> favorites = ReceiveFavorites(stream);
-               OnServerConnection(new ShareFavoritesEventArgs(favorites));
+                var favorites = ReceiveFavorites(stream);
+                OnServerConnection(new ShareFavoritesEventArgs(favorites));
             }
         }
 
@@ -79,7 +78,7 @@ namespace Terminals.Network
         {
             if (networkStream.CanWrite)
             {
-                byte[] userName = Encoding.Default.GetBytes(Environment.UserName);
+                var userName = Encoding.Default.GetBytes(Environment.UserName);
                 networkStream.Write(userName, 0, userName.Length);
                 networkStream.Flush();
             }
@@ -89,7 +88,7 @@ namespace Terminals.Network
         {
             if (Response.Length != 0)
             {
-                ArrayList favorites = (ArrayList)Serialize.DeSerializeBinary(Response);
+                var favorites = (ArrayList)Serialize.DeSerializeBinary(Response);
                 return GetReceivedFavorites(favorites);
             }
 
@@ -99,18 +98,19 @@ namespace Terminals.Network
         private static SortableList<FavoriteConfigurationElement> GetReceivedFavorites(ArrayList favorites)
         {
             var importedFavorites = new SortableList<FavoriteConfigurationElement>();
-            foreach (object item in favorites)
+            foreach (var item in favorites)
             {
-                SharedFavorite favorite = item as SharedFavorite;
+                var favorite = item as SharedFavorite;
                 if (favorite != null)
                     importedFavorites.Add(ImportSharedFavorite(favorite));
             }
+
             return importedFavorites;
         }
 
         private static FavoriteConfigurationElement ImportSharedFavorite(SharedFavorite favorite)
         {
-            FavoriteConfigurationElement newfav = SharedFavorite.ConvertFromFavorite(favorite);
+            var newfav = SharedFavorite.ConvertFromFavorite(favorite);
             newfav.UserName = Environment.UserName;
             newfav.DomainName = Environment.UserDomainName;
             return newfav;

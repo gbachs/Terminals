@@ -1,5 +1,4 @@
-﻿using System;
-using Terminals.Security;
+﻿using Terminals.Security;
 
 namespace Terminals.Data.Credentials
 {
@@ -7,22 +6,25 @@ namespace Terminals.Data.Credentials
     {
         private readonly ICredentialBase credential;
 
-        protected PersistenceSecurity PersistenceSecurity { get; private set; }
+        internal GuardedCredential(ICredentialBase credential, PersistenceSecurity persistenceSecurity)
+        {
+            this.credential = credential;
+            this.PersistenceSecurity = persistenceSecurity;
+        }
+
+        protected PersistenceSecurity PersistenceSecurity { get; }
 
         /// <summary>
-        /// Gets or sets the user name in not encrypted form. This value isn't stored.
-        /// this property needs to be public, because it is required by the validation.
+        ///     Gets or sets the user name in not encrypted form. This value isn't stored.
+        ///     this property needs to be public, because it is required by the validation.
         /// </summary>
         public string UserName
         {
-            get
-            {
-                return this.GetDecryptedUserName();
-            }
+            get => this.GetDecryptedUserName();
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    this.credential.EncryptedUserName = String.Empty;
+                    this.credential.EncryptedUserName = string.Empty;
                 else
                     this.credential.EncryptedUserName = this.PersistenceSecurity.EncryptPersistencePassword(value);
             }
@@ -30,61 +32,49 @@ namespace Terminals.Data.Credentials
 
         public string Domain
         {
-            get
-            {
-                return this.GetDecryptedDomain();
-            }
+            get => this.GetDecryptedDomain();
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    this.credential.EncryptedDomain = String.Empty;
+                    this.credential.EncryptedDomain = string.Empty;
                 else
                     this.credential.EncryptedDomain = this.PersistenceSecurity.EncryptPersistencePassword(value);
             }
         }
 
-        public String Password
+        public string Password
         {
-            get
-            {
-                return this.GetDecryptedPassword();
-            }
+            get => this.GetDecryptedPassword();
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    this.credential.EncryptedPassword = String.Empty;
+                    this.credential.EncryptedPassword = string.Empty;
                 else
-                   this.credential.EncryptedPassword = this.PersistenceSecurity.EncryptPersistencePassword(value);
+                    this.credential.EncryptedPassword = this.PersistenceSecurity.EncryptPersistencePassword(value);
             }
         }
 
         public string EncryptedPassword
         {
-            get { return this.credential.EncryptedPassword; }
-            set { this.credential.EncryptedPassword = value; }
-        }
-
-        internal GuardedCredential(ICredentialBase credential, PersistenceSecurity persistenceSecurity)
-        {
-            this.credential = credential;
-            this.PersistenceSecurity = persistenceSecurity;
+            get => this.credential.EncryptedPassword;
+            set => this.credential.EncryptedPassword = value;
         }
 
         /// <summary>
-        /// Replaces stored encrypted password by new one using newKeymaterial
+        ///     Replaces stored encrypted password by new one using newKeymaterial
         /// </summary>
         /// <param name="newKeymaterial">key created from master password hash</param>
         internal void UpdatePasswordByNewKeyMaterial(string newKeymaterial)
         {
-            string userName = this.GetDecryptedUserName();
+            var userName = this.GetDecryptedUserName();
             if (!string.IsNullOrEmpty(userName))
                 this.credential.EncryptedUserName = PasswordFunctions2.EncryptPassword(userName, newKeymaterial);
 
-            string domain = this.GetDecryptedDomain();
+            var domain = this.GetDecryptedDomain();
             if (!string.IsNullOrEmpty(domain))
                 this.credential.EncryptedDomain = PasswordFunctions2.EncryptPassword(domain, newKeymaterial);
 
-            string secret = this.GetDecryptedPassword();
+            var secret = this.GetDecryptedPassword();
             if (!string.IsNullOrEmpty(secret))
                 this.credential.EncryptedPassword = PasswordFunctions2.EncryptPassword(secret, newKeymaterial);
         }
@@ -94,7 +84,7 @@ namespace Terminals.Data.Credentials
             if (!string.IsNullOrEmpty(this.credential.EncryptedUserName))
                 return this.PersistenceSecurity.DecryptPersistencePassword(this.credential.EncryptedUserName);
 
-            return String.Empty;
+            return string.Empty;
         }
 
         private string GetDecryptedDomain()
@@ -102,7 +92,7 @@ namespace Terminals.Data.Credentials
             if (!string.IsNullOrEmpty(this.credential.EncryptedDomain))
                 return this.PersistenceSecurity.DecryptPersistencePassword(this.credential.EncryptedDomain);
 
-            return String.Empty;
+            return string.Empty;
         }
 
         private string GetDecryptedPassword()
@@ -110,7 +100,7 @@ namespace Terminals.Data.Credentials
             if (!string.IsNullOrEmpty(this.credential.EncryptedPassword))
                 return this.PersistenceSecurity.DecryptPersistencePassword(this.credential.EncryptedPassword);
 
-            return String.Empty;
+            return string.Empty;
         }
     }
 }

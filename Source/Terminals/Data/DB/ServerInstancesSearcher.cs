@@ -16,7 +16,7 @@ namespace Terminals.Data.DB
         private readonly Func<DataTable> findInstances = SqlDataSourceEnumerator.Instance.GetDataSources;
 
         /// <summary>
-        /// Creates new instance of Sql server instances search engine.
+        ///     Creates new instance of Sql server instances search engine.
         /// </summary>
         /// <param name="findInstaces">Optional method, which can provide the datatable filled with server instances</param>
         public ServerInstancesSearcher(Func<DataTable> findInstaces = null)
@@ -26,30 +26,30 @@ namespace Terminals.Data.DB
         }
 
         /// <summary>
-        /// Finds all available MS SQL server instances in form %Server%\%Instance%.
-        /// Returns nenver null collection of found items. Returns task, because it can take long time.
+        ///     Finds all available MS SQL server instances in form %Server%\%Instance%.
+        ///     Returns nenver null collection of found items. Returns task, because it can take long time.
         /// </summary>
         internal Task<List<string>> FindSqlServerInstancesAsync()
         {
-            return Task<List<string>>.Factory.StartNew(FindSqlServerInstances);
+            return Task<List<string>>.Factory.StartNew(this.FindSqlServerInstances);
         }
 
         private List<string> FindSqlServerInstances()
         {
-            DataTable instancesTable = this.findInstances();
-            
+            var instancesTable = this.findInstances();
+
             if (instancesTable == null)
                 return new List<string>();
 
             return instancesTable.Rows.OfType<DataRow>()
-                                      .Select(ToFullInstanceName)
-                                      .ToList();
+                .Select(ToFullInstanceName)
+                .ToList();
         }
 
         private static string ToFullInstanceName(DataRow row)
         {
-            string serverName = row[SERVER_NAME_COLUMN].ToString();
-            string instanceName = row[INSTANCE_NAME_COLUMN].ToString();
+            var serverName = row[SERVER_NAME_COLUMN].ToString();
+            var instanceName = row[INSTANCE_NAME_COLUMN].ToString();
             return FormatSqlInstanceDisplayName(serverName, instanceName);
         }
 

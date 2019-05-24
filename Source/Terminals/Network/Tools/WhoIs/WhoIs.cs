@@ -7,31 +7,34 @@ namespace Terminals.Network.WhoIs
     {
         public WhoIs()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         private void whoisButton_Click(object sender, EventArgs e)
         {
-            String server = this.hostTextbox.Text.Trim();
-            if (server != String.Empty)
+            var server = this.hostTextbox.Text.Trim();
+            if (server != string.Empty)
             {
-                if (!server.StartsWith("=") && !server.ToLower().EndsWith(".ca")) 
+                if (!server.StartsWith("=") && !server.ToLower().EndsWith(".ca"))
                     server = "=" + server;
 
-                String result = WhoisResolver.Whois(server);
+                var result = WhoisResolver.Whois(server);
                 result = result.Replace("\n", Environment.NewLine);
-                Int32 pos = result.IndexOf("Whois Server:");
+                var pos = result.IndexOf("Whois Server:");
                 if (pos > 0)
                 {
-                    String newServer = result.Substring(pos + 13, result.IndexOf("\r\n", pos) - pos - 13);
-                    if (server.StartsWith("=")) 
+                    var newServer = result.Substring(pos + 13, result.IndexOf("\r\n", pos) - pos - 13);
+                    if (server.StartsWith("="))
                         server = this.hostTextbox.Text.Trim();
 
-                    String newResults = WhoisResolver.Whois(server, newServer.Trim());
-                    if (!String.IsNullOrEmpty(newResults)) 
-                        newResults = newResults.Replace("\n", Environment.NewLine); ;
+                    var newResults = WhoisResolver.Whois(server, newServer.Trim());
+                    if (!string.IsNullOrEmpty(newResults))
+                        newResults = newResults.Replace("\n", Environment.NewLine);
+                    ;
 
-                    result = String.Format("{0}\r\n----------------------Sub Query:{1}--------------------------\r\n{2}", result, newServer, newResults);
+                    result = string.Format(
+                        "{0}\r\n----------------------Sub Query:{1}--------------------------\r\n{2}", result,
+                        newServer, newResults);
                 }
 
                 this.textBox2.Text = result;
@@ -41,9 +44,7 @@ namespace Terminals.Network.WhoIs
         private void hostTextbox_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-            {
-                whoisButton_Click(null, null);
-            }
+                this.whoisButton_Click(null, null);
         }
     }
 }

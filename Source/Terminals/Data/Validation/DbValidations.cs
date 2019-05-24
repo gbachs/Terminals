@@ -6,7 +6,8 @@ namespace Terminals.Data.Validation
     internal class DbValidations : Validations, IDataValidator
     {
         public DbValidations(ConnectionManager connectionManager)
-            :base(new DbCredentialSetValidator(), new DbFavoriteValidator(connectionManager), new DbNamedItemValidator<INamedItem>())
+            : base(new DbCredentialSetValidator(), new DbFavoriteValidator(connectionManager),
+                new DbNamedItemValidator<INamedItem>())
         {
         }
     }

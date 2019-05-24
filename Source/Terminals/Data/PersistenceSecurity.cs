@@ -5,27 +5,14 @@ using Terminals.Security;
 namespace Terminals.Data
 {
     /// <summary>
-    /// Provides persistence authentication and manipulations with master password.
-    /// Doesn't distinguish between application and persistence master password.
+    ///     Provides persistence authentication and manipulations with master password.
+    ///     Doesn't distinguish between application and persistence master password.
     /// </summary>
     internal class PersistenceSecurity
     {
         private readonly Settings settings = Settings.Instance;
+
         private bool isAuthenticated;
-
-        protected string KeyMaterial { get; private set; }
-
-        protected virtual string PersistenceKeyMaterial { get { return this.KeyMaterial; }  }
-
-        internal bool IsMasterPasswordDefined
-        {
-            get
-            {
-                return AuthenticationSequence.IsMasterPasswordDefined();
-            }
-        }
-
-        internal event Action<string> OnUpdatePasswordsByNewMasterPassword;
 
         internal PersistenceSecurity()
         {
@@ -33,7 +20,7 @@ namespace Terminals.Data
         }
 
         /// <summary>
-        /// Creates new instance and initializes internal state from sourceSecurity.
+        ///     Creates new instance and initializes internal state from sourceSecurity.
         /// </summary>
         /// <param name="sourceSecurity">Not null current security instance to initialize from.</param>
         internal PersistenceSecurity(PersistenceSecurity sourceSecurity)
@@ -41,21 +28,29 @@ namespace Terminals.Data
             this.KeyMaterial = sourceSecurity.KeyMaterial;
         }
 
+        protected string KeyMaterial { get; private set; }
+
+        protected virtual string PersistenceKeyMaterial => this.KeyMaterial;
+
+        internal bool IsMasterPasswordDefined => AuthenticationSequence.IsMasterPasswordDefined();
+
+        internal event Action<string> OnUpdatePasswordsByNewMasterPassword;
+
         internal bool Authenticate(Func<bool, AuthenticationPrompt> knowsUserPassword)
         {
             // don't prompt user third time for password when upgrading passwords from v2
             if (this.isAuthenticated)
                 return true;
-            
+
             var authentication = new AuthenticationSequence(this.IsMasterPasswordValid, knowsUserPassword);
             this.isAuthenticated = authentication.AuthenticateIfRequired();
             return this.isAuthenticated;
         }
 
-        private Boolean IsMasterPasswordValid(string passwordToCheck)
+        private bool IsMasterPasswordValid(string passwordToCheck)
         {
-            string storedMasterPassword = this.settings.MasterPasswordHash;
-            bool isValid = PasswordFunctions2.MasterPasswordIsValid(passwordToCheck, storedMasterPassword);
+            var storedMasterPassword = this.settings.MasterPasswordHash;
+            var isValid = PasswordFunctions2.MasterPasswordIsValid(passwordToCheck, storedMasterPassword);
             if (isValid)
             {
                 this.KeyMaterial = PasswordFunctions2.CalculateMasterPasswordKey(passwordToCheck, storedMasterPassword);
@@ -67,8 +62,8 @@ namespace Terminals.Data
 
         internal void UpdateMasterPassword(string newPassword)
         {
-            string storedMasterPassword = PasswordFunctions2.CalculateStoredMasterPasswordKey(newPassword);
-            string newMasterKey = PasswordFunctions2.CalculateMasterPasswordKey(newPassword, storedMasterPassword);
+            var storedMasterPassword = PasswordFunctions2.CalculateStoredMasterPasswordKey(newPassword);
+            var newMasterKey = PasswordFunctions2.CalculateMasterPasswordKey(newPassword, storedMasterPassword);
 
             // start of not secured transaction. Old key is still present,
             // but passwords are already encrypted by new Key
@@ -81,7 +76,7 @@ namespace Terminals.Data
         }
 
         /// <summary>
-        /// Use only to resolve settings file passwords
+        ///     Use only to resolve settings file passwords
         /// </summary>
         internal string DecryptPassword(string encryptedPassword)
         {
@@ -89,7 +84,7 @@ namespace Terminals.Data
         }
 
         /// <summary>
-        /// Use only to store settings file passwords
+        ///     Use only to store settings file passwords
         /// </summary>
         internal string EncryptPassword(string decryptedPassword)
         {
@@ -97,7 +92,7 @@ namespace Terminals.Data
         }
 
         /// <summary>
-        /// Use only to resolve all other passwords except settings file passwords
+        ///     Use only to resolve all other passwords except settings file passwords
         /// </summary>
         internal string DecryptPersistencePassword(string encryptedPassword)
         {
@@ -105,7 +100,7 @@ namespace Terminals.Data
         }
 
         /// <summary>
-        /// Use only to store all other passwords except settings file passwords
+        ///     Use only to store all other passwords except settings file passwords
         /// </summary>
         internal string EncryptPersistencePassword(string decryptedPassword)
         {

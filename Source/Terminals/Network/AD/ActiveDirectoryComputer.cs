@@ -8,29 +8,34 @@ namespace Terminals.Network
     internal class ActiveDirectoryComputer
     {
         private const string NAME = "name";
-        private const string OS = "operatingSystem";
-        private const string DN = "distinguishedName";
 
-        // public required by databinding
-        public String ComputerName { get; set; }
-        public String OperatingSystem { get; set; }
-        
-        internal String Protocol { get; set; }
-        internal String Tags { get; set; }
-        internal String Notes { get; set; }
+        private const string OS = "operatingSystem";
+
+        private const string DN = "distinguishedName";
 
         internal ActiveDirectoryComputer()
         {
             this.Protocol = KnownConnectionConstants.RDP;
-            this.ComputerName = String.Empty;
-            this.OperatingSystem = String.Empty;
-            this.Tags = String.Empty;
-            this.Notes = String.Empty;
+            this.ComputerName = string.Empty;
+            this.OperatingSystem = string.Empty;
+            this.Tags = string.Empty;
+            this.Notes = string.Empty;
         }
 
-        internal static ActiveDirectoryComputer FromDirectoryEntry(String domain, DirectoryEntry computer)
+        // public required by databinding
+        public string ComputerName { get; set; }
+
+        public string OperatingSystem { get; set; }
+
+        internal string Protocol { get; set; }
+
+        internal string Tags { get; set; }
+
+        internal string Notes { get; set; }
+
+        internal static ActiveDirectoryComputer FromDirectoryEntry(string domain, DirectoryEntry computer)
         {
-            ActiveDirectoryComputer comp = new ActiveDirectoryComputer();
+            var comp = new ActiveDirectoryComputer();
             comp.Tags = domain;
 
             if (computer.Properties != null)
@@ -45,18 +50,16 @@ namespace Terminals.Network
 
         private void NameFromEntry(DirectoryEntry computer)
         {
-            PropertyValueCollection nameValues = computer.Properties[NAME];
-            String name = computer.Name.Replace("CN=", "");
+            var nameValues = computer.Properties[NAME];
+            var name = computer.Name.Replace("CN=", "");
             if (nameValues != null && nameValues.Count > 0)
-            {
                 name = nameValues[0].ToString();
-            }
             this.ComputerName = name;
         }
-        
+
         private void OperationSystemFromEntry(DirectoryEntry computer)
         {
-            PropertyValueCollection osValues = computer.Properties[OS];
+            var osValues = computer.Properties[OS];
             if (osValues != null && osValues.Count > 0)
             {
                 this.Tags += "," + osValues[0];
@@ -66,20 +69,18 @@ namespace Terminals.Network
 
         private void DistinquishedNameFromEntry(DirectoryEntry computer)
         {
-            PropertyValueCollection dnameValues = computer.Properties[DN];
+            var dnameValues = computer.Properties[DN];
             if (dnameValues != null && dnameValues.Count > 0)
             {
-                string distinguishedName = dnameValues[0].ToString();
+                var distinguishedName = dnameValues[0].ToString();
                 if (distinguishedName.Contains("OU=Domain Controllers"))
-                {
                     this.Tags += ",Domain Controllers";
-                }
             }
         }
 
         internal FavoriteConfigurationElement ToFavorite(ConnectionManager connectionManager, string domain)
         {
-            FavoriteConfigurationElement favorite = new FavoriteConfigurationElement(this.ComputerName);
+            var favorite = new FavoriteConfigurationElement(this.ComputerName);
             favorite.Name = this.ComputerName;
             favorite.ServerName = this.ComputerName;
             favorite.UserName = Environment.UserName;

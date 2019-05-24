@@ -9,7 +9,7 @@ namespace Terminals.Network
     {
         public NetworkShares()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         private void LoadShares(string username, string password, string computer)
@@ -23,7 +23,7 @@ namespace Terminals.Network
             catch
             {
                 MessageBox.Show("Unable to loads shares for remote compuer.", "Loading shares",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -35,7 +35,7 @@ namespace Terminals.Network
         private static List<Share> TryLoadShares(string username, string password, string computer)
         {
             var shares = new List<Share>();
-            ManagementObjectSearcher searcher = CreateSearcher(username, password, computer);
+            var searcher = CreateSearcher(username, password, computer);
 
             foreach (ManagementObject share in searcher.Get())
             {
@@ -43,13 +43,13 @@ namespace Terminals.Network
                 FillShareByManagementObject(share, s);
                 shares.Add(s);
             }
+
             return shares;
         }
 
         private static void FillShareByManagementObject(ManagementObject share, Share s)
         {
-            foreach (PropertyData property in share.Properties)
-            {
+            foreach (var property in share.Properties)
                 switch (property.Name)
                 {
                     case "AccessMask":
@@ -83,7 +83,6 @@ namespace Terminals.Network
                         s.TypeId = ResolvePropertyValue(property);
                         break;
                 }
-            }
         }
 
         private static string ResolvePropertyValue(PropertyData property)
@@ -124,15 +123,14 @@ namespace Terminals.Network
 
         private void ConnectButton_Click(object sender, EventArgs e)
         {
-            this.LoadShares(this.wmiServerCredentials1.Username, this.wmiServerCredentials1.Password, this.wmiServerCredentials1.SelectedServer);
+            this.LoadShares(this.wmiServerCredentials1.Username, this.wmiServerCredentials1.Password,
+                this.wmiServerCredentials1.SelectedServer);
         }
 
         private void WmiServerCredentials1_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-            {
                 this.ConnectButton_Click(this, EventArgs.Empty);
-            }
         }
     }
 }

@@ -19,41 +19,39 @@ namespace Terminals.Integration.Import
 
         internal string GetProvidersDialogFilter()
         {
-            LoadProviders();
+            this.LoadProviders();
 
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             // work with copy because it is modified
-            Dictionary<string, IImport> extraImporters = new Dictionary<string, IImport>(providers);
-            AddTerminalsImporter(extraImporters, stringBuilder);
+            var extraImporters = new Dictionary<string, IImport>(this.providers);
+            this.AddTerminalsImporter(extraImporters, stringBuilder);
 
-            foreach (KeyValuePair<string, IImport> importer in extraImporters)
-            {
-                AddProviderFilter(stringBuilder, importer.Value);
-            }
+            foreach (var importer in extraImporters)
+                this.AddProviderFilter(stringBuilder, importer.Value);
 
             return stringBuilder.ToString();
         }
 
         /// <summary>
-        /// Forces terminals importer to be on first place
+        ///     Forces terminals importer to be on first place
         /// </summary>
         private void AddTerminalsImporter(Dictionary<string, IImport> extraImporters, StringBuilder stringBuilder)
         {
             if (extraImporters.ContainsKey(ImportTerminals.TERMINALS_FILEEXTENSION))
             {
-                IImport terminalsImporter = extraImporters[ImportTerminals.TERMINALS_FILEEXTENSION];
-                AddProviderFilter(stringBuilder, terminalsImporter);
-                extraImporters.Remove(ImportTerminals.TERMINALS_FILEEXTENSION); 
+                var terminalsImporter = extraImporters[ImportTerminals.TERMINALS_FILEEXTENSION];
+                this.AddProviderFilter(stringBuilder, terminalsImporter);
+                extraImporters.Remove(ImportTerminals.TERMINALS_FILEEXTENSION);
             }
         }
 
         /// <summary>
-        /// Loads a new collection of favorites from source file.
-        /// The newly created favorites aren't imported into configuration.
+        ///     Loads a new collection of favorites from source file.
+        ///     The newly created favorites aren't imported into configuration.
         /// </summary>
-        internal List<FavoriteConfigurationElement> ImportFavorites(String Filename)
+        internal List<FavoriteConfigurationElement> ImportFavorites(string Filename)
         {
-            IImport importer = FindProvider(Filename);
+            var importer = this.FindProvider(Filename);
 
             if (importer == null)
                 return new List<FavoriteConfigurationElement>();
@@ -61,48 +59,42 @@ namespace Terminals.Integration.Import
             return importer.ImportFavorites(Filename);
         }
 
-        internal List<FavoriteConfigurationElement> ImportFavorites(String[] files)
+        internal List<FavoriteConfigurationElement> ImportFavorites(string[] files)
         {
-            var favorites =  new List<FavoriteConfigurationElement>();
-            foreach (string file in files)
-            {
-                favorites.AddRange(ImportFavorites(file));
-            }
+            var favorites = new List<FavoriteConfigurationElement>();
+            foreach (var file in files)
+                favorites.AddRange(this.ImportFavorites(file));
             return favorites;
         }
 
         protected override void LoadProviders()
         {
-            if (providers == null)
+            if (this.providers == null)
             {
-                providers = new Dictionary<string, IImport>();
-                providers.Add(ImportTerminals.TERMINALS_FILEEXTENSION, new ImportTerminals(this.persistence));
-                providers.Add(ImportRDP.FILE_EXTENSION, new ImportRDP());
-                providers.Add(ImportvRD.FILE_EXTENSION, new ImportvRD(this.persistence));
-                providers.Add(ImportMuRD.FILE_EXTENSION, new ImportMuRD());
-                providers.Add(ImportRdcMan.FILE_EXTENSION, new ImportRdcMan(this.persistence));
+                this.providers = new Dictionary<string, IImport>();
+                this.providers.Add(ImportTerminals.TERMINALS_FILEEXTENSION, new ImportTerminals(this.persistence));
+                this.providers.Add(ImportRDP.FILE_EXTENSION, new ImportRDP());
+                this.providers.Add(ImportvRD.FILE_EXTENSION, new ImportvRD(this.persistence));
+                this.providers.Add(ImportMuRD.FILE_EXTENSION, new ImportMuRD());
+                this.providers.Add(ImportRdcMan.FILE_EXTENSION, new ImportRdcMan(this.persistence));
             }
         }
 
         /// <summary>
-        /// Disabled because of performance, there is no need to search all libraries,
-        /// because importers are implemented only in Terminals
+        ///     Disabled because of performance, there is no need to search all libraries,
+        ///     because importers are implemented only in Terminals
         /// </summary>
         private void LoadImportersFromAssemblies()
         {
-            if (providers == null)
+            if (this.providers == null)
             {
-                providers = new Dictionary<string, IImport>();
-                DirectoryInfo dir = new DirectoryInfo(Program.Info.Location);
-                string[] patterns = new string[] { "*.dll", "*.exe" };
+                this.providers = new Dictionary<string, IImport>();
+                var dir = new DirectoryInfo(Program.Info.Location);
+                string[] patterns = {"*.dll", "*.exe"};
 
-                foreach (string pattern in patterns)
-                {
-                    foreach (FileInfo assemblyFile in dir.GetFiles(pattern))
-                    {
-                        LoadAssemblyImporters(assemblyFile.FullName);
-                    }
-                }
+                foreach (var pattern in patterns)
+                foreach (var assemblyFile in dir.GetFiles(pattern))
+                    this.LoadAssemblyImporters(assemblyFile.FullName);
             }
         }
 
@@ -110,11 +102,9 @@ namespace Terminals.Integration.Import
         {
             try
             {
-                Assembly assembly = Assembly.LoadFile(assemblyFileFullName);
+                var assembly = Assembly.LoadFile(assemblyFileFullName);
                 if (assembly != null)
-                {
-                    LoadAssemblyImporters(assembly);
-                }
+                    this.LoadAssemblyImporters(assembly);
             }
             catch (Exception exc) //do nothing
             {
@@ -124,10 +114,8 @@ namespace Terminals.Integration.Import
 
         private void LoadAssemblyImporters(Assembly assembly)
         {
-            foreach (Type type in assembly.GetTypes())
-            {
-                LoadAssemblyImporter(type);
-            }
+            foreach (var type in assembly.GetTypes())
+                this.LoadAssemblyImporter(type);
         }
 
         private void LoadAssemblyImporter(Type type)
@@ -136,8 +124,8 @@ namespace Terminals.Integration.Import
             {
                 if (typeof(IImport).IsAssignableFrom(type) && type.IsClass)
                 {
-                    IImport importer = type.Assembly.CreateInstance(type.FullName) as IImport;
-                    AddImporter(importer);
+                    var importer = type.Assembly.CreateInstance(type.FullName) as IImport;
+                    this.AddImporter(importer);
                 }
             }
             catch (Exception exc)
@@ -150,18 +138,16 @@ namespace Terminals.Integration.Import
         {
             if (importer != null)
             {
-                string extension = importer.KnownExtension.ToLower();
-                if (ShouldAddImporterExtension(extension))
-                {
-                    providers.Add(extension, importer);
-                }
+                var extension = importer.KnownExtension.ToLower();
+                if (this.ShouldAddImporterExtension(extension))
+                    this.providers.Add(extension, importer);
             }
         }
 
         private bool ShouldAddImporterExtension(string extension)
         {
-            return !String.IsNullOrEmpty(extension) &&
-                   !providers.ContainsKey(extension);
+            return !string.IsNullOrEmpty(extension) &&
+                   !this.providers.ContainsKey(extension);
         }
     }
 }

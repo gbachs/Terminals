@@ -18,12 +18,12 @@ namespace Terminals.Connections
 
         public IEnumerable<IConnectionPlugin> Load()
         {
-            List<string> allPluginAssemblies = FindPluginAssemblies()
-                .Where(p => !enabledPlugins.Contains(p))
+            var allPluginAssemblies = FindPluginAssemblies()
+                .Where(p => !this.enabledPlugins.Contains(p))
                 .ToList();
 
             var availablePlugins = allPluginAssemblies.SelectMany(LoadAssemblyPlugins)
-                    .ToList();
+                .ToList();
 
             if (!availablePlugins.Any())
                 throw new ApplicationException("No available protocol plugin was loaded.");
@@ -31,39 +31,39 @@ namespace Terminals.Connections
             return availablePlugins;
         }
 
+        public IEnumerable<PluginDefinition> FindAvailablePlugins()
+        {
+            var allPluginAssemblies = FindPluginAssemblies();
+            return allPluginAssemblies.Select(LoadPlugDefinition)
+                .ToList();
+        }
+
         private static IEnumerable<IConnectionPlugin> LoadAssemblyPlugins(string pluginFile)
         {
             try
             {
-                Assembly pluginAssembly = Assembly.LoadFrom(pluginFile);
+                var pluginAssembly = Assembly.LoadFrom(pluginFile);
                 var types = FindAllPluginTypes(pluginAssembly);
                 return types.Select(Activator.CreateInstance).OfType<IConnectionPlugin>();
             }
             catch (Exception exception)
             {
-                string message = string.Format("Unable to load plugins from '{0}'.", pluginFile);
+                var message = string.Format("Unable to load plugins from '{0}'.", pluginFile);
                 Logging.Info(message, exception);
                 return new IConnectionPlugin[0];
             }
         }
 
-        public IEnumerable<PluginDefinition> FindAvailablePlugins()
-        {
-            IEnumerable<string> allPluginAssemblies = FindPluginAssemblies();
-            return allPluginAssemblies.Select(LoadPlugDefinition)
-                .ToList();
-        }
-
         private static PluginDefinition LoadPlugDefinition(string pluginFile)
         {
-            string description = GetAssemblyDescription(pluginFile);
+            var description = GetAssemblyDescription(pluginFile);
             return new PluginDefinition(pluginFile, description);
         }
 
         private static string GetAssemblyDescription(string pluginFile)
         {
-            Assembly assembly = Assembly.ReflectionOnlyLoadFrom(pluginFile);
-            CustomAttributeData customData = assembly.GetCustomAttributesData()
+            var assembly = Assembly.ReflectionOnlyLoadFrom(pluginFile);
+            var customData = assembly.GetCustomAttributesData()
                 .FirstOrDefault(IsAssemblyDecriptionAttribute);
 
             if (customData == null)
@@ -80,21 +80,22 @@ namespace Terminals.Connections
 
         private static IEnumerable<string> FindPluginAssemblies()
         {
-            string[] pluginDirectories = FindPluginDirectories();
+            var pluginDirectories = FindPluginDirectories();
             return FindAllPluginAssemblies(pluginDirectories);
         }
 
         private static IEnumerable<Type> FindAllPluginTypes(Assembly pluginAssembly)
         {
             return pluginAssembly.GetTypes()
-                .Where(t => !t.IsAbstract && !t.IsInterface && t.GetInterface(typeof(IConnectionPlugin).FullName) != null);
+                .Where(t => !t.IsAbstract && !t.IsInterface &&
+                            t.GetInterface(typeof(IConnectionPlugin).FullName) != null);
         }
 
         private static string[] FindPluginDirectories()
         {
             try
             {
-                string pluginsDirectory = FindBasePluginDirectory();
+                var pluginsDirectory = FindBasePluginDirectory();
                 return Directory.GetDirectories(pluginsDirectory);
             }
             catch (Exception exception)
@@ -106,8 +107,8 @@ namespace Terminals.Connections
 
         internal static string FindBasePluginDirectory()
         {
-            string applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string pluginsDirectory = Path.Combine(applicationDirectory, "Plugins");
+            var applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var pluginsDirectory = Path.Combine(applicationDirectory, "Plugins");
             return pluginsDirectory;
         }
 
@@ -124,7 +125,7 @@ namespace Terminals.Connections
             }
             catch (Exception exception)
             {
-                string message = string.Format("Unable to load plugins list from '{0}'.", pluginDirectory);
+                var message = string.Format("Unable to load plugins list from '{0}'.", pluginDirectory);
                 Logging.Info(message, exception);
                 return new string[0];
             }

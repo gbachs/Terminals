@@ -1,84 +1,122 @@
 using System;
-using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
-using System.Windows.Forms;
 using System.Data;
+using System.IO;
 using System.Management;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using System.Xml;
+using Terminals;
+using Terminals.Properties;
 
 namespace WMITestClient
 {
     /// <summary>
-    /// Summary description for Form1.
+    ///     Summary description for Form1.
     /// </summary>
-    internal class WMIControl : System.Windows.Forms.UserControl
+    internal class WMIControl : UserControl
     {
-        private System.Windows.Forms.Button QueryButton;
-        private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Button StopButton;
-        private System.Windows.Forms.ComboBox QueryTextBox;
-        private System.Windows.Forms.MainMenu mainMenu1;
-        private System.Windows.Forms.MenuItem menuItem1;
-        private System.Windows.Forms.MenuItem menuItem2;
-        private System.Windows.Forms.MenuItem LoginMenuItem;
-        private System.Windows.Forms.MenuItem ExitmenuItem;
-        private System.Windows.Forms.MenuItem SavemenuItem;
-        private System.Windows.Forms.MenuItem LoadmenuItem;
-        private System.Windows.Forms.MenuItem ClearmenuItem;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.MenuItem BasicTreemenuItem;
-        private System.Windows.Forms.TreeView treeView1;
-        private System.Windows.Forms.TreeView treeView2;
-        private Button ConnectButton;
-        private SplitContainer splitContainer1;
-        private Panel panel1;
-        private Label ConnectionLabel;
-        private SplitContainer splitContainer2;
+        private MenuItem BasicTreemenuItem;
+
+        private MenuItem ClearmenuItem;
+
         private IContainer components;
 
-        private System.Collections.ArrayList history = new System.Collections.ArrayList();
+        private Button ConnectButton;
+
+        private Label ConnectionLabel;
+
+        private MenuItem ExitmenuItem;
+
+        private ArrayList history = new ArrayList();
+
+        private MenuItem LoadmenuItem;
+
+        private MenuItem LoginMenuItem;
+
+        private MainMenu mainMenu1;
+
+        private MenuItem menuItem1;
+
+        private MenuItem menuItem2;
+
+        private OpenFileDialog openFileDialog1;
+
+        private Panel panel1;
+
+        private ProgressBar progressBar1;
+
+        private Button QueryButton;
+
+        private ComboBox QueryTextBox;
+
+        private MenuItem SavemenuItem;
+
+        private SplitContainer splitContainer1;
+
+        private SplitContainer splitContainer2;
+
         private bool StilRunning = true;
 
+        private Button StopButton;
+
+        private TreeView treeView1;
+
+        private TreeView treeView2;
+
+        public WMIControl()
+        {
+            this.InitializeComponent();
+            this.Form1_Resize(null, null);
+        }
+
         public string Username { get; set; }
+
         public string Password { get; set; }
+
         public string Computer { get; set; }
+
+        private string HistoryPath => Application.StartupPath + "\\WMITestClientHistory.txt";
 
         public static DataTable WMIToDataTable(string query, string computer, string username, string password)
         {
-            string qry = query;
-            System.Management.ManagementObjectSearcher searcher;
-            System.Management.ObjectQuery queryObj = new System.Management.ObjectQuery(qry);
+            var qry = query;
+            ManagementObjectSearcher searcher;
+            var queryObj = new ObjectQuery(qry);
 
-            if (username != string.Empty && password != string.Empty && computer != string.Empty && !computer.StartsWith(@"\\localhost"))
+            if (username != string.Empty && password != string.Empty && computer != string.Empty &&
+                !computer.StartsWith(@"\\localhost"))
             {
-                System.Management.ConnectionOptions oConn = new System.Management.ConnectionOptions();
+                var oConn = new ConnectionOptions();
                 oConn.Username = username;
                 oConn.Password = password;
-                if (!computer.StartsWith(@"\\")) 
+                if (!computer.StartsWith(@"\\"))
                     computer = @"\\" + computer;
 
-                if (!computer.ToLower().EndsWith(@"\root\cimv2")) 
+                if (!computer.ToLower().EndsWith(@"\root\cimv2"))
                     computer += @"\root\cimv2";
 
-                System.Management.ManagementScope oMs = new System.Management.ManagementScope(computer, oConn);
-                searcher = new System.Management.ManagementObjectSearcher(oMs, queryObj);
+                var oMs = new ManagementScope(computer, oConn);
+                searcher = new ManagementObjectSearcher(oMs, queryObj);
             }
             else
             {
-                searcher = new System.Management.ManagementObjectSearcher(queryObj);
+                searcher = new ManagementObjectSearcher(queryObj);
             }
 
-            System.Data.DataTable dt = new DataTable();
-            bool needsSchema = true;
-            int length = 0;
+            var dt = new DataTable();
+            var needsSchema = true;
+            var length = 0;
             object[] values = null;
-            foreach (System.Management.ManagementObject share in searcher.Get())
+            foreach (ManagementObject share in searcher.Get())
             {
                 if (needsSchema)
                 {
-                    foreach(System.Management.PropertyData p in share.Properties)
+                    foreach (var p in share.Properties)
                     {
-                        System.Data.DataColumn col = new DataColumn(p.Name, ConvertCimType(p.Type));
+                        var col = new DataColumn(p.Name, ConvertCimType(p.Type));
                         dt.Columns.Add(col);
                     }
 
@@ -86,20 +124,16 @@ namespace WMITestClient
                     needsSchema = false;
                 }
 
-                if (values == null) 
+                if (values == null)
                     values = new object[length];
 
-                int x = 0;
-                foreach (System.Management.PropertyData p in share.Properties)
+                var x = 0;
+                foreach (var p in share.Properties)
                 {
                     if (p.Type == CimType.DateTime)
-                    {
-                        values[x] = System.Management.ManagementDateTimeConverter.ToDateTime(p.Value.ToString());
-                    }
+                        values[x] = ManagementDateTimeConverter.ToDateTime(p.Value.ToString());
                     else
-                    {
                         values[x] = p.Value;
-                    }
 
                     x++;
                 }
@@ -111,86 +145,77 @@ namespace WMITestClient
             return dt;
         }
 
-        public static System.Type ConvertCimType(CimType ctValue)
+        public static Type ConvertCimType(CimType ctValue)
         {
-            System.Type tReturnVal = null;
+            Type tReturnVal = null;
             switch (ctValue)
             {
                 case CimType.Boolean:
-                    tReturnVal = typeof(System.Boolean);
+                    tReturnVal = typeof(bool);
                     break;
                 case CimType.Char16:
-                    tReturnVal = typeof(System.String);
+                    tReturnVal = typeof(string);
                     break;
                 case CimType.DateTime:
-                    tReturnVal = typeof(System.DateTime);
+                    tReturnVal = typeof(DateTime);
                     break;
                 case CimType.Object:
-                    tReturnVal = typeof(System.Object);
+                    tReturnVal = typeof(object);
                     break;
                 case CimType.Real32:
-                    tReturnVal = typeof(System.Decimal);
+                    tReturnVal = typeof(decimal);
                     break;
                 case CimType.Real64:
-                    tReturnVal = typeof(System.Decimal);
+                    tReturnVal = typeof(decimal);
                     break;
                 case CimType.Reference:
-                    tReturnVal = typeof(System.Object);
+                    tReturnVal = typeof(object);
                     break;
                 case CimType.SInt16:
-                    tReturnVal = typeof(System.Int16);
+                    tReturnVal = typeof(short);
                     break;
                 case CimType.SInt32:
-                    tReturnVal = typeof(System.Int32);
+                    tReturnVal = typeof(int);
                     break;
                 case CimType.SInt8:
-                    tReturnVal = typeof(System.Int16);
+                    tReturnVal = typeof(short);
                     break;
                 case CimType.String:
-                    tReturnVal = typeof(System.String);
+                    tReturnVal = typeof(string);
                     break;
                 case CimType.UInt16:
-                    tReturnVal = typeof(System.UInt16);
+                    tReturnVal = typeof(ushort);
                     break;
                 case CimType.UInt32:
-                    tReturnVal = typeof(System.UInt32);
+                    tReturnVal = typeof(uint);
                     break;
                 case CimType.UInt64:
-                    tReturnVal = typeof(System.UInt64);
+                    tReturnVal = typeof(ulong);
                     break;
                 case CimType.UInt8:
-                    tReturnVal = typeof(System.UInt16);
+                    tReturnVal = typeof(ushort);
                     break;
             }
 
             return tReturnVal;
         }
 
-        public WMIControl()
-        {
-            InitializeComponent();
-            Form1_Resize(null, null);
-        }
-
         /// <summary>
-        /// Clean up any resources being used.
+        ///     Clean up any resources being used.
         /// </summary>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
+                if (this.components != null)
+                    this.components.Dispose();
             base.Dispose(disposing);
         }
 
         #region Windows Form Designer generated code
+
         /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
+        ///     Required method for Designer support - do not modify
+        ///     the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
@@ -230,7 +255,9 @@ namespace WMITestClient
             // 
             // QueryButton
             // 
-            this.QueryButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.QueryButton.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.QueryButton.Location = new System.Drawing.Point(592, 7);
             this.QueryButton.Name = "QueryButton";
             this.QueryButton.Size = new System.Drawing.Size(67, 24);
@@ -248,7 +275,9 @@ namespace WMITestClient
             // 
             // StopButton
             // 
-            this.StopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.StopButton.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.StopButton.Enabled = false;
             this.StopButton.Location = new System.Drawing.Point(667, 7);
             this.StopButton.Name = "StopButton";
@@ -269,17 +298,21 @@ namespace WMITestClient
             // 
             // mainMenu1
             // 
-            this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItem1});
+            this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[]
+            {
+                this.menuItem1
+            });
             // 
             // menuItem1
             // 
             this.menuItem1.Index = 0;
-            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.LoginMenuItem,
-            this.menuItem2,
-            this.BasicTreemenuItem,
-            this.ExitmenuItem});
+            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[]
+            {
+                this.LoginMenuItem,
+                this.menuItem2,
+                this.BasicTreemenuItem,
+                this.ExitmenuItem
+            });
             this.menuItem1.Text = "&Options";
             // 
             // LoginMenuItem
@@ -291,10 +324,12 @@ namespace WMITestClient
             // menuItem2
             // 
             this.menuItem2.Index = 1;
-            this.menuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.SavemenuItem,
-            this.LoadmenuItem,
-            this.ClearmenuItem});
+            this.menuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[]
+            {
+                this.SavemenuItem,
+                this.LoadmenuItem,
+                this.ClearmenuItem
+            });
             this.menuItem2.Text = "&History";
             // 
             // SavemenuItem
@@ -343,8 +378,10 @@ namespace WMITestClient
             this.treeView2.Name = "treeView2";
             treeNode1.Name = "";
             treeNode1.Text = "To load-> Double Click";
-            this.treeView2.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1});
+            this.treeView2.Nodes.AddRange(new System.Windows.Forms.TreeNode[]
+            {
+                treeNode1
+            });
             this.treeView2.Size = new System.Drawing.Size(350, 374);
             this.treeView2.TabIndex = 4;
             this.treeView2.Click += new System.EventHandler(this.treeView2_Click);
@@ -437,161 +474,144 @@ namespace WMITestClient
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.ResumeLayout(false);
-
         }
+
         #endregion
 
-        public void Form1_Resize(object sender, System.EventArgs e)
+        public void Form1_Resize(object sender, EventArgs e)
         {
             //this.tabControl1.Height = this.Height - 50;
             //this.StopButton.Left = this.Width - QueryButton.Width - 15;
             //QueryButton.Left = StopButton.Left - QueryButton.Width - 15;
             //this.ConnectButton.Left = QueryButton.Left - StopButton.Left - QueryButton.Width - StopButton.Width - 15;
-            
+
             //this.QueryTextBox.Width = QueryButton.Left - 15;
-            progressBar1.Width = this.Width - 10;
+            this.progressBar1.Width = this.Width - 10;
             //progressBar1.Left=this.Width-progressBar1.Width-25;
             //progressBar1.Top=this.Height-progressBar1.Height-33;
         }
 
         private void IncrementBar()
         {
-            if (progressBar1.Value >= this.progressBar1.Maximum) 
-                progressBar1.Value = 0;
+            if (this.progressBar1.Value >= this.progressBar1.Maximum)
+                this.progressBar1.Value = 0;
 
-            progressBar1.Value++;
+            this.progressBar1.Value++;
         }
 
         private void AddToHistory()
         {
-            if (!history.Contains(this.QueryTextBox.Text))
+            if (!this.history.Contains(this.QueryTextBox.Text))
             {
                 this.QueryTextBox.Items.Add(this.QueryTextBox.Text);
                 this.history.Add(this.QueryTextBox.Text);
             }
         }
 
-        private string HistoryPath
-        {
-            get 
-            {
-                return Application.StartupPath + "\\WMITestClientHistory.txt";
-            }
-        }
-
         private void SaveHistory()
         {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            var sb = new StringBuilder();
             foreach (string historyItem in this.history)
-            {
-                if (historyItem != "") 
+                if (historyItem != "")
                     sb.Append(historyItem + "\r\n");
-            }
 
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(HistoryPath, false);
+            var sw = new StreamWriter(this.HistoryPath, false);
             sw.Write(sb.ToString());
             sw.Close();
         }
 
         private void LoadHistory(string path)
         {
-            string realPath = path;
+            var realPath = path;
             if (realPath == null || realPath == string.Empty)
-                realPath = HistoryPath;
+                realPath = this.HistoryPath;
 
-            if (System.IO.File.Exists(realPath))
+            if (File.Exists(realPath))
             {
-                System.IO.StreamReader sr = new System.IO.StreamReader(realPath);
-                string contents = sr.ReadToEnd();
+                var sr = new StreamReader(realPath);
+                var contents = sr.ReadToEnd();
                 sr.Close();
-                string[] items = System.Text.RegularExpressions.Regex.Split(contents, "\r\n");
-                foreach (string item in items)
-                {
+                var items = Regex.Split(contents, "\r\n");
+                foreach (var item in items)
                     if (item != string.Empty)
                     {
-                        history.Add(item);
+                        this.history.Add(item);
                         this.QueryTextBox.Items.Add(item);
                     }
-                }
             }
         }
 
-        private void QueryButton_Click(object sender, System.EventArgs e)
+        private void QueryButton_Click(object sender, EventArgs e)
         {
-            AddToHistory();
+            this.AddToHistory();
             this.StilRunning = true;
             this.QueryButton.Enabled = false;
             this.StopButton.Enabled = true;
             try
             {
-                treeView1.Nodes.Clear();
+                this.treeView1.Nodes.Clear();
                 if (this.QueryTextBox.Text != string.Empty)
                 {
-                    string qry = QueryTextBox.Text;
-                    System.Management.ManagementObjectSearcher searcher;
-                    System.Management.ObjectQuery query = new System.Management.ObjectQuery(qry);
+                    var qry = this.QueryTextBox.Text;
+                    ManagementObjectSearcher searcher;
+                    var query = new ObjectQuery(qry);
 
-
-
-                    if (!string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password) && !string.IsNullOrEmpty(Computer) && !Computer.StartsWith(@"\\localhost"))
+                    if (!string.IsNullOrEmpty(this.Username) && !string.IsNullOrEmpty(this.Password) &&
+                        !string.IsNullOrEmpty(this.Computer) && !this.Computer.StartsWith(@"\\localhost"))
                     {
-                        System.Management.ConnectionOptions oConn = new System.Management.ConnectionOptions();
-                        oConn.Username = Username;
-                        oConn.Password = Password;
+                        var oConn = new ConnectionOptions();
+                        oConn.Username = this.Username;
+                        oConn.Password = this.Password;
 
-                        System.Management.ManagementScope oMs = new System.Management.ManagementScope(Computer, oConn);
-                        searcher = new System.Management.ManagementObjectSearcher(oMs, query);
+                        var oMs = new ManagementScope(this.Computer, oConn);
+                        searcher = new ManagementObjectSearcher(oMs, query);
                     }
                     else
                     {
-                        searcher = new System.Management.ManagementObjectSearcher(query);
+                        searcher = new ManagementObjectSearcher(query);
                     }
 
-                    System.Windows.Forms.TreeNode root = new TreeNode(qry);
+                    var root = new TreeNode(qry);
                     root.Tag = "RootNode";
                     root.Expand();
-                    treeView1.Nodes.Add(root);
-                    string path = "";
-                    foreach (System.Management.ManagementObject share in searcher.Get())
+                    this.treeView1.Nodes.Add(root);
+                    var path = "";
+                    foreach (ManagementObject share in searcher.Get())
                     {
-                        System.Windows.Forms.TreeNode item = new TreeNode(share.ClassPath.ClassName);
+                        var item = new TreeNode(share.ClassPath.ClassName);
                         item.Tag = "ClassNode";
                         root.Nodes.Add(item);
                         path = "Enumerating:" + share.ClassPath.ClassName;
-                        foreach (System.Management.PropertyData p in share.Properties)
+                        foreach (var p in share.Properties)
                         {
-                            bool isLocal = p.IsLocal;
-                            string type = p.Type.ToString();
-                            string origin = p.Origin;
-                            string name = p.Name;
+                            var isLocal = p.IsLocal;
+                            var type = p.Type.ToString();
+                            var origin = p.Origin;
+                            var name = p.Name;
                             path = "Enumerating:" + share.ClassPath.ClassName + "," + name;
                             Application.DoEvents();
 
-                            bool IsArray = p.IsArray;
-                            string val = "NULL";
-                            if (p.Value != null) 
+                            var IsArray = p.IsArray;
+                            var val = "NULL";
+                            if (p.Value != null)
                                 val = p.Value.ToString();
 
-                            System.Windows.Forms.TreeNode node = new TreeNode(name);
+                            var node = new TreeNode(name);
                             node.Tag = "PropertyNode";
-                            string display = "";
+                            var display = "";
                             if (type.ToLower() == "string")
-                            {
                                 display = "Value='" + val + "'";
-                            }
                             else
-                            {
                                 display = "Value=" + val;
-                            }
-                            System.Windows.Forms.TreeNode ValueNode = new TreeNode(display);
+                            var ValueNode = new TreeNode(display);
                             ValueNode.Tag = "ValueNode";
-                            System.Windows.Forms.TreeNode TypeNode = new TreeNode("Type='" + type + "'");
+                            var TypeNode = new TreeNode("Type='" + type + "'");
                             TypeNode.Tag = "ValueNode";
-                            System.Windows.Forms.TreeNode localNode = new TreeNode("IsLocal=" + isLocal);
+                            var localNode = new TreeNode("IsLocal=" + isLocal);
                             localNode.Tag = "ValueNode";
-                            System.Windows.Forms.TreeNode OriginNode = new TreeNode("Origin='" + origin + "'");
+                            var OriginNode = new TreeNode("Origin='" + origin + "'");
                             OriginNode.Tag = "ValueNode";
-                            System.Windows.Forms.TreeNode IsArrayNode = new TreeNode("IsArray=" + IsArray);
+                            var IsArrayNode = new TreeNode("IsArray=" + IsArray);
                             IsArrayNode.Tag = "ValueNode";
 
                             node.Nodes.Add(ValueNode);
@@ -602,37 +622,36 @@ namespace WMITestClient
 
                             if (IsArray && p.Value != null)
                             {
-                                System.Array a = (System.Array)p.Value;
-                                for (int x = 0; x < a.Length; x++)
+                                var a = (Array)p.Value;
+                                for (var x = 0; x < a.Length; x++)
                                 {
-                                    string v = "";
-                                    if (a.GetValue(x) != null) 
+                                    var v = "";
+                                    if (a.GetValue(x) != null)
                                         v = a.GetValue(x).ToString();
 
-                                    System.Windows.Forms.TreeNode arrayNode = new TreeNode(name + "[" + x + "]=" + v);
+                                    var arrayNode = new TreeNode(name + "[" + x + "]=" + v);
                                     arrayNode.Tag = "ArrayNode";
                                     IsArrayNode.Nodes.Add(arrayNode);
-                                    IncrementBar();
+                                    this.IncrementBar();
                                 }
                             }
 
-                            IncrementBar();
+                            this.IncrementBar();
 
                             item.Nodes.Add(node);
                             Application.DoEvents();
-                            if (!this.StilRunning) 
+                            if (!this.StilRunning)
                                 break;
                         }
 
-                        if (!this.StilRunning) 
+                        if (!this.StilRunning)
                             break;
                     }
-
                 }
             }
             catch (Exception exc)
             {
-                Terminals.Logging.Info("Query Button Failed", exc);
+                Logging.Info("Query Button Failed", exc);
                 MessageBox.Show("Error Thrown:" + exc.Message);
             }
 
@@ -641,7 +660,7 @@ namespace WMITestClient
             this.StopButton.Enabled = false;
         }
 
-        private void treeView1_DoubleClick(object sender, System.EventArgs e)
+        private void treeView1_DoubleClick(object sender, EventArgs e)
         {
             //
             // select * from win32_process where caption like 'k%'
@@ -649,13 +668,13 @@ namespace WMITestClient
             // work our way up the tree till the root
             if (sender != null)
             {
-                string queryString = string.Empty;
-                System.Windows.Forms.TreeNode n = ((System.Windows.Forms.TreeView)sender).SelectedNode;
+                var queryString = string.Empty;
+                var n = ((TreeView)sender).SelectedNode;
                 if (n != null)
                 {
-                    string nodeType = string.Empty;
+                    var nodeType = string.Empty;
                     if (n.Tag != null) nodeType = n.Tag.ToString();
-                    string ntext = n.Text;
+                    var ntext = n.Text;
                     if (ntext.IndexOf("(") > 0) ntext = ntext.Substring(0, ntext.IndexOf("(") - 1).Trim();
 
                     switch (nodeType)
@@ -665,47 +684,44 @@ namespace WMITestClient
                             break;
 
                         case "PropertyNode":
-                            System.Windows.Forms.TreeNode p = n.Parent;
-                            string pnPText = p.Text;
-                            if (pnPText.IndexOf("(") > 0) 
+                            var p = n.Parent;
+                            var pnPText = p.Text;
+                            if (pnPText.IndexOf("(") > 0)
                                 pnPText = pnPText.Substring(0, pnPText.IndexOf("(") - 1).Trim();
 
                             queryString = "select " + ntext + " from " + pnPText;
                             break;
 
                         case "ValueNode":
-                            System.Windows.Forms.TreeNode p1 = n.Parent;
-                            System.Windows.Forms.TreeNode pp = p1.Parent;
-                            string ppText = pp.Text;
-                            string p1Text = p1.Text;
-                            if (ppText.IndexOf("(") > 0) 
+                            var p1 = n.Parent;
+                            var pp = p1.Parent;
+                            var ppText = pp.Text;
+                            var p1Text = p1.Text;
+                            if (ppText.IndexOf("(") > 0)
                                 ppText = ppText.Substring(0, ppText.IndexOf("(") - 1).Trim();
 
-                            if (p1Text.IndexOf("(") > 0) 
+                            if (p1Text.IndexOf("(") > 0)
                                 p1Text = p1Text.Substring(0, p1Text.IndexOf("(") - 1).Trim();
 
                             if (ntext.Substring(0, 5).ToLower() == "value")
-                            {
-                                queryString = "select * from " + ppText + " where " + p1Text + "=" + ntext.Replace("Value=", string.Empty);
-                            }
+                                queryString = "select * from " + ppText + " where " + p1Text + "=" +
+                                              ntext.Replace("Value=", string.Empty);
                             else
-                            {
-                                queryString = "select " + p1Text + " from " + ppText;// + " where " + n.Text;
-                            }
+                                queryString = "select " + p1Text + " from " + ppText; // + " where " + n.Text;
 
                             break;
 
                         case "RootNode":
-                            if (treeView1.Nodes == null || treeView1.Nodes.Count == 0) 
-                                treeView1.Nodes.Add("Query");
+                            if (this.treeView1.Nodes == null || this.treeView1.Nodes.Count == 0)
+                                this.treeView1.Nodes.Add("Query");
 
-                            System.Windows.Forms.TreeNode root = treeView1.Nodes[0];
+                            var root = this.treeView1.Nodes[0];
                             queryString = root.Text;
                             break;
 
                         default:
                             if (nodeType != null && nodeType != string.Empty)
-                                System.Windows.Forms.MessageBox.Show(nodeType);
+                                MessageBox.Show(nodeType);
 
                             break;
                     }
@@ -718,47 +734,47 @@ namespace WMITestClient
             }
         }
 
-        private void button1_Click(object sender, System.EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
             this.StilRunning = false;
             this.QueryButton.Enabled = true;
             this.StopButton.Enabled = false;
         }
 
-        private void Form1_Load(object sender, System.EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
             this.QueryTextBox.Items.Clear();
             this.QueryTextBox.Text = "select * from CIM_System";
             this.LoadHistory(null);
-            BasicTreemenuItem_Click(null, null);
+            this.BasicTreemenuItem_Click(null, null);
         }
 
-        private void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Form1_Closing(object sender, CancelEventArgs e)
         {
             this.SaveHistory();
         }
 
-        private void ExitmenuItem_Click(object sender, System.EventArgs e)
+        private void ExitmenuItem_Click(object sender, EventArgs e)
         {
             this.SaveHistory();
             Application.Exit();
         }
 
-        private void SavemenuItem_Click(object sender, System.EventArgs e)
+        private void SavemenuItem_Click(object sender, EventArgs e)
         {
-            SaveHistory();
-            System.Windows.Forms.MessageBox.Show("History Saved.");
+            this.SaveHistory();
+            MessageBox.Show("History Saved.");
         }
 
-        private void ClearmenuItem_Click(object sender, System.EventArgs e)
+        private void ClearmenuItem_Click(object sender, EventArgs e)
         {
             this.QueryTextBox.Items.Clear();
             this.history = new ArrayList();
-            System.IO.File.Delete(this.HistoryPath);
-            System.Windows.Forms.MessageBox.Show("History Cleared.");
+            File.Delete(this.HistoryPath);
+            MessageBox.Show("History Cleared.");
         }
 
-        private void LoadmenuItem_Click(object sender, System.EventArgs e)
+        private void LoadmenuItem_Click(object sender, EventArgs e)
         {
             this.openFileDialog1.CheckFileExists = true;
             this.openFileDialog1.CheckPathExists = true;
@@ -766,17 +782,15 @@ namespace WMITestClient
             this.openFileDialog1.InitialDirectory = Application.StartupPath;
             this.openFileDialog1.Multiselect = false;
             this.openFileDialog1.Title = "Locate History File...";
-            System.Windows.Forms.DialogResult result = this.openFileDialog1.ShowDialog();
+            var result = this.openFileDialog1.ShowDialog();
 
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
+            if (result == DialogResult.OK)
                 this.LoadHistory(this.openFileDialog1.FileName);
-            }
         }
 
-        private void LoginMenuItem_Click(object sender, System.EventArgs e)
+        private void LoginMenuItem_Click(object sender, EventArgs e)
         {
-            LoginForm frm = new LoginForm();
+            var frm = new LoginForm();
             frm.UserName = this.Username;
             frm.Password = this.Password;
             frm.MachineName = this.Computer;
@@ -790,12 +804,12 @@ namespace WMITestClient
             }
         }
 
-        private void LoadNode(System.Xml.XmlNode n, System.Windows.Forms.TreeNode tn)
+        private void LoadNode(XmlNode n, TreeNode tn)
         {
             if (n != null)
             {
                 string nText = null;
-                string nAlt=null;
+                string nAlt = null;
                 string nType = null;
                 try
                 {
@@ -805,61 +819,54 @@ namespace WMITestClient
 
                     try
                     {
-                        if(n.Attributes["Alt"]!=null) 
+                        if (n.Attributes["Alt"] != null)
                             nAlt = n.Attributes["Alt"].Value;
                     }
                     catch (Exception exc)
                     {
-                        Terminals.Logging.Error("Alt Attribute", exc); 
+                        Logging.Error("Alt Attribute", exc);
                         nAlt = nText;
                     }
 
                     try
                     {
-                        if(n.Attributes["Type"] != null) 
+                        if (n.Attributes["Type"] != null)
                             nType = n.Attributes["Type"].Value;
                     }
                     catch (Exception exc)
                     {
-                        Terminals.Logging.Error("Type Attributes", exc);
+                        Logging.Error("Type Attributes", exc);
                         nType = nAlt;
                     }
 
                     if (nAlt == string.Empty || nAlt == null)
-                    {
                         tn.Text = nText;
-                    }
                     else
-                    {
                         tn.Text = nText + " (" + nAlt + ")";
-                    }
 
                     tn.Tag = nType;
                     if (n.HasChildNodes)
-                    {
-                        foreach (System.Xml.XmlNode newXmlNode in n.ChildNodes)
+                        foreach (XmlNode newXmlNode in n.ChildNodes)
                         {
-                            System.Windows.Forms.TreeNode child = new TreeNode();
-                            LoadNode(newXmlNode, child);
+                            var child = new TreeNode();
+                            this.LoadNode(newXmlNode, child);
                             tn.Nodes.Add(child);
                         }
-                    }
                 }
                 catch (Exception ee)
                 {
-                    Terminals.Logging.Error("Load Node Failed", ee);
+                    Logging.Error("Load Node Failed", ee);
                 }
             }
-
         }
 
-        private void BasicTreemenuItem_Click(object sender, System.EventArgs e)
+        private void BasicTreemenuItem_Click(object sender, EventArgs e)
         {
             //string path = Application.StartupPath + "\\BasicTree.xml";
             //System.IO.StreamReader rdr = new System.IO.StreamReader(path);
             //string xml = rdr.ReadToEnd();
             //rdr.Close();
-            LoadBasicTree(Terminals.Properties.Resources.BasicTree);
+            this.LoadBasicTree(Resources.BasicTree);
         }
 
         private void LoadBasicTree(string xml)
@@ -867,55 +874,55 @@ namespace WMITestClient
             this.progressBar1.Value = 0;
 
             this.IncrementBar();
-            treeView2.Nodes.Clear();
+            this.treeView2.Nodes.Clear();
             Application.DoEvents();
             this.IncrementBar();
             Application.DoEvents();
 
             this.IncrementBar();
             Application.DoEvents();
-            System.Xml.XmlDocument x = new System.Xml.XmlDocument();
+            var x = new XmlDocument();
             try
             {
                 x.LoadXml(xml);
             }
             catch (Exception xexc)
             {
-                Terminals.Logging.Error("Load Basic Tree Failed", xexc);
+                Logging.Error("Load Basic Tree Failed", xexc);
             }
 
-            System.Xml.XmlNode n = x.SelectSingleNode("/tree");
-            System.Windows.Forms.TreeNode root = new System.Windows.Forms.TreeNode();
+            var n = x.SelectSingleNode("/tree");
+            var root = new TreeNode();
             this.treeView2.Nodes.Add(root);
             Application.DoEvents();
 
             this.LoadNode(n, root);
-            
+
             root.Expand();
-            if(root.Nodes != null && root.Nodes.Count > 0) 
+            if (root.Nodes != null && root.Nodes.Count > 0)
                 root.Nodes[0].Expand();
 
             this.progressBar1.Value = 0;
         }
 
-        private void treeView2_DoubleClick(object sender, System.EventArgs e)
+        private void treeView2_DoubleClick(object sender, EventArgs e)
         {
             if (this.treeView2.Nodes[0].Text == "To load-> Double Click")
             {
-                BasicTreemenuItem_Click(null, null);
+                this.BasicTreemenuItem_Click(null, null);
             }
             else
             {
-                treeView1.Nodes.Clear();
+                this.treeView1.Nodes.Clear();
                 Application.DoEvents();
-                treeView1_DoubleClick(treeView2, null);
+                this.treeView1_DoubleClick(this.treeView2, null);
                 Application.DoEvents();
-                QueryButton_Click(null, null);
+                this.QueryButton_Click(null, null);
                 Application.DoEvents();
             }
         }
 
-        private void tabControl1_SelectedIndexChanged(object sender, System.EventArgs e)
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
             /*
                         if(tabControl1.SelectedTab.Name==processesTab.Name) {
@@ -929,7 +936,7 @@ namespace WMITestClient
         */
         }
 
-        private void treeView2_Click(object sender, System.EventArgs e)
+        private void treeView2_Click(object sender, EventArgs e)
         {
             //System.Windows.Forms.TreeNode rootNode = treeView2.SelectedNode;
             //if (rootNode != null)
@@ -1041,15 +1048,13 @@ namespace WMITestClient
         private void ConnectButton_Click(object sender, EventArgs e)
         {
             this.LoginMenuItem_Click(null, null);
-            ConnectionLabel.Text = this.Computer;
+            this.ConnectionLabel.Text = this.Computer;
         }
 
         private void QueryTextBox_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-            {
-                QueryButton_Click(null, null);
-            }
+                this.QueryButton_Click(null, null);
         }
     }
 }

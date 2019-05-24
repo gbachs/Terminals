@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,42 +6,28 @@ using System.Text;
 namespace Terminals.Data.Validation
 {
     /// <summary>
-    /// Encapsulated collection of validation results
+    ///     Encapsulated collection of validation results
     /// </summary>
     internal class ValidationStates : IEnumerable<ValidationState>
     {
         private readonly IEnumerable<ValidationState> results;
 
-        internal bool Empty
-        {
-            get { return !this.results.Any(); }
-        }
-
-        internal string this[string propertyName]
-        {
-            get
-            {
-                IEnumerable<string> messages = this.results
-                                                   .Where(result => result.PropertyName == propertyName)
-                                                   .Select(result => result.Message);
-                return String.Concat(messages);
-            }
-        }
-        
         internal ValidationStates(IEnumerable<ValidationState> results)
         {
             this.results = results;
         }
 
-        internal string ToOneMessage()
-        {
-            var builder = new StringBuilder();
-            foreach (ValidationState result in results)
-            {
-                builder.AppendFormat("{0}: {1}\r\n", result.PropertyName, result.Message);
-            }
+        internal bool Empty => !this.results.Any();
 
-            return builder.ToString();
+        internal string this[string propertyName]
+        {
+            get
+            {
+                var messages = this.results
+                    .Where(result => result.PropertyName == propertyName)
+                    .Select(result => result.Message);
+                return string.Concat(messages);
+            }
         }
 
         public IEnumerator<ValidationState> GetEnumerator()
@@ -53,6 +38,15 @@ namespace Terminals.Data.Validation
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        internal string ToOneMessage()
+        {
+            var builder = new StringBuilder();
+            foreach (var result in this.results)
+                builder.AppendFormat("{0}: {1}\r\n", result.PropertyName, result.Message);
+
+            return builder.ToString();
         }
 
         public override string ToString()

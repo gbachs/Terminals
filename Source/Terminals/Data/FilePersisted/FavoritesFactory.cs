@@ -8,14 +8,10 @@ namespace Terminals.Data
     internal static class FavoritesFactory
     {
         private const string DISCOVERED_CONNECTIONS = "Discovered Connections";
-        private static readonly String terminalsReleasesFavoriteName = Program.Resources.GetString("TerminalsNews");
 
-        internal static string TerminalsReleasesFavoriteName
-        {
-            get { return terminalsReleasesFavoriteName; }
-        }
+        internal static string TerminalsReleasesFavoriteName { get; } = Program.Resources.GetString("TerminalsNews");
 
-        internal static FavoriteConfigurationElement CreateNewFavorite(ConnectionManager connectionManager, 
+        internal static FavoriteConfigurationElement CreateNewFavorite(ConnectionManager connectionManager,
             string favoriteName, string server, int port,
             string domain, string userName)
         {
@@ -30,11 +26,11 @@ namespace Terminals.Data
             return newFavorite;
         }
 
-        internal static FavoriteConfigurationElement CreateNewFavorite(ConnectionManager connectionManager, 
+        internal static FavoriteConfigurationElement CreateNewFavorite(ConnectionManager connectionManager,
             string favoriteName, string server, int port)
         {
-            string name = GetHostName(connectionManager, server, favoriteName, port);
-            string domainName = GetCurrentDomainName(server);
+            var name = GetHostName(connectionManager, server, favoriteName, port);
+            var domainName = GetCurrentDomainName(server);
             return CreateNewFavorite(connectionManager, name, server, port, domainName, Environment.UserName);
         }
 
@@ -54,7 +50,7 @@ namespace Terminals.Data
                 if (IPAddress.TryParse(server, out address))
                     name = Dns.GetHostEntry(address).HostName;
 
-                string portName = connectionManager.GetPortName(port);
+                var portName = connectionManager.GetPortName(port);
                 return string.Format("{0}_{1}", name, portName);
             }
             catch // don't log dns lookups!
@@ -64,19 +60,18 @@ namespace Terminals.Data
             }
         }
 
-
         /// <summary>
-        /// Gets persisted favorite, if there is a favorite named by server parameter.
-        /// If no favorite is found creates new favorite, which is configured by parameter properties
-        /// and point to RDP server.
+        ///     Gets persisted favorite, if there is a favorite named by server parameter.
+        ///     If no favorite is found creates new favorite, which is configured by parameter properties
+        ///     and point to RDP server.
         /// </summary>
         /// <param name="server">the RDP server name</param>
         /// <param name="connectToConsole">Flag used for ConnectToConsole RDP option</param>
         /// <param name="port">Number of port, which RDP service is listening on server "server"</param>
         internal static IFavorite GetOrCreateQuickConnectFavorite(IPersistence persistence,
-            String server, Boolean connectToConsole, Int32 port)
+            string server, bool connectToConsole, int port)
         {
-            IFavorite favorite = persistence.Favorites[server];
+            var favorite = persistence.Favorites[server];
             if (favorite == null) //create a temporary favorite and connect to it
             {
                 favorite = persistence.Factory.CreateFavorite();
@@ -95,19 +90,19 @@ namespace Terminals.Data
         }
 
         /// <summary>
-        /// Gets group with required groupName or creates new group which is immediately added to the persistence.
+        ///     Gets group with required groupName or creates new group which is immediately added to the persistence.
         /// </summary>
         /// <param name="persistence">Not null persistence, where to search for groups</param>
         /// <param name="groupName">Name of the group to search in persistence.</param>
         /// <returns>Not null value of Group obtained from persistence or newly created group</returns>
         internal static IGroup GetOrAddNewGroup(IPersistence persistence, string groupName)
         {
-            IGroups groups = persistence.Groups;
-            IGroup group = groups[groupName];
+            var groups = persistence.Groups;
+            var group = groups[groupName];
             if (group == null)
             {
                 group = persistence.Factory.CreateGroup(groupName);
-                groups.Add(group); 
+                groups.Add(group);
             }
 
             return group;

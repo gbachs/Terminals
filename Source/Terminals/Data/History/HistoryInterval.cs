@@ -3,30 +3,14 @@
 namespace Terminals.Data
 {
     /// <summary>
-    /// Represents (time interval) part of timeline for history items. Used to group history items by time.
-    /// All members operate with in UTC.
+    ///     Represents (time interval) part of timeline for history items. Used to group history items by time.
+    ///     All members operate with in UTC.
     /// </summary>
     internal class HistoryInterval
     {
         private readonly Func<DateTime> getFrom;
+
         private readonly Func<DateTime> getTo;
-        internal string Name { get; private set; }
-
-        /// <summary>
-        /// Gets starting time in universal time
-        /// </summary>
-        internal DateTime From
-        {
-            get { return getFrom(); }
-        }
-
-        /// <summary>
-        /// Gets end time in universal time
-        /// </summary>
-        internal DateTime To
-        {
-            get { return getTo(); }
-        }
 
         internal HistoryInterval(Func<DateTime> getFrom, Func<DateTime> getTo, string name)
         {
@@ -35,13 +19,25 @@ namespace Terminals.Data
             this.Name = name;
         }
 
+        internal string Name { get; }
+
+        /// <summary>
+        ///     Gets starting time in universal time
+        /// </summary>
+        internal DateTime From => this.getFrom();
+
+        /// <summary>
+        ///     Gets end time in universal time
+        /// </summary>
+        internal DateTime To => this.getTo();
+
         public override string ToString()
         {
-            return String.Format("HistoryTimeInterval:{0}{{{1} - {2}}}", this.Name, this.From, this.To);
+            return string.Format("HistoryTimeInterval:{0}{{{1} - {2}}}", this.Name, this.From, this.To);
         }
 
         /// <summary>
-        /// Checks whether the given UTC date is inside this interval range.
+        ///     Checks whether the given UTC date is inside this interval range.
         /// </summary>
         /// <param name="dateToCheck">UTC DateTime of the interval to find</param>
         internal bool IsInRange(DateTime dateToCheck)
@@ -100,7 +96,7 @@ namespace Terminals.Data
         {
             // prevent system specific (MS SQL) date range,
             // limit older item to this century (longer before first release)
-            return new DateTime(2000,1,1);
+            return new DateTime(2000, 1, 1);
         }
     }
 }

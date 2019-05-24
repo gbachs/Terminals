@@ -7,26 +7,34 @@ namespace Terminals.Data.DB
 {
     internal partial class DbGroup : IGroup, IIntegerKeyEnityty
     {
+        /// <summary>
+        ///     Gets or sets its associated eventing container. Used to report favorite in group membership changes.
+        /// </summary>
+        private DataDispatcher dispatcher;
+
+        private List<int?> favoriteIds;
+
+        private Favorites favorites;
+
+        /// <summary>
+        ///     Gets or sets the redirection container, which is able to obtain parent
+        /// </summary>
+        private Groups groups;
+
         // we dont have to release the field, to refrehs the instance, because the value is loaded directly
         private DbGroup parent;
 
-        /// <summary>
-        /// Gets or sets the virtual unique identifier. This isn't used, because of internal database identifier.
-        /// Only for compatibility with file persistence.
-        /// </summary>
-        public IGroup Parent
+        internal DbGroup(string name)
+            : this()
         {
-            get
-            {
-                return this.parent;
-            }
-            set
-            {
-                this.parent = (DbGroup)value;
-            }
+            this.Name = name;
         }
 
-        private List<int?> favoriteIds;
+        /// <summary>
+        ///     Gets or sets the virtual unique identifier. This isn't used, because of internal database identifier.
+        ///     Only for compatibility with file persistence.
+        /// </summary>
+        public IGroup Parent { get => this.parent; set => this.parent = (DbGroup)value; }
 
         List<IFavorite> IGroup.Favorites
         {
@@ -37,29 +45,70 @@ namespace Terminals.Data.DB
 
                 // List<Favorite> recent = this.Favorites.ToList();
                 // prefer to select cached items, instead of selecting from database directly
-                List<DbFavorite> selected = this.favorites
-                    .Where<DbFavorite>(candidate => favoriteIds.Contains(candidate.Id))
+                var selected = this.favorites
+                    .Where<DbFavorite>(candidate => this.favoriteIds.Contains(candidate.Id))
                     .ToList();
                 return selected.Cast<IFavorite>().ToList();
             }
         }
 
-        /// <summary>
-        /// Gets or sets the redirection container, which is able to obtain parent
-        /// </summary>
-        private Groups groups;
-
-        /// <summary>
-        /// Gets or sets its associated eventing container. Used to report favorite in group membership changes.
-        /// </summary>
-        private DataDispatcher dispatcher;
-
-        private Favorites favorites;
-
-        internal DbGroup(string name)
-            : this()
+        public void AddFavorite(IFavorite favorite)
         {
-            this.Name = name;
+            this.AddFavorites(new List<IFavorite> {favorite});
+        }
+
+        public void AddFavorites(List<IFavorite> favorites)
+        {
+            try
+            {
+                this.TryAddFavorites(favorites);
+            }
+            catch (DbUpdateException)
+            {
+                this.groups.RefreshCache();
+            }
+            catch (EntityException exception)
+            {
+                this.dispatcher.ReportActionError(this.AddFavorites, favorites, this, exception,
+                    "Unable to add favorite to database group.");
+            }
+        }
+
+        public void RemoveFavorite(IFavorite favorite)
+        {
+            this.RemoveFavorites(new List<IFavorite> {favorite});
+            this.ReportGroupChanged(this);
+        }
+
+        public void RemoveFavorites(List<IFavorite> favorites)
+        {
+            try
+            {
+                this.TryRemoveFavorites(favorites);
+            }
+            catch (DbUpdateException)
+            {
+                this.groups.RefreshCache();
+            }
+            catch (EntityException exception)
+            {
+                this.dispatcher.ReportActionError(this.RemoveFavorites, favorites, this, exception,
+                    "Unable to remove favorites from group.");
+            }
+        }
+
+        bool IStoreIdEquals<IGroup>.StoreIdEquals(IGroup oponent)
+        {
+            var oponentGroup = oponent as DbGroup;
+            if (oponentGroup == null)
+                return false;
+
+            return oponentGroup.Id == this.Id;
+        }
+
+        public int GetStoreIdHash()
+        {
+            return this.Id.GetHashCode();
         }
 
         internal void AssignStores(Groups groups, DataDispatcher dispatcher, Favorites favorites)
@@ -83,14 +132,14 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                return this.dispatcher.ReportFunctionError(LoadFavoritesFromDatabase, this, exception,
-                     "Unable to load group favorites from database");
+                return this.dispatcher.ReportFunctionError(this.LoadFavoritesFromDatabase, this, exception,
+                    "Unable to load group favorites from database");
             }
         }
 
         private List<int?> TryLoadFavoritesFromDatabase()
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
                 return database.GetFavoritesInGroup(this.Id).ToList();
             }
@@ -119,28 +168,6 @@ namespace Terminals.Data.DB
             return this.favoriteIds.Contains(favoriteId);
         }
 
-        public void AddFavorite(IFavorite favorite)
-        {
-            this.AddFavorites(new List<IFavorite> { favorite });
-        }
-
-        public void AddFavorites(List<IFavorite> favorites)
-        {
-            try
-            {
-                this.TryAddFavorites(favorites);
-            }
-            catch (DbUpdateException)
-            {
-                this.groups.RefreshCache();
-            }
-            catch (EntityException exception)
-            {
-                this.dispatcher.ReportActionError(AddFavorites, favorites, this, exception,
-                                                  "Unable to add favorite to database group.");
-            }
-        }
-
         private void TryAddFavorites(List<IFavorite> favorites)
         {
             this.UpdateFavoritesMembershipInDatabase(favorites);
@@ -149,36 +176,13 @@ namespace Terminals.Data.DB
 
         private void UpdateFavoritesMembershipInDatabase(List<IFavorite> favorites)
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
                 foreach (DbFavorite favorite in favorites)
                 {
                     database.InsertFavoritesInGroup(favorite.Id, this.Id);
                     this.AddToCachedIds(favorite);
                 }
-            }
-        }
-
-        public void RemoveFavorite(IFavorite favorite)
-        {
-            this.RemoveFavorites(new List<IFavorite> { favorite });
-            this.ReportGroupChanged(this);
-        }
-
-        public void RemoveFavorites(List<IFavorite> favorites)
-        {
-            try
-            {
-                this.TryRemoveFavorites(favorites);
-            }
-            catch (DbUpdateException)
-            {
-                this.groups.RefreshCache();
-            }
-            catch (EntityException exception)
-            {
-                this.dispatcher.ReportActionError(RemoveFavorites, favorites, this, exception, 
-                    "Unable to remove favorites from group.");
             }
         }
 
@@ -190,12 +194,12 @@ namespace Terminals.Data.DB
 
         private void ReportGroupChanged(IGroup group)
         {
-            this.dispatcher.ReportGroupsUpdated(new List<IGroup> { group });
+            this.dispatcher.ReportGroupsUpdated(new List<IGroup> {group});
         }
 
         private void RemoveFavoritesFromDatabase(List<IFavorite> favorites)
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
                 foreach (DbFavorite favorite in favorites)
                 {
@@ -203,20 +207,6 @@ namespace Terminals.Data.DB
                     this.RemoveFromCachedIds(favorite);
                 }
             }
-        }
-
-        bool IStoreIdEquals<IGroup>.StoreIdEquals(IGroup oponent)
-        {
-            var oponentGroup = oponent as DbGroup;
-            if (oponentGroup == null)
-                return false;
-
-            return oponentGroup.Id == this.Id;
-        }
-
-        public int GetStoreIdHash()
-        {
-            return this.Id.GetHashCode();
         }
 
         public override string ToString()

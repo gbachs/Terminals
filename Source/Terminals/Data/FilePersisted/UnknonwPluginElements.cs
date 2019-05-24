@@ -5,10 +5,6 @@ namespace Terminals.Data.FilePersisted
 {
     internal class UnknonwPluginElements
     {
-        public List<XElement> Favorites { get; private set; }
-
-        public Dictionary<string, List<XElement>> GroupMembership { get; private set; }
-
         public UnknonwPluginElements()
             : this(new List<XElement>(), new Dictionary<string, List<XElement>>())
         {
@@ -19,5 +15,9 @@ namespace Terminals.Data.FilePersisted
             this.Favorites = favorites;
             this.GroupMembership = groupMembership;
         }
+
+        public List<XElement> Favorites { get; }
+
+        public Dictionary<string, List<XElement>> GroupMembership { get; }
     }
 }

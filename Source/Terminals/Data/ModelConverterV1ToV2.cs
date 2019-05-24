@@ -5,10 +5,10 @@ using Terminals.Data.Credentials;
 namespace Terminals.Data
 {
     /// <summary>
-    /// Converts favorites from data model used in version 1.X (FavoriteConfigurationElement)
-    /// to the model used in version 2.0 (Favorite).
-    /// Temporary used also to support imports and export using old data model, 
-    /// before they will be updated.
+    ///     Converts favorites from data model used in version 1.X (FavoriteConfigurationElement)
+    ///     to the model used in version 2.0 (Favorite).
+    ///     Temporary used also to support imports and export using old data model,
+    ///     before they will be updated.
     /// </summary>
     internal class ModelConverterV1ToV2 : ModelConvertersTemplate
     {
@@ -21,8 +21,8 @@ namespace Terminals.Data
         }
 
         /// <summary>
-        /// Doesn't convert Tags to groups, it has to be handled manually, 
-        /// when adding Favorite into Persistence
+        ///     Doesn't convert Tags to groups, it has to be handled manually,
+        ///     when adding Favorite into Persistence
         /// </summary>
         internal static IFavorite ConvertToFavorite(FavoriteConfigurationElement sourceFavorite,
             IPersistence persistence, ConnectionManager connectionManager)
@@ -33,13 +33,13 @@ namespace Terminals.Data
 
         private IFavorite Convert(FavoriteConfigurationElement sourceFavorite)
         {
-            IFavorite result = this.Persistence.Factory.CreateFavorite();
-            ConvertGeneralProperties(result, sourceFavorite);
-            ConvertSecurity(result, sourceFavorite);
+            var result = this.Persistence.Factory.CreateFavorite();
+            this.ConvertGeneralProperties(result, sourceFavorite);
+            this.ConvertSecurity(result, sourceFavorite);
             ConvertBeforeConnetExecute(result, sourceFavorite);
             ConvertDisplay(result, sourceFavorite);
-            
-            IOptionsConverter converter = this.CreateOptionsConverter(result.Protocol);
+
+            var converter = this.CreateOptionsConverter(result.Protocol);
             var context = new OptionsConversionContext(this.CredentialFactory, result, sourceFavorite);
             converter.FromConfigFavorite(context);
             return result;
@@ -66,15 +66,15 @@ namespace Terminals.Data
             // because persistence and application masterpassword may differ,
             // we have to go through encryption without credential resolution
             guarded.Password = this.Persistence.Security.DecryptPassword(sourceFavorite.EncryptedPassword);
-            
-            ICredentialSet credential = this.Persistence.Credentials[sourceFavorite.Credential];
+
+            var credential = this.Persistence.Credentials[sourceFavorite.Credential];
             if (credential != null)
                 security.Credential = credential.Id;
         }
 
         private static void ConvertBeforeConnetExecute(IFavorite result, FavoriteConfigurationElement sourceFavorite)
         {
-            IBeforeConnectExecuteOptions executeOptions = result.ExecuteBeforeConnect;
+            var executeOptions = result.ExecuteBeforeConnect;
             executeOptions.Execute = sourceFavorite.ExecuteBeforeConnect;
             executeOptions.Command = sourceFavorite.ExecuteBeforeConnectCommand;
             executeOptions.CommandArguments = sourceFavorite.ExecuteBeforeConnectArgs;
@@ -84,7 +84,7 @@ namespace Terminals.Data
 
         private static void ConvertDisplay(IFavorite result, FavoriteConfigurationElement sourceFavorite)
         {
-            IDisplayOptions display = result.Display;
+            var display = result.Display;
             display.Colors = sourceFavorite.Colors;
             display.DesktopSize = sourceFavorite.DesktopSize;
             display.Width = sourceFavorite.DesktopSizeWidth;

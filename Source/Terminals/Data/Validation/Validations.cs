@@ -7,7 +7,7 @@ using Terminals.Data.Interfaces;
 namespace Terminals.Data.Validation
 {
     /// <summary>
-    /// Stupid tranformations to validate input values when storing to the database
+    ///     Stupid tranformations to validate input values when storing to the database
     /// </summary>
     internal abstract class Validations : IDataValidator
     {
@@ -18,7 +18,7 @@ namespace Terminals.Data.Validation
         internal const string PORT_RANGE = "Port has to be a number in range 0-65535.";
 
         /// <summary>
-        /// Gets name of the "Name" property
+        ///     Gets name of the "Name" property
         /// </summary>
         internal const string NAME_PROPERTY = "Name";
 
@@ -58,13 +58,13 @@ namespace Terminals.Data.Validation
 
         private static ValidationStates ValidateToStates<TItem>(AbstractValidator<TItem> validator, TItem toValidate)
         {
-            List<ValidationState> results = Validate(validator, toValidate);
+            var results = Validate(validator, toValidate);
             return new ValidationStates(results);
         }
 
         private static List<ValidationState> Validate<TItem>(AbstractValidator<TItem> validator, TItem toValidate)
         {
-            ValidationResult results = validator.Validate(toValidate);
+            var results = validator.Validate(toValidate);
             return ConvertResultsToStates(results);
         }
 
@@ -77,11 +77,11 @@ namespace Terminals.Data.Validation
 
         private static ValidationState ToState(ValidationFailure result)
         {
-            return new ValidationState()
-                {
-                    PropertyName = result.PropertyName,
-                    Message = result.ErrorMessage
-                };
+            return new ValidationState
+            {
+                PropertyName = result.PropertyName,
+                Message = result.ErrorMessage
+            };
         }
     }
 }

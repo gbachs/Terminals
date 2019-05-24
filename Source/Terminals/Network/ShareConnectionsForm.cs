@@ -6,7 +6,7 @@ namespace Terminals.Network
     {
         public ShareConnectionsForm()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Terminals
 
         public virtual bool AskUserIfWantsToOverwrite(string newName)
         {
-            string message = String.Format("A connection named \"{0}\" already exists\r\nDo you want to overwrite it?", newName);
+            string message = $"A connection named \"{newName}\" already exists\r\nDo you want to overwrite it?";
             return MessageBox.Show(message, Program.Info.Title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
         }
 

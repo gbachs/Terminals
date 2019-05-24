@@ -10,27 +10,27 @@ namespace Terminals.Network
 {
     internal partial class ImportFromAD : Form
     {
-        private readonly IPersistence persistence;
+        private readonly ActiveDirectoryClient adClient;
 
         private readonly ConnectionManager connectionManager;
 
-        private readonly Settings settings = Settings.Instance;
+        private readonly IPersistence persistence;
 
-        private readonly ActiveDirectoryClient adClient;
+        private readonly Settings settings = Settings.Instance;
 
         private string defautlDomainName;
 
         public ImportFromAD(IPersistence persistence, ConnectionManager connectionManager)
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             this.persistence = persistence;
             this.connectionManager = connectionManager;
             this.gridComputers.AutoGenerateColumns = false;
 
-            adClient = new ActiveDirectoryClient();
-            adClient.ListComputersDone += new ListComputersDoneDelegate(this.AdClient_OnListComputersDone);
-            adClient.ComputerFound += new ComputerFoundDelegate(this.OnClientComputerFound);
+            this.adClient = new ActiveDirectoryClient();
+            this.adClient.ListComputersDone += this.AdClient_OnListComputersDone;
+            this.adClient.ComputerFound += this.OnClientComputerFound;
 
             var computers = new SortableList<ActiveDirectoryComputer>();
             this.bsComputers.DataSource = computers;
@@ -39,16 +39,16 @@ namespace Terminals.Network
         private void ImportFromAD_Load(object sender, EventArgs e)
         {
             this.progressBar1.Visible = false;
-            this.lblProgressStatus.Text = String.Empty;
+            this.lblProgressStatus.Text = string.Empty;
             this.defautlDomainName = this.ResolveDomainName();
             this.domainTextbox.Text = this.defautlDomainName;
         }
 
         private string ResolveDomainName()
         {
-            if (!String.IsNullOrEmpty(settings.DefaultDomain))
-                return settings.DefaultDomain;
-                
+            if (!string.IsNullOrEmpty(this.settings.DefaultDomain))
+                return this.settings.DefaultDomain;
+
             return Environment.UserDomainName;
         }
 
@@ -59,13 +59,13 @@ namespace Terminals.Network
                 this.bsComputers.Clear();
                 var searchParams = new ActiveDirectorySearchParams(this.domainTextbox.Text,
                     this.ldapFilterTextbox.Text, this.searchbaseTextbox.Text);
-                adClient.FindComputers(searchParams);
+                this.adClient.FindComputers(searchParams);
                 this.lblProgressStatus.Text = "Contacting domain...";
                 this.SwitchToRunningMode();
             }
             else
             {
-                adClient.Stop();
+                this.adClient.Stop();
                 this.lblProgressStatus.Text = "Canceling scan...";
             }
         }
@@ -92,12 +92,12 @@ namespace Terminals.Network
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(new ComputerFoundDelegate(this.OnClientComputerFound), new object[] { computer });
+                this.Invoke(new ComputerFoundDelegate(this.OnClientComputerFound), computer);
             }
             else
             {
                 this.bsComputers.Add(computer);
-                this.lblProgressStatus.Text = String.Format("Scaning... {0} computers found.", this.bsComputers.Count);
+                this.lblProgressStatus.Text = string.Format("Scaning... {0} computers found.", this.bsComputers.Count);
                 this.gridComputers.Refresh();
             }
         }
@@ -106,20 +106,17 @@ namespace Terminals.Network
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(new ListComputersDoneDelegate(AdClient_OnListComputersDone), new object[] { success });
+                this.Invoke(new ListComputersDoneDelegate(this.AdClient_OnListComputersDone), success);
             }
             else
             {
                 if (success)
-                {
-                    this.lblProgressStatus.Text = String.Format("Scan complete, {0} computers found.", this.bsComputers.Count);
-                }
+                    this.lblProgressStatus.Text =
+                        string.Format("Scan complete, {0} computers found.", this.bsComputers.Count);
                 else
-                {
                     this.lblProgressStatus.Text = "Scan canceled.";
-                }
 
-                SwitchToStoppedMode();
+                this.SwitchToStoppedMode();
             }
         }
 
@@ -131,46 +128,47 @@ namespace Terminals.Network
         private void OnButtonImportClick(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;
-            List<FavoriteConfigurationElement> favoritesToImport = GetFavoritesFromBindingSource(this.domainTextbox.Text);
+            var favoritesToImport = this.GetFavoritesFromBindingSource(this.domainTextbox.Text);
             var managedImport = new ImportWithDialogs(this, this.persistence, this.connectionManager);
             managedImport.Import(favoritesToImport);
         }
 
-        private List<FavoriteConfigurationElement> GetFavoritesFromBindingSource(String domain)
+        private List<FavoriteConfigurationElement> GetFavoritesFromBindingSource(string domain)
         {
-            List<FavoriteConfigurationElement> favoritesToImport = new List<FavoriteConfigurationElement>();
+            var favoritesToImport = new List<FavoriteConfigurationElement>();
             foreach (DataGridViewRow computerRow in this.gridComputers.SelectedRows)
             {
-                ActiveDirectoryComputer computer = computerRow.DataBoundItem as ActiveDirectoryComputer;
-                FavoriteConfigurationElement newFavorite = computer.ToFavorite(this.connectionManager, domain);
+                var computer = computerRow.DataBoundItem as ActiveDirectoryComputer;
+                var newFavorite = computer.ToFavorite(this.connectionManager, domain);
                 favoritesToImport.Add(newFavorite);
             }
+
             return favoritesToImport;
         }
 
         private void OnBtnSelectAllClick(object sender, EventArgs e)
         {
-            this.gridComputers.SelectAll();  
+            this.gridComputers.SelectAll();
         }
 
         private void OnBtnSelectNoneClick(object sender, EventArgs e)
         {
-            this.gridComputers.ClearSelection(); 
+            this.gridComputers.ClearSelection();
         }
 
         private void ImportFromAD_FormClosing(object sender, FormClosingEventArgs e)
         {
-            adClient.ListComputersDone -= new ListComputersDoneDelegate(this.AdClient_OnListComputersDone);
-            adClient.ComputerFound -= new ComputerFoundDelegate(this.OnClientComputerFound);
-            adClient.Stop();
+            this.adClient.ListComputersDone -= this.AdClient_OnListComputersDone;
+            this.adClient.ComputerFound -= this.OnClientComputerFound;
+            this.adClient.Stop();
         }
 
         private void GridComputers_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            DataGridViewColumn lastSortedColumn = this.gridComputers.FindLastSortedColumn();
-            DataGridViewColumn column = this.gridComputers.Columns[e.ColumnIndex];
+            var lastSortedColumn = this.gridComputers.FindLastSortedColumn();
+            var column = this.gridComputers.Columns[e.ColumnIndex];
 
-            SortOrder newSortDirection = SortableUnboundGrid.GetNewSortDirection(lastSortedColumn, column);
+            var newSortDirection = SortableUnboundGrid.GetNewSortDirection(lastSortedColumn, column);
             var data = this.bsComputers.DataSource as SortableList<ActiveDirectoryComputer>;
             this.bsComputers.DataSource = data.SortByProperty(column.DataPropertyName, newSortDirection);
             column.HeaderCell.SortGlyphDirection = newSortDirection;

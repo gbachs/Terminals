@@ -1,85 +1,89 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using Terminals.Connections;
 
 namespace Terminals.Scanner
-{    
+{
     internal delegate void NetworkScanHandler(ScanItemEventArgs args);
-    
+
     internal class NetworkScanManager
     {
-        internal event NetworkScanHandler OnAddressScanHit;
-        internal event NetworkScanHandler OnAddressScanFinished;
-
-        private List<NetworkScanItem> scanItems = new List<NetworkScanItem>();
-
-        /// <summary>
-        /// Gets count of pending ip addresses to scan during last or actualy running scan.
-        /// </summary>
-        internal Int32 PendingAddressesToScan
-        {
-            get
-            {
-                return this.AllAddressesToScan - this.DoneAddressScans;
-            }
-        }
-
-        /// <summary>
-        /// Gets count of all ip addresses to scan during last or actualy running scan.
-        /// </summary>
-        internal Int32 AllAddressesToScan { get; private set; }
-
-        private object doneItems = new object();
-        private Int32 doneAddressScans;
-        /// <summary>
-        /// Gets or sets count of already finished ipaddress scans during last or actualy running scan.
-        /// </summary>
-        internal Int32 DoneAddressScans
-        {
-            get
-            {
-                lock (doneItems)
-                    return doneAddressScans;
-            }
-            private set
-            {
-                lock (doneItems)
-                    doneAddressScans = value;
-            }
-        }
-
-        private Boolean scanIsRunning = false;
-
         private readonly ConnectionManager connectionManager;
+
+        private int doneAddressScans;
+
+        private readonly object doneItems = new object();
+
+        private bool scanIsRunning;
+
+        private readonly List<NetworkScanItem> scanItems = new List<NetworkScanItem>();
 
         public NetworkScanManager(ConnectionManager connectionManager)
         {
             this.connectionManager = connectionManager;
         }
 
+        /// <summary>
+        ///     Gets count of pending ip addresses to scan during last or actualy running scan.
+        /// </summary>
+        internal int PendingAddressesToScan => this.AllAddressesToScan - this.DoneAddressScans;
+
+        /// <summary>
+        ///     Gets count of all ip addresses to scan during last or actualy running scan.
+        /// </summary>
+        internal int AllAddressesToScan { get; private set; }
+
+        /// <summary>
+        ///     Gets or sets count of already finished ipaddress scans during last or actualy running scan.
+        /// </summary>
+        internal int DoneAddressScans
+        {
+            get
+            {
+                lock (this.doneItems)
+                {
+                    return this.doneAddressScans;
+                }
+            }
+            private set
+            {
+                lock (this.doneItems)
+                {
+                    this.doneAddressScans = value;
+                }
+            }
+        }
+
         internal bool ScanIsRunning
         {
             get
             {
-                lock(doneItems)
+                lock (this.doneItems)
+                {
                     return this.scanIsRunning;
+                }
             }
             set
             {
-                lock (doneItems)
+                lock (this.doneItems)
+                {
                     this.scanIsRunning = value;
+                }
             }
         }
 
+        internal event NetworkScanHandler OnAddressScanHit;
+
+        internal event NetworkScanHandler OnAddressScanFinished;
+
         public override string ToString()
         {
-            return String.Format("NetworkScanManager:{0}{1}/{2}", 
+            return string.Format("NetworkScanManager:{0}{1}/{2}",
                 this.ScanIsRunning, this.DoneAddressScans, this.AllAddressesToScan);
         }
 
-        internal void StartScan(String A, String B, String C, String D, String E, List<Int32> portList)
+        internal void StartScan(string A, string B, string C, string D, string E, List<int> portList)
         {
             Debug.WriteLine("Starting scan with previous state" + this.ScanIsRunning);
             if (this.ScanIsRunning)
@@ -87,31 +91,31 @@ namespace Terminals.Scanner
 
             this.ScanIsRunning = true;
             this.DoneAddressScans = 0;
-            PrepareItemsToScan(A, B, C, D, E, portList);
+            this.PrepareItemsToScan(A, B, C, D, E, portList);
             this.QueueBackgroundScans();
         }
 
-        private void PrepareItemsToScan(String A, String B, String C, String D, String E, List<Int32> portList)
+        private void PrepareItemsToScan(string A, string B, string C, string D, string E, List<int> portList)
         {
-            String ipBody = String.Format("{0}.{1}.{2}.", A, B, C);
-            Int32 start = 0;
-            Int32 end = 0;
-            Int32.TryParse(D, out start);
-            Int32.TryParse(E, out end);
+            var ipBody = string.Format("{0}.{1}.{2}.", A, B, C);
+            var start = 0;
+            var end = 0;
+            int.TryParse(D, out start);
+            int.TryParse(E, out end);
 
             this.scanItems.Clear();
             this.AllAddressesToScan = end - start + 1;
 
-            for (Int32 ipSuffix = start; ipSuffix <= end; ipSuffix++)
+            for (var ipSuffix = start; ipSuffix <= end; ipSuffix++)
             {
                 if (!this.ScanIsRunning)
                     break;
-                String ipAdddress = String.Format("{0}{1}", ipBody, ipSuffix);
+                var ipAdddress = string.Format("{0}{1}", ipBody, ipSuffix);
                 this.AddItemToScan(portList, ipAdddress);
             }
         }
 
-        private void AddItemToScan(List<Int32> portList, String ipAdddress)
+        private void AddItemToScan(List<int> portList, string ipAdddress)
         {
             var item = new NetworkScanItem(this.connectionManager, ipAdddress, portList);
             this.scanItems.Add(item);
@@ -120,35 +124,33 @@ namespace Terminals.Scanner
         internal void StopScan()
         {
             Debug.WriteLine("Canceling scan with previous state" + this.ScanIsRunning);
-            foreach (NetworkScanItem scanItem in this.scanItems)
-            {
+            foreach (var scanItem in this.scanItems)
                 scanItem.Stop();
-            }
             this.ScanIsRunning = false;
             Debug.WriteLine("Scan stoped.");
         }
 
         private void QueueBackgroundScans()
         {
-            foreach (NetworkScanItem item in scanItems)
+            foreach (var item in this.scanItems)
             {
                 if (!this.ScanIsRunning)
                     break;
-                QueueBackgroundScan(item);
+                this.QueueBackgroundScan(item);
             }
         }
 
         private void QueueBackgroundScan(NetworkScanItem item)
         {
             // dont use events, otherwise we have to unregister
-            item.OnScanHit = new NetworkScanHandler(this.item_OnScanHit);
-            item.OnScanFinished = new NetworkScanHandler(this.item_OnScanFinished);
-            ThreadPool.QueueUserWorkItem(new WaitCallback(item.Scan));
+            item.OnScanHit = this.item_OnScanHit;
+            item.OnScanFinished = this.item_OnScanFinished;
+            ThreadPool.QueueUserWorkItem(item.Scan);
         }
 
         private void item_OnScanFinished(ScanItemEventArgs args)
         {
-            Debug.WriteLine(String.Format("Scan finished: {0}", args.ScanResult));
+            Debug.WriteLine("Scan finished: {0}", args.ScanResult);
 
             this.DoneAddressScans++;
 

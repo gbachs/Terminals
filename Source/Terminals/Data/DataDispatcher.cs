@@ -7,34 +7,35 @@ using System.Linq;
 namespace Terminals.Data
 {
     /// <summary>
-    /// Informs about changes in Tags collection
+    ///     Informs about changes in Tags collection
     /// </summary>
     /// <param name="args">Not null container reporting removed and added Tags</param>
     internal delegate void GroupsChangedEventHandler(GroupsChangedArgs args);
 
     /// <summary>
-    /// Informs about changes in favorites collection.
+    ///     Informs about changes in favorites collection.
     /// </summary>
     /// <param name="args">Not null container, reporting Added, removed, and updated favorites</param>
     internal delegate void FavoritesChangedEventHandler(FavoritesChangedEventArgs args);
 
     /// <summary>
-    /// Central point, which distributes information about changes in Tags and Favorites collections
+    ///     Central point, which distributes information about changes in Tags and Favorites collections
     /// </summary>
     internal sealed class DataDispatcher
     {
-        internal event GroupsChangedEventHandler GroupsChanged;
-        internal event FavoritesChangedEventHandler FavoritesChanged;
-
-        internal event EventHandler<DataErrorEventArgs> ErrorOccurred;
-
         private int callStackCounter;
-
-        private GroupsChangedArgs groups;
 
         private FavoritesChangedEventArgs favorites;
 
-        private bool DelayedUpdate { get { return this.groups !=null; } }
+        private GroupsChangedArgs groups;
+
+        private bool DelayedUpdate => this.groups != null;
+
+        internal event GroupsChangedEventHandler GroupsChanged;
+
+        internal event FavoritesChangedEventHandler FavoritesChanged;
+
+        internal event EventHandler<DataErrorEventArgs> ErrorOccurred;
 
         internal void StartDelayedUpdate()
         {
@@ -55,7 +56,8 @@ namespace Terminals.Data
         internal static List<IFavorite> GetMissingFavorites(List<IFavorite> newFavorites, List<IFavorite> oldFavorites)
         {
             return newFavorites.Where(
-                newFavorite => oldFavorites.FirstOrDefault(oldFavorite => oldFavorite.Name == newFavorite.Name) == null)
+                    newFavorite => oldFavorites.FirstOrDefault(oldFavorite => oldFavorite.Name == newFavorite.Name) ==
+                                   null)
                 .ToList();
         }
 
@@ -63,42 +65,42 @@ namespace Terminals.Data
         {
             var args = new FavoritesChangedEventArgs();
             args.Added.Add(addedFavorite);
-            FireFavoriteChanges(args);
+            this.FireFavoriteChanges(args);
         }
 
         internal void ReportFavoritesAdded(List<IFavorite> addedFavorites)
         {
             var args = new FavoritesChangedEventArgs();
             args.Added.AddRange(addedFavorites);
-            FireFavoriteChanges(args);
+            this.FireFavoriteChanges(args);
         }
 
         internal void ReportFavoriteUpdated(IFavorite changedFavorite)
         {
             var args = new FavoritesChangedEventArgs();
             args.Updated.Add(changedFavorite);
-            FireFavoriteChanges(args);
+            this.FireFavoriteChanges(args);
         }
 
         internal void ReportFavoritesUpdated(List<IFavorite> changedFavorites)
         {
             var args = new FavoritesChangedEventArgs();
             args.Updated.AddRange(changedFavorites);
-            FireFavoriteChanges(args);
+            this.FireFavoriteChanges(args);
         }
 
         internal void ReportFavoriteDeleted(IFavorite deletedFavorite)
         {
             var args = new FavoritesChangedEventArgs();
             args.Removed.Add(deletedFavorite);
-            FireFavoriteChanges(args);
+            this.FireFavoriteChanges(args);
         }
 
         internal void ReportFavoritesDeleted(List<IFavorite> deletedFavorites)
         {
             var args = new FavoritesChangedEventArgs();
             args.Removed.AddRange(deletedFavorites);
-            FireFavoriteChanges(args);
+            this.FireFavoriteChanges(args);
         }
 
         private void FireFavoriteChanges(FavoritesChangedEventArgs args)
@@ -185,11 +187,12 @@ namespace Terminals.Data
         }
 
         internal void ReportActionError<TActionParams1, TActionParams2>(Action<TActionParams1, TActionParams2> action,
-            TActionParams1 actionParams1, TActionParams2 actionParams2, object sender, EntityException exception, string message)
+            TActionParams1 actionParams1, TActionParams2 actionParams2, object sender, EntityException exception,
+            string message)
         {
             this.ReportDataError(sender, exception, message);
             action(actionParams1, actionParams2);
-            callStackCounter = 0;
+            this.callStackCounter = 0;
         }
 
         internal void ReportActionError<TActionParams>(Action<TActionParams> action, TActionParams actionParams,
@@ -197,22 +200,23 @@ namespace Terminals.Data
         {
             this.ReportDataError(sender, exception, message);
             action(actionParams);
-            callStackCounter = 0;
+            this.callStackCounter = 0;
         }
 
         internal void ReportActionError(Action action, object sender, EntityException exception, string message)
         {
             this.ReportDataError(sender, exception, message);
             action();
-            callStackCounter = 0;
+            this.callStackCounter = 0;
         }
 
-        internal TFuncReturnValue ReportFunctionError<TActionParams, TFuncReturnValue>(Func<TActionParams, TFuncReturnValue> function,
+        internal TFuncReturnValue ReportFunctionError<TActionParams, TFuncReturnValue>(
+            Func<TActionParams, TFuncReturnValue> function,
             TActionParams actionParams, object sender, EntityException exception, string message)
         {
             this.ReportDataError(sender, exception, message);
-            TFuncReturnValue returnValue = function(actionParams);
-            callStackCounter = 0;
+            var returnValue = function(actionParams);
+            this.callStackCounter = 0;
             return returnValue;
         }
 
@@ -220,14 +224,14 @@ namespace Terminals.Data
             object sender, EntityException exception, string message)
         {
             this.ReportDataError(sender, exception, message);
-            TFuncReturnValue returnValue = function();
-            callStackCounter = 0;
+            var returnValue = function();
+            this.callStackCounter = 0;
             return returnValue;
         }
 
         private void ReportDataError(object sender, EntityException exception, string message)
         {
-            callStackCounter++;
+            this.callStackCounter++;
             // don't log the action params, because they may contain sensitive value (passwords etc.)
             Logging.Error(message, exception);
             this.FireDataErrorOccured(sender, message);
@@ -239,10 +243,10 @@ namespace Terminals.Data
             if (this.ErrorOccurred == null || this.callStackCounter > 20)
                 throw new ApplicationException("Terminals was not recover from previous data exception");
 
-            var arguments = new DataErrorEventArgs 
-            { 
+            var arguments = new DataErrorEventArgs
+            {
                 Message = message,
-                CallStackFull = this.callStackCounter == 20 
+                CallStackFull = this.callStackCounter == 20
             };
             this.ErrorOccurred(sender, arguments);
         }

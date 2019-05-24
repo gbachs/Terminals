@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 using Terminals.Data;
 
@@ -6,26 +7,26 @@ namespace Terminals.Connections
 {
     internal partial class TabbedTools : UserControl
     {
-        private readonly PacketCapture packetCapture1;
         public delegate void TabChanged(object sender, TabControlEventArgs e);
-        public event TabChanged OnTabChanged;
+
+        private readonly PacketCapture packetCapture1;
 
         public TabbedTools()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             try
             {
-                packetCapture1 = new PacketCapture();
+                this.packetCapture1 = new PacketCapture();
 
                 // 
                 // PcapTabPage
                 // 
-                this.PcapTabPage.Controls.Add(packetCapture1);
-                this.PcapTabPage.Location = new System.Drawing.Point(4, 22);
+                this.PcapTabPage.Controls.Add(this.packetCapture1);
+                this.PcapTabPage.Location = new Point(4, 22);
                 this.PcapTabPage.Name = "PcapTabPage";
                 this.PcapTabPage.Padding = new Padding(3);
-                this.PcapTabPage.Size = new System.Drawing.Size(886, 309);
+                this.PcapTabPage.Size = new Size(886, 309);
                 this.PcapTabPage.TabIndex = 15;
                 this.PcapTabPage.Text = "Packets";
                 this.PcapTabPage.UseVisualStyleBackColor = true;
@@ -33,15 +34,15 @@ namespace Terminals.Connections
                 // packetCapture1
                 // 
                 this.packetCapture1.Dock = DockStyle.Fill;
-                this.packetCapture1.Location = new System.Drawing.Point(3, 3);
+                this.packetCapture1.Location = new Point(3, 3);
                 this.packetCapture1.Name = "packetCapture1";
-                this.packetCapture1.Size = new System.Drawing.Size(880, 303);
+                this.packetCapture1.Size = new Size(880, 303);
                 this.packetCapture1.TabIndex = 0;
             }
             catch (Exception e)
             {
                 this.PcapTabPage.Controls.Clear();
-                Label l = new Label();
+                var l = new Label();
                 this.PcapTabPage.Controls.Add(l);
                 l.Text = "Packet Capture is either not install or not supported on this version of windows.";
                 l.Dock = DockStyle.Top;
@@ -49,15 +50,17 @@ namespace Terminals.Connections
             }
         }
 
+        public event TabChanged OnTabChanged;
+
         private void TabControl1_Selected(object sender, TabControlEventArgs e)
         {
-            if (this.OnTabChanged != null) 
+            if (this.OnTabChanged != null)
                 this.OnTabChanged(sender, e);
         }
 
-        public void HideTab(Int32 index)
+        public void HideTab(int index)
         {
-            if (this.tabControl1.TabCount > index) 
+            if (this.tabControl1.TabCount > index)
                 this.tabControl1.TabPages[index].Hide();
         }
 

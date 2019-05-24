@@ -8,10 +8,10 @@ using Terminals.Data.Credentials;
 namespace Terminals.Data
 {
     /// <summary>
-    /// Converts favorites to data model used in version 1.X (FavoriteConfigurationElement)
-    /// from the model used in version 2.0 (Favorite).
-    /// Temporary used also to support imports and export using old data model, 
-    /// before they will be updated.
+    ///     Converts favorites to data model used in version 1.X (FavoriteConfigurationElement)
+    ///     from the model used in version 2.0 (Favorite).
+    ///     Temporary used also to support imports and export using old data model,
+    ///     before they will be updated.
     /// </summary>
     internal class ModelConverterV2ToV1 : ModelConvertersTemplate
     {
@@ -36,7 +36,7 @@ namespace Terminals.Data
             ConvertDisplay(result, sourceFavorite);
             ConvertGroups(result, sourceFavorite);
 
-            IOptionsConverter converter = this.CreateOptionsConverter(result.Protocol);
+            var converter = this.CreateOptionsConverter(result.Protocol);
             var context = new OptionsConversionContext(this.CredentialFactory, sourceFavorite, result);
             converter.ToConfigFavorite(context);
             return result;
@@ -71,15 +71,15 @@ namespace Terminals.Data
             // because persistence and application masterpassword may differ, we have to go through encryption
             var resultSecurity = new FavoriteConfigurationSecurity(this.Persistence, result);
             resultSecurity.Password = guarded.Password;
-            
-            ICredentialSet credential = this.Persistence.Credentials[security.Credential];
-            if(credential != null)
+
+            var credential = this.Persistence.Credentials[security.Credential];
+            if (credential != null)
                 result.Credential = credential.Name;
         }
 
         private static void ConvertBeforeConnetExecute(FavoriteConfigurationElement result, IFavorite sourceFavorite)
         {
-            IBeforeConnectExecuteOptions executeOptions = sourceFavorite.ExecuteBeforeConnect;
+            var executeOptions = sourceFavorite.ExecuteBeforeConnect;
             result.ExecuteBeforeConnect = executeOptions.Execute;
             result.ExecuteBeforeConnectCommand = executeOptions.Command;
             result.ExecuteBeforeConnectArgs = executeOptions.CommandArguments;
@@ -89,7 +89,7 @@ namespace Terminals.Data
 
         private static void ConvertDisplay(FavoriteConfigurationElement result, IFavorite sourceFavorite)
         {
-            IDisplayOptions display = sourceFavorite.Display;
+            var display = sourceFavorite.Display;
             result.Colors = display.Colors;
             result.DesktopSize = display.DesktopSize;
             result.DesktopSizeWidth = display.Width;

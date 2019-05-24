@@ -9,17 +9,16 @@ namespace Terminals
     {
         private const string LOCAL_IP = "127.0.0.1";
 
-        internal static String TryGetIPv4LocalAddress()
-        {   
+        internal static string TryGetIPv4LocalAddress()
+        {
             try
             {
-                IPInterfaceProperties adapter = SelectFirstUpAdapterProperties();
+                var adapter = SelectFirstUpAdapterProperties();
 
                 if (adapter != null)
                     return SelectFirstIPv4Addres(adapter);
 
                 return LOCAL_IP;
-
             }
             catch (Exception e)
             {
@@ -30,7 +29,7 @@ namespace Terminals
 
         private static IPInterfaceProperties SelectFirstUpAdapterProperties()
         {
-            NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
+            var adapters = NetworkInterface.GetAllNetworkInterfaces();
             return adapters.Where(IsUpEthernet)
                 .Select(a => a.GetIPProperties())
                 .FirstOrDefault();

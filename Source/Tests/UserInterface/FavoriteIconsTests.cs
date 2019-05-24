@@ -5,11 +5,9 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Terminals.Common.Connections;
 using Terminals.Connections;
-using Terminals.Connections.ICA;
 using Terminals.Connections.Rdp;
 using Terminals.Connections.VMRC;
 using Terminals.Connections.VNC;
-using Terminals.Connections.Web;
 using Terminals.Data;
 using Tests.Connections;
 using Terminals.Plugins.Putty;
@@ -42,8 +40,7 @@ namespace Tests.UserInterface
                 new Tuple<string, string>(KnownConnectionConstants.HTTPS, "treeIcon_HTTPS"),
 
                 // undefined icons use default icon
-                new Tuple<string, string>(VmrcConnectionPlugin.VMRC, "treeIcon_VMRC"),
-                new Tuple<string, string>(ICAConnectionPlugin.ICA_CITRIX, "treeIcon_ICA Citrix")     
+                new Tuple<string, string>(VmrcConnectionPlugin.VMRC, "treeIcon_VMRC")
             };
 
             bool allEquals = testData.All(this.AssertGetTreeviewImageListKey);
@@ -75,11 +72,8 @@ namespace Tests.UserInterface
                 new Tuple<string, Image>(VncConnectionPlugin.VNC, VncConnectionPlugin.TreeIconVnc),
                 new Tuple<string, Image>(SshConnectionPlugin.SSH, SshConnectionPlugin.TreeIconSsh),
                 new Tuple<string, Image>(TelnetConnectionPlugin.TELNET, TelnetConnectionPlugin.TreeIconTelnet),
-                new Tuple<string, Image>(KnownConnectionConstants.HTTP, HttpConnectionPlugin.TreeIconHttp),
-                new Tuple<string, Image>(KnownConnectionConstants.HTTPS, HttpConnectionPlugin.TreeIconHttp),
 
                 // undefined icons use default icon
-                new Tuple<string, Image>(ICAConnectionPlugin.ICA_CITRIX, Connection.Terminalsicon),
                 new Tuple<string, Image>(VmrcConnectionPlugin.VMRC, Connection.Terminalsicon)
             };
 

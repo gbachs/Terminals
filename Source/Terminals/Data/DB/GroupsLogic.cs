@@ -9,17 +9,22 @@ using System.Linq;
 namespace Terminals.Data.DB
 {
     /// <summary>
-    /// SQL persisted groups container
+    ///     SQL persisted groups container
     /// </summary>
     internal class Groups : IGroups
     {
+        private readonly EntitiesCache<DbGroup> cache;
+
         private DataDispatcher dispatcher;
 
         private Favorites favorites;
 
-        private readonly EntitiesCache<DbGroup> cache;
-
         private bool isLoaded;
+
+        internal Groups()
+        {
+            this.cache = new EntitiesCache<DbGroup>();
+        }
 
         private List<DbGroup> Cached
         {
@@ -31,7 +36,7 @@ namespace Terminals.Data.DB
         }
 
         /// <summary>
-        /// Gets cached item by its database unique identifier
+        ///     Gets cached item by its database unique identifier
         /// </summary>
         internal DbGroup this[int id]
         {
@@ -42,23 +47,12 @@ namespace Terminals.Data.DB
             }
         }
 
-        internal Groups()
-        {
-            this.cache = new EntitiesCache<DbGroup>();
-        }
-
-        public void AssignStores(DataDispatcher dispatcher, Favorites favorites)
-        {
-            this.dispatcher = dispatcher;
-            this.favorites = favorites;
-        }
-
         IGroup IGroups.this[string groupName]
         {
             get
             {
                 this.CheckCache();
-                return this.cache.FirstOrDefault(group => 
+                return this.cache.FirstOrDefault(group =>
                     group.Name.Equals(groupName, StringComparison.CurrentCultureIgnoreCase));
             }
         }
@@ -71,20 +65,7 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                this.dispatcher.ReportActionError(Add, group, this, exception, "Unable to add group to database.");
-            }
-        }
-
-        private void TryAdd(IGroup group)
-        {
-            using (Database database = DatabaseConnections.CreateInstance())
-            {
-                DbGroup toAdd = group as DbGroup;
-                database.AddToGroups(toAdd);
-                database.SaveImmediatelyIfRequested();
-                database.Cache.DetachGoup(toAdd);
-                this.cache.Add(toAdd);
-                this.dispatcher.ReportGroupsAdded(new List<IGroup> {toAdd});
+                this.dispatcher.ReportActionError(this.Add, group, this, exception, "Unable to add group to database.");
             }
         }
 
@@ -96,15 +77,67 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                this.dispatcher.ReportActionError(Update, group, this, exception,
+                this.dispatcher.ReportActionError(this.Update, group, this, exception,
                     "Unable to update group in database");
             }
+        }
 
+        public void Delete(IGroup group)
+        {
+            try
+            {
+                this.TryDelete(group);
+            }
+            catch (DbUpdateException) // item already removed
+            {
+                this.FinishGroupRemove(group);
+            }
+            catch (EntityException exception)
+            {
+                this.dispatcher.ReportActionError(this.Delete, group, this, exception,
+                    "Unable to remove group from database.");
+            }
+        }
+
+        public void Rebuild()
+        {
+            try
+            {
+                this.TryRebuild();
+            }
+            catch (DbUpdateException)
+            {
+                // merge or update is not critical simply force refresh
+                this.RefreshCache();
+            }
+            catch (EntityException exception)
+            {
+                this.dispatcher.ReportActionError(this.Rebuild, this, exception, "Unable to rebuild groups.");
+            }
+        }
+
+        public void AssignStores(DataDispatcher dispatcher, Favorites favorites)
+        {
+            this.dispatcher = dispatcher;
+            this.favorites = favorites;
+        }
+
+        private void TryAdd(IGroup group)
+        {
+            using (var database = DatabaseConnections.CreateInstance())
+            {
+                var toAdd = group as DbGroup;
+                database.AddToGroups(toAdd);
+                database.SaveImmediatelyIfRequested();
+                database.Cache.DetachGoup(toAdd);
+                this.cache.Add(toAdd);
+                this.dispatcher.ReportGroupsAdded(new List<IGroup> {toAdd});
+            }
         }
 
         private void TryUpdateGroup(IGroup group)
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
                 var toUpdate = group as DbGroup;
                 database.Cache.Attach(toUpdate);
@@ -134,7 +167,7 @@ namespace Terminals.Data.DB
             catch (InvalidOperationException)
             {
                 this.cache.Delete(toUpdate);
-                this.dispatcher.ReportGroupsDeleted(new List<IGroup>(){ toUpdate });
+                this.dispatcher.ReportGroupsDeleted(new List<IGroup> {toUpdate});
             }
         }
 
@@ -144,31 +177,15 @@ namespace Terminals.Data.DB
             database.SaveImmediatelyIfRequested();
             database.Cache.Detach(toUpdate);
             this.cache.Update(toUpdate);
-            this.dispatcher.ReportGroupsUpdated(new List<IGroup>() { toUpdate });
-        }
-
-        public void Delete(IGroup group)
-        {
-            try
-            {
-                this.TryDelete(group);
-            }
-            catch (DbUpdateException) // item already removed
-            {
-                this.FinishGroupRemove(group);
-            }
-            catch (EntityException exception)
-            {
-                this.dispatcher.ReportActionError(Delete, group, this, exception, "Unable to remove group from database.");
-            }
+            this.dispatcher.ReportGroupsUpdated(new List<IGroup> {toUpdate});
         }
 
         private void TryDelete(IGroup group)
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
                 var toDelete = group as DbGroup;
-                List<IFavorite> changedFavorites = group.Favorites;
+                var changedFavorites = group.Favorites;
                 this.SetChildsToRoot(database, toDelete);
                 database.Groups.Attach(toDelete);
                 database.Groups.Remove(toDelete);
@@ -180,7 +197,7 @@ namespace Terminals.Data.DB
 
         private void SetChildsToRoot(Database database, DbGroup group)
         {
-            foreach (DbGroup child in this.CachedChilds(group))
+            foreach (var child in this.CachedChilds(group))
             {
                 child.Parent = null;
                 database.Cache.Attach(child);
@@ -198,40 +215,23 @@ namespace Terminals.Data.DB
         private void FinishGroupRemove(IGroup group)
         {
             this.cache.Delete((DbGroup)group);
-            this.dispatcher.ReportGroupsDeleted(new List<IGroup> { group });
-        }
-
-        public void Rebuild()
-        {
-            try
-            {
-                this.TryRebuild();
-            }
-            catch (DbUpdateException)
-            {
-                // merge or update is not critical simply force refresh
-                this.RefreshCache();
-            }
-            catch (EntityException exception)
-            {
-                this.dispatcher.ReportActionError(Rebuild, this, exception, "Unable to rebuild groups.");
-            }
+            this.dispatcher.ReportGroupsDeleted(new List<IGroup> {group});
         }
 
         private void TryRebuild()
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
-                List<DbGroup> emptyGroups = this.DeleteEmptyGroupsFromDatabase(database);
+                var emptyGroups = this.DeleteEmptyGroupsFromDatabase(database);
                 database.SaveImmediatelyIfRequested();
-                List<IGroup> toReport = this.DeleteFromCache(emptyGroups);
+                var toReport = this.DeleteFromCache(emptyGroups);
                 this.dispatcher.ReportGroupsDeleted(toReport);
             }
         }
 
         /// <summary>
-        /// Call this method after the changes were committed into database, 
-        /// to let the cache in last state as long as possible and ensure, that the commit didn't fail.
+        ///     Call this method after the changes were committed into database,
+        ///     to let the cache in last state as long as possible and ensure, that the commit didn't fail.
         /// </summary>
         private List<IGroup> DeleteFromCache(List<DbGroup> emptyGroups)
         {
@@ -240,11 +240,11 @@ namespace Terminals.Data.DB
         }
 
         /// <summary>
-        /// Doesn't remove them from cache, only from database
+        ///     Doesn't remove them from cache, only from database
         /// </summary>
         private List<DbGroup> DeleteEmptyGroupsFromDatabase(Database database)
         {
-            List<DbGroup> emptyGroups = this.GetEmptyGroups();
+            var emptyGroups = this.GetEmptyGroups();
             database.Cache.AttachAll(emptyGroups);
             database.DeleteAll(emptyGroups);
             return emptyGroups;
@@ -258,11 +258,11 @@ namespace Terminals.Data.DB
 
         internal void RefreshCache()
         {
-            List<DbGroup> newlyLoaded = this.Load(this.Cached);
-            List<DbGroup> oldGroups = this.Cached;
+            var newlyLoaded = this.Load(this.Cached);
+            var oldGroups = this.Cached;
 
-            List<DbGroup> missing = ListsHelper.GetMissingSourcesInTarget(newlyLoaded, oldGroups);
-            List<DbGroup> redundant = ListsHelper.GetMissingSourcesInTarget(oldGroups, newlyLoaded);
+            var missing = ListsHelper.GetMissingSourcesInTarget(newlyLoaded, oldGroups);
+            var redundant = ListsHelper.GetMissingSourcesInTarget(oldGroups, newlyLoaded);
             this.cache.Add(missing);
             this.cache.Delete(redundant);
             this.RefreshLoaded();
@@ -274,18 +274,16 @@ namespace Terminals.Data.DB
 
         private void RefreshLoaded()
         {
-            foreach (DbGroup group in this.cache)
-            {
+            foreach (var group in this.cache)
                 group.ReleaseFavoriteIds();
-            }
         }
 
         private void CheckCache()
         {
-            if (isLoaded)
+            if (this.isLoaded)
                 return;
 
-            List<DbGroup> loaded = LoadFromDatabase();
+            var loaded = this.LoadFromDatabase();
             this.AssignGroupsContainer(loaded);
             this.cache.Add(loaded);
             this.isLoaded = true;
@@ -293,17 +291,15 @@ namespace Terminals.Data.DB
 
         private List<DbGroup> Load(List<DbGroup> toRefresh)
         {
-            List<DbGroup> loaded = LoadFromDatabase(toRefresh);
+            var loaded = this.LoadFromDatabase(toRefresh);
             this.AssignGroupsContainer(loaded);
             return loaded;
         }
 
         private void AssignGroupsContainer(List<DbGroup> groups)
         {
-            foreach (DbGroup group in groups)
-            {
+            foreach (var group in groups)
                 group.AssignStores(this, this.dispatcher, this.favorites);
-            }
         }
 
         private List<DbGroup> LoadFromDatabase()
@@ -314,16 +310,16 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                return this.dispatcher.ReportFunctionError(LoadFromDatabase, this, exception,
+                return this.dispatcher.ReportFunctionError(this.LoadFromDatabase, this, exception,
                     "Unable to load groups from database");
             }
         }
 
         private static List<DbGroup> TryLoadFromDatabase()
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
-                List<DbGroup> groups = database.Groups.ToList();
+                var groups = database.Groups.ToList();
                 database.Cache.DetachAll(groups);
                 return groups;
             }
@@ -337,20 +333,20 @@ namespace Terminals.Data.DB
             }
             catch (EntityException exception)
             {
-                return this.dispatcher.ReportFunctionError(LoadFromDatabase, toRefresh, this, exception,
+                return this.dispatcher.ReportFunctionError(this.LoadFromDatabase, toRefresh, this, exception,
                     "Unable to refresh groups from database");
             }
         }
 
         private static List<DbGroup> TryLoadFromDatabase(List<DbGroup> toRefresh)
         {
-            using (Database database = DatabaseConnections.CreateInstance())
+            using (var database = DatabaseConnections.CreateInstance())
             {
                 if (toRefresh != null)
                     database.Cache.AttachAll(toRefresh);
 
                 ((IObjectContextAdapter)database).ObjectContext.Refresh(RefreshMode.StoreWins, database.Groups);
-                List<DbGroup> groups = database.Groups.Include("ParentGroup").ToList();
+                var groups = database.Groups.Include("ParentGroup").ToList();
                 database.Cache.DetachAll(groups);
                 return groups;
             }
@@ -363,6 +359,11 @@ namespace Terminals.Data.DB
                 .ToList();
         }
 
+        public override string ToString()
+        {
+            return string.Format("Groups:Cached={0}", this.cache.Count());
+        }
+
         #region IEnumerable members
 
         public IEnumerator<IGroup> GetEnumerator()
@@ -373,14 +374,9 @@ namespace Terminals.Data.DB
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return this.GetEnumerator();
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            return string.Format("Groups:Cached={0}", this.cache.Count());
-        }
     }
 }

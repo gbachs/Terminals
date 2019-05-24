@@ -15,7 +15,7 @@ namespace Terminals.Converters
         /// <returns>New not globally unique identifier, which holds content of source integer bytes</returns>
         internal static Guid ToGuid(int value)
         {
-            byte[] bytes = new byte[16];
+            var bytes = new byte[16];
             BitConverter.GetBytes(value).CopyTo(bytes, 0);
             return new Guid(bytes);
         }

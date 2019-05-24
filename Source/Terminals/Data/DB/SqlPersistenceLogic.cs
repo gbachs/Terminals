@@ -8,66 +8,35 @@ using Terminals.Data.History;
 namespace Terminals.Data.DB
 {
     /// <summary>
-    /// SQL Database store using Entity framework. All parts use Disconnected entities.
+    ///     SQL Database store using Entity framework. All parts use Disconnected entities.
     /// </summary>
     internal class SqlPersistence : IPersistence
     {
-        /// <summary>
-        /// periodical download of latest changes
-        /// </summary>
-        private readonly Timer reLoadClock;
-
         private const int DEFAULT_REFRESH_INTERVAL = 1000 * 30;
-        /// <summary>
-        /// Gets or sets value in seconds indicating, how often should persistence
-        /// ping server to check for latest state. Default value 30 seconds.
-        /// </summary>
-        internal int RefreshInterval 
-        {
-            get { return (int)this.reLoadClock.Interval / 1000; }
-            set { this.reLoadClock.Interval = 1000 * value; }
-        }
 
         /// <summary>
-        /// Gets unique id of the persistence to be stored in settings (1)
+        ///     Gets unique id of the persistence to be stored in settings (1)
         /// </summary>
         internal const int TYPE_ID = 1;
 
-        public int TypeId { get { return TYPE_ID; } }
-
-        public string Name { get { return "Database"; } }
-
-        private Favorites favorites;
-        public IFavorites Favorites
-        {
-            get
-            {
-                return this.favorites;
-            }
-        }
-
-        private Groups groups;
-        public IGroups Groups
-        {
-            get { return this.groups; }
-        }
-
-        private ConnectionHistory connectionHistory;
-        public IConnectionHistory ConnectionHistory { get { return this.connectionHistory; } }
-        
-        public IFactory Factory { get; private set; }
-        public DataDispatcher Dispatcher { get; private set; }
-
-        private StoredCredentials credentials;
-        public ICredentials Credentials { get { return this.credentials; } }
-
-        private readonly SqlPersistenceSecurity security;
+        private readonly ConnectionManager connectionManager;
 
         private readonly FavoriteIcons favoriteIcons;
 
-        private readonly ConnectionManager connectionManager;
+        /// <summary>
+        ///     periodical download of latest changes
+        /// </summary>
+        private readonly Timer reLoadClock;
 
-        public PersistenceSecurity Security { get { return this.security; } }
+        private readonly SqlPersistenceSecurity security;
+
+        private ConnectionHistory connectionHistory;
+
+        private StoredCredentials credentials;
+
+        private Favorites favorites;
+
+        private Groups groups;
 
         internal SqlPersistence(FavoriteIcons favoriteIcons, ConnectionManager connectionManager)
         {
@@ -78,6 +47,34 @@ namespace Terminals.Data.DB
             this.security.OnUpdatePasswordsByNewMasterPassword += this.UpdatePasswordsByNewMasterPassword;
             this.Dispatcher = new DataDispatcher();
         }
+
+        /// <summary>
+        ///     Gets or sets value in seconds indicating, how often should persistence
+        ///     ping server to check for latest state. Default value 30 seconds.
+        /// </summary>
+        internal int RefreshInterval
+        {
+            get => (int)this.reLoadClock.Interval / 1000;
+            set => this.reLoadClock.Interval = 1000 * value;
+        }
+
+        public int TypeId => TYPE_ID;
+
+        public string Name => "Database";
+
+        public IFavorites Favorites => this.favorites;
+
+        public IGroups Groups => this.groups;
+
+        public IConnectionHistory ConnectionHistory => this.connectionHistory;
+
+        public IFactory Factory { get; private set; }
+
+        public DataDispatcher Dispatcher { get; }
+
+        public ICredentials Credentials => this.credentials;
+
+        public PersistenceSecurity Security => this.security;
 
         public void StartDelayedUpdate()
         {
@@ -95,29 +92,37 @@ namespace Terminals.Data.DB
 
         public bool Initialize()
         {
-            if(!this.TryInitializeDatabase())
+            if (!this.TryInitializeDatabase())
                 return false;
 
             this.groups = new Groups();
             this.credentials = new StoredCredentials(this.Dispatcher);
-            this.favorites = new Favorites(this, this.groups, this.credentials, this.connectionManager, this.favoriteIcons);
+            this.favorites = new Favorites(this, this.groups, this.credentials, this.connectionManager,
+                this.favoriteIcons);
             this.groups.AssignStores(this.Dispatcher, this.favorites);
             this.connectionHistory = new ConnectionHistory(this.favorites, this.Dispatcher);
-            this.Factory = new Factory(this.groups, this.favorites, this.credentials, this.Dispatcher, this.connectionManager);
+            this.Factory = new Factory(this.groups, this.favorites, this.credentials, this.Dispatcher,
+                this.connectionManager);
             return true;
+        }
+
+        public void AssignSynchronizationObject(ISynchronizeInvoke synchronizer)
+        {
+            // this forces the clock to run the updates in gui thread, because Entity framework isn't thread safe
+            this.reLoadClock.SynchronizingObject = synchronizer;
+            this.reLoadClock.Elapsed += this.OnReLoadClockElapsed;
+            this.reLoadClock.Start();
         }
 
         private bool TryInitializeDatabase()
         {
             if (DatabaseConnections.TestConnection())
             {
-                bool updatedKey = this.security.UpdateDatabaseKey();
+                var updatedKey = this.security.UpdateDatabaseKey();
 
                 if (updatedKey)
-                {
                     // UpgradeDatabaseVersion();
                     return true;
-                }
             }
 
             return false;
@@ -133,22 +138,14 @@ namespace Terminals.Data.DB
             filePersistence.UpdatePasswordsByNewMasterPassword(newMasterKey);
         }
 
-        public void AssignSynchronizationObject(ISynchronizeInvoke synchronizer)
-        {
-            // this forces the clock to run the updates in gui thread, because Entity framework isn't thread safe
-            this.reLoadClock.SynchronizingObject = synchronizer;
-            this.reLoadClock.Elapsed += new ElapsedEventHandler(this.OnReLoadClockElapsed);
-            this.reLoadClock.Start();
-        }
-
         /// <summary>
-        /// Fire simple refresh of all already cached items.
+        ///     Fire simple refresh of all already cached items.
         /// </summary>
         private void OnReLoadClockElapsed(object sender, ElapsedEventArgs e)
         {
             this.reLoadClock.Stop();
             var clock = Stopwatch.StartNew();
-            
+
             this.groups.RefreshCache();
             this.favorites.RefreshCache();
             this.credentials.RefreshCache();

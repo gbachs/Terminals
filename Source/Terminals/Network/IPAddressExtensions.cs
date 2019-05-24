@@ -9,63 +9,59 @@ namespace Terminals.Network
     internal static class IPAddressExtensions
     {
         #region Public methods
-        
+
         public static IPAddress GetBroadcastAddress(this IPAddress address, IPAddress subnetMask)
         {
-            Byte[] ipAdressBytes = address.GetAddressBytes();
-            Byte[] subnetMaskBytes = subnetMask.GetAddressBytes();
+            var ipAdressBytes = address.GetAddressBytes();
+            var subnetMaskBytes = subnetMask.GetAddressBytes();
 
             if (ipAdressBytes.Length != subnetMaskBytes.Length)
                 throw new ArgumentException("Lengths of IP address and subnet mask do not match.");
 
-            Byte[] broadcastAddress = new Byte[ipAdressBytes.Length];
-            for (Int32 i = 0; i < broadcastAddress.Length; i++)
-            {
-                broadcastAddress[i] = (Byte)(ipAdressBytes[i] | (subnetMaskBytes[i] ^ 255));
-            }
+            var broadcastAddress = new byte[ipAdressBytes.Length];
+            for (var i = 0; i < broadcastAddress.Length; i++)
+                broadcastAddress[i] = (byte)(ipAdressBytes[i] | (subnetMaskBytes[i] ^ 255));
 
             return new IPAddress(broadcastAddress);
         }
 
         public static IPAddress GetNetworkAddress(this IPAddress address, IPAddress subnetMask)
         {
-            Byte[] ipAdressBytes = address.GetAddressBytes();
-            Byte[] subnetMaskBytes = subnetMask.GetAddressBytes();
+            var ipAdressBytes = address.GetAddressBytes();
+            var subnetMaskBytes = subnetMask.GetAddressBytes();
 
             if (ipAdressBytes.Length != subnetMaskBytes.Length)
                 throw new ArgumentException("Lengths of IP address and subnet mask do not match.");
 
-            Byte[] broadcastAddress = new Byte[ipAdressBytes.Length];
-            for (Int32 i = 0; i < broadcastAddress.Length; i++)
-            {
-                broadcastAddress[i] = (Byte)(ipAdressBytes[i] & (subnetMaskBytes[i]));
-            }
+            var broadcastAddress = new byte[ipAdressBytes.Length];
+            for (var i = 0; i < broadcastAddress.Length; i++)
+                broadcastAddress[i] = (byte)(ipAdressBytes[i] & subnetMaskBytes[i]);
 
             return new IPAddress(broadcastAddress);
         }
 
         public static bool IsInSameSubnet(this IPAddress address2, IPAddress address, IPAddress subnetMask)
         {
-            IPAddress network1 = address.GetNetworkAddress(subnetMask);
-            IPAddress network2 = address2.GetNetworkAddress(subnetMask);
+            var network1 = address.GetNetworkAddress(subnetMask);
+            var network2 = address2.GetNetworkAddress(subnetMask);
 
             return network1.Equals(network2);
         }
 
         /// <summary>
-        /// Get all IP addresses between a start and an end IP address
+        ///     Get all IP addresses between a start and an end IP address
         /// </summary>
         /// <param name="startIP">Starting IP address.</param>
         /// <param name="endIP">Ending IP address</param>
         /// <returns>IP address collection.</returns>
         /// <example>
-        /// foreach (String address in GetIPRange(startIP, endIP))
+        ///     foreach (String address in GetIPRange(startIP, endIP))
         ///     Console.WriteLine(address);
         /// </example>
         public static IEnumerable<IPAddress> GetIPRange(IPAddress startIP, IPAddress endIP)
         {
-            UInt32 sIP = IpToUint(startIP.GetAddressBytes());
-            UInt32 eIP = IpToUint(endIP.GetAddressBytes());
+            var sIP = IpToUint(startIP.GetAddressBytes());
+            var eIP = IpToUint(endIP.GetAddressBytes());
 
             while (sIP <= eIP)
             {
@@ -75,25 +71,25 @@ namespace Terminals.Network
         }
 
         /// <summary>
-        /// Get the next IP address, adding one hop.
+        ///     Get the next IP address, adding one hop.
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
         public static IPAddress GetNextIPAddress(IPAddress address)
         {
-            UInt32 sIP = IpToUint(address.GetAddressBytes());
+            var sIP = IpToUint(address.GetAddressBytes());
             sIP++;
             return new IPAddress(ReverseBytesArray(sIP));
         }
 
         /// <summary>
-        /// Get the previous IP address, substracting one hop.
+        ///     Get the previous IP address, substracting one hop.
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
         public static IPAddress GetPreviousIPAddress(IPAddress address)
         {
-            UInt32 sIP = IpToUint(address.GetAddressBytes());
+            var sIP = IpToUint(address.GetAddressBytes());
             sIP--;
             return new IPAddress(ReverseBytesArray(sIP));
         }
@@ -101,37 +97,37 @@ namespace Terminals.Network
         #endregion
 
         #region Private methods
-        
+
         /// <summary>
-        /// Reverse byte order in array
+        ///     Reverse byte order in array
         /// </summary>
         /// <param name="ip"></param>
         /// <returns></returns>
-        private static uint ReverseBytesArray(UInt32 ip)
+        private static uint ReverseBytesArray(uint ip)
         {
-            Byte[] bytes = BitConverter.GetBytes(ip);
+            var bytes = BitConverter.GetBytes(ip);
             bytes = bytes.Reverse().ToArray();
-            return (UInt32)BitConverter.ToInt32(bytes, 0);
+            return (uint)BitConverter.ToInt32(bytes, 0);
         }
 
         /// <summary>
-        /// Convert bytes array to 32 bit long value
+        ///     Convert bytes array to 32 bit long value
         /// </summary>
         /// <param name="ipBytes"></param>
         /// <returns></returns>
-        private static UInt32 IpToUint(IEnumerable<Byte> ipBytes)
+        private static uint IpToUint(IEnumerable<byte> ipBytes)
         {
-            ByteConverter bConvert = new ByteConverter();
-            UInt32 ipUint = 0;
+            var bConvert = new ByteConverter();
+            uint ipUint = 0;
 
-            Int32 shift = 24; // indicates number of bits left for shifting
-            foreach (Byte b in ipBytes)
+            var shift = 24; // indicates number of bits left for shifting
+            foreach (var b in ipBytes)
             {
                 if (ipUint == 0)
                 {
-                    object convertTo = bConvert.ConvertTo(b, typeof(UInt32));
+                    var convertTo = bConvert.ConvertTo(b, typeof(uint));
                     if (convertTo != null)
-                        ipUint = (UInt32)convertTo << shift;
+                        ipUint = (uint)convertTo << shift;
 
                     shift -= 8;
                     continue;
@@ -139,15 +135,15 @@ namespace Terminals.Network
 
                 if (shift >= 8)
                 {
-                    object convertTo = bConvert.ConvertTo(b, typeof(UInt32));
+                    var convertTo = bConvert.ConvertTo(b, typeof(uint));
                     if (convertTo != null)
-                        ipUint += (UInt32)convertTo << shift;
+                        ipUint += (uint)convertTo << shift;
                 }
                 else
                 {
-                    object to = bConvert.ConvertTo(b, typeof(UInt32));
+                    var to = bConvert.ConvertTo(b, typeof(uint));
                     if (to != null)
-                        ipUint += (UInt32)to;
+                        ipUint += (uint)to;
                 }
 
                 shift -= 8;

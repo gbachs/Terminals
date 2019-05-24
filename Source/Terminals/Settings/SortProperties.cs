@@ -3,8 +3,11 @@
     internal enum SortProperties
     {
         ServerName,
+
         ConnectionName,
+
         Protocol,
+
         None
     }
 }

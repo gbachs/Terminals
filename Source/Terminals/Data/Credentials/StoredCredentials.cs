@@ -3,70 +3,70 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Threading;
-using Terminals.Configuration;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using Terminals.Configuration;
 using Terminals.Data.Credentials;
 using Unified;
 
 namespace Terminals.Data
 {
-    internal sealed class StoredCredentials: ICredentials
+    internal sealed class StoredCredentials : ICredentials
     {
-        private readonly PersistenceSecurity persistenceSecurity;
         private readonly List<ICredentialSet> cache;
-        private readonly Mutex fileLock = new Mutex(false, "Terminals.CodePlex.com.Credentials");
-        private DataFileWatcher fileWatcher;
 
-        private string FileFullName
-        {
-            get { return Settings.Instance.FileLocations.Credentials; }
-        }
+        private readonly Mutex fileLock = new Mutex(false, "Terminals.CodePlex.com.Credentials");
+
+        private readonly PersistenceSecurity persistenceSecurity;
+
+        private DataFileWatcher fileWatcher;
 
         internal StoredCredentials(PersistenceSecurity persistenceSecurity)
         {
             this.persistenceSecurity = persistenceSecurity;
             this.cache = new List<ICredentialSet>();
-            InitializeFileWatch();
+            this.InitializeFileWatch();
         }
+
+        private string FileFullName => Settings.Instance.FileLocations.Credentials;
 
         private void InitializeFileWatch()
         {
-            fileWatcher = new DataFileWatcher(FileFullName);
-            fileWatcher.FileChanged += new EventHandler(CredentialsFileChanged);
-            fileWatcher.StartObservation();
+            this.fileWatcher = new DataFileWatcher(this.FileFullName);
+            this.fileWatcher.FileChanged += this.CredentialsFileChanged;
+            this.fileWatcher.StartObservation();
         }
 
         /// <summary>
-        /// Don't load the file in constructor, we wait until persistence is authenticated.
-        /// This is needed specially by upgrades from previous version,
-        ///  to let it upgrade the file, before it is loaded into persistence.
+        ///     Don't load the file in constructor, we wait until persistence is authenticated.
+        ///     This is needed specially by upgrades from previous version,
+        ///     to let it upgrade the file, before it is loaded into persistence.
         /// </summary>
         internal void Initialize()
         {
-            string configFileName = this.FileFullName;
+            var configFileName = this.FileFullName;
             if (File.Exists(configFileName))
-                LoadStoredCredentials(configFileName);
+                this.LoadStoredCredentials(configFileName);
             else
-                Save();
+                this.Save();
         }
 
         private void CredentialsFileChanged(object sender, EventArgs e)
         {
-            LoadStoredCredentials(FileFullName);
-            if (CredentialsChanged != null)
-                CredentialsChanged(this, new EventArgs());
+            this.LoadStoredCredentials(this.FileFullName);
+            if (this.CredentialsChanged != null)
+                this.CredentialsChanged(this, new EventArgs());
         }
 
         internal void AssignSynchronizationObject(ISynchronizeInvoke synchronizer)
         {
-            fileWatcher.AssignSynchronizer(synchronizer);
+            this.fileWatcher.AssignSynchronizer(synchronizer);
         }
 
         private void LoadStoredCredentials(string configFileName)
         {
-            List<ICredentialSet> loaded = LoadFile(configFileName);
+            var loaded = this.LoadFile(configFileName);
             if (loaded != null)
             {
                 this.cache.Clear();
@@ -78,25 +78,25 @@ namespace Terminals.Data
         {
             try
             {
-                fileLock.WaitOne();
-                return DeserializeFileContent(configFileName);
+                this.fileLock.WaitOne();
+                return this.DeserializeFileContent(configFileName);
             }
             catch (Exception exception)
             {
-                string errorMessage = String.Format("Load credentials from {0} failed.", configFileName);
+                var errorMessage = string.Format("Load credentials from {0} failed.", configFileName);
                 Logging.Error(errorMessage, exception);
                 return new List<ICredentialSet>();
             }
             finally
             {
-                fileLock.ReleaseMutex();
+                this.fileLock.ReleaseMutex();
                 Debug.WriteLine("Credentials file Loaded.");
             }
         }
 
         private List<ICredentialSet> DeserializeFileContent(string configFileName)
         {
-            object loadedObj = Serialize.DeserializeXMLFromDisk(configFileName, typeof (List<CredentialSet>));
+            var loadedObj = Serialize.DeserializeXMLFromDisk(configFileName, typeof(List<CredentialSet>));
             var loadedItems = loadedObj as List<CredentialSet>;
             return loadedItems.Cast<ICredentialSet>().ToList();
         }
@@ -107,15 +107,12 @@ namespace Terminals.Data
 
         public ICredentialSet this[Guid id]
         {
-            get
-            {
-                return this.cache.FirstOrDefault(candidate => candidate.Id.Equals(id));
-            }
+            get { return this.cache.FirstOrDefault(candidate => candidate.Id.Equals(id)); }
         }
 
         /// <summary>
-        /// Gets a credential by its name from cached credentials.
-        /// This method isn't case sensitive. If no item matches, returns null.
+        ///     Gets a credential by its name from cached credentials.
+        ///     This method isn't case sensitive. If no item matches, returns null.
         /// </summary>
         /// <param name="name">name of an item to search</param>
         public ICredentialSet this[string name]
@@ -126,13 +123,13 @@ namespace Terminals.Data
                     return null;
 
                 return this.cache.FirstOrDefault(candidate => candidate.Name
-                   .Equals(name, StringComparison.CurrentCultureIgnoreCase));
+                    .Equals(name, StringComparison.CurrentCultureIgnoreCase));
             }
         }
 
         public void Add(ICredentialSet toAdd)
         {
-            if (String.IsNullOrEmpty(toAdd.Name))
+            if (string.IsNullOrEmpty(toAdd.Name))
                 return;
 
             this.cache.Add(toAdd);
@@ -151,23 +148,23 @@ namespace Terminals.Data
             if (oldItem != null)
                 this.cache.Remove(oldItem);
             this.cache.Add(toUpdate);
-            Save();
+            this.Save();
         }
 
         public void UpdatePasswordsByNewKeyMaterial(string newKeyMaterial)
         {
-            foreach (ICredentialSet credentials in cache)
+            foreach (var credentials in this.cache)
             {
                 var guarded = new GuardedCredential(credentials, this.persistenceSecurity);
                 guarded.UpdatePasswordByNewKeyMaterial(newKeyMaterial);
             }
 
-            Save();
+            this.Save();
         }
 
         /// <summary>
-        /// Called automatically after each <see cref="ICredentials"/> method.
-        /// Not necessary to call manually.
+        ///     Called automatically after each <see cref="ICredentials" /> method.
+        ///     Not necessary to call manually.
         /// </summary>
         internal void Save()
         {
@@ -179,7 +176,7 @@ namespace Terminals.Data
             }
             catch (Exception exception)
             {
-                string errorMessage = string.Format("Save credentials to {0} failed.", FileFullName);
+                var errorMessage = string.Format("Save credentials to {0} failed.", this.FileFullName);
                 Logging.Error(errorMessage, exception);
             }
             finally
@@ -191,8 +188,8 @@ namespace Terminals.Data
 
         private void SaveToFile()
         {
-            List<CredentialSet> fileContent = this.cache.Cast<CredentialSet>().ToList();
-            Serialize.SerializeXMLToDisk(fileContent, FileFullName);
+            var fileContent = this.cache.Cast<CredentialSet>().ToList();
+            Serialize.SerializeXMLToDisk(fileContent, this.FileFullName);
             Debug.WriteLine("Credentials file saved.");
         }
 

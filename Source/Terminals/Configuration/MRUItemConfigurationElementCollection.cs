@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -7,23 +6,39 @@ namespace Terminals
 {
     public class MRUItemConfigurationElementCollection : ConfigurationElementCollection
     {
-        public MRUItemConfigurationElementCollection() { }
+        public MRUItemConfigurationElementCollection()
+        {
+        }
 
         internal MRUItemConfigurationElementCollection(IEnumerable<string> values)
         {
-            foreach (string newItem in values)
-            {
+            foreach (var newItem in values)
                 this.AddByName(newItem);
+        }
+
+        public override ConfigurationElementCollectionType CollectionType =>
+            ConfigurationElementCollectionType.AddRemoveClearMap;
+
+        public new string AddElementName { get => base.AddElementName; set => base.AddElementName = value; }
+
+        public new string ClearElementName { get => base.ClearElementName; set => base.AddElementName = value; }
+
+        public new string RemoveElementName => base.RemoveElementName;
+
+        public new int Count => base.Count;
+
+        public MRUItemConfigurationElement this[int index]
+        {
+            get => (MRUItemConfigurationElement)this.BaseGet(index);
+            set
+            {
+                if (this.BaseGet(index) != null)
+                    this.BaseRemoveAt(index);
+                this.BaseAdd(index, value);
             }
         }
 
-        public override ConfigurationElementCollectionType CollectionType
-        {
-            get
-            {
-                return ConfigurationElementCollectionType.AddRemoveClearMap;
-            }
-        }
+        public new MRUItemConfigurationElement this[string Name] => (MRUItemConfigurationElement)this.BaseGet(Name);
 
         protected override ConfigurationElement CreateNewElement()
         {
@@ -35,114 +50,50 @@ namespace Terminals
             return new MRUItemConfigurationElement();
         }
 
-        protected override Object GetElementKey(ConfigurationElement element)
+        protected override object GetElementKey(ConfigurationElement element)
         {
             return ((MRUItemConfigurationElement)element).Name;
         }
 
-        public new string AddElementName
-        {
-            get
-            {
-                return base.AddElementName;
-            }
-            set
-            {
-                base.AddElementName = value;
-            }
-        }
-
-        public new string ClearElementName
-        {
-            get
-            {
-                return base.ClearElementName;
-            }
-            set
-            {
-                base.AddElementName = value;
-            }
-        }
-
-        public new string RemoveElementName
-        {
-            get
-            {
-                return base.RemoveElementName;
-            }
-        }
-
-        public new int Count
-        {
-            get
-            {
-                return base.Count;
-            }
-        }
-
-        public MRUItemConfigurationElement this[int index]
-        {
-            get
-            {
-                return (MRUItemConfigurationElement)BaseGet(index);
-            }
-            set
-            {
-                if (BaseGet(index) != null)
-                {
-                    BaseRemoveAt(index);
-                }
-                BaseAdd(index, value);
-            }
-        }
-
-        new public MRUItemConfigurationElement this[string Name]
-        {
-            get
-            {
-                return (MRUItemConfigurationElement)BaseGet(Name);
-            }
-        }
-
         public int IndexOf(MRUItemConfigurationElement item)
         {
-            return BaseIndexOf(item);
+            return this.BaseIndexOf(item);
         }
 
         public MRUItemConfigurationElement ItemByName(string name)
         {
-            return (MRUItemConfigurationElement)BaseGet(name);
+            return (MRUItemConfigurationElement)this.BaseGet(name);
         }
 
         public void Add(MRUItemConfigurationElement item)
         {
-            BaseAdd(item);
+            this.BaseAdd(item);
         }
 
         protected override void BaseAdd(ConfigurationElement element)
         {
-            BaseAdd(element, false);
+            this.BaseAdd(element, false);
         }
 
         public void Remove(MRUItemConfigurationElement item)
         {
-            if (BaseIndexOf(item) >= 0)
-                BaseRemove(item.Name);
+            if (this.BaseIndexOf(item) >= 0)
+                this.BaseRemove(item.Name);
         }
 
         public void RemoveAt(int index)
         {
-            BaseRemoveAt(index);
+            this.BaseRemoveAt(index);
         }
 
         public void Remove(string name)
         {
-            BaseRemove(name);
+            this.BaseRemove(name);
         }
 
         public void Clear()
         {
-            BaseClear();
+            this.BaseClear();
         }
 
         internal List<string> ToList()
@@ -154,36 +105,30 @@ namespace Terminals
 
         internal string[] ToSortedArray()
         {
-            List<string> domainNames = ToList();
+            var domainNames = this.ToList();
             domainNames.Sort();
             return domainNames.ToArray();
         }
 
         internal void AddByName(string name)
         {
-            MRUItemConfigurationElement configurationElement = this.ItemByName(name);
+            var configurationElement = this.ItemByName(name);
             if (configurationElement == null)
-            {
                 this.Add(new MRUItemConfigurationElement(name));
-            }
         }
 
         internal void DeleteByName(string name)
         {
-            MRUItemConfigurationElement configurationElement = this.ItemByName(name);
+            var configurationElement = this.ItemByName(name);
             if (configurationElement != null)
-            {
                 this.Remove(name);
-            }
         }
 
         internal void EditByName(string oldName, string newName)
         {
-            MRUItemConfigurationElement configurationElement = this.ItemByName(oldName);
+            var configurationElement = this.ItemByName(oldName);
             if (configurationElement != null)
-            {
                 this[oldName].Name = newName;
-            }
         }
     }
 }

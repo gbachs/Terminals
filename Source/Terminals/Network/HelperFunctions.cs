@@ -1,15 +1,13 @@
-﻿using System;
-
-namespace Terminals.Network
+﻿namespace Terminals.Network
 {
     /// <summary>
-    /// Helper network function to simplify username, domain, hostname parsing
+    ///     Helper network function to simplify username, domain, hostname parsing
     /// </summary>
     internal static class HelperFunctions
     {
         internal static string UserDisplayName(string domain, string user)
         {
-            return String.IsNullOrEmpty(domain) ? (user) : (domain + "\\" + user);
+            return string.IsNullOrEmpty(domain) ? user : domain + "\\" + user;
         }
 
         internal static string GetErrorMessage(int code)
@@ -45,6 +43,7 @@ namespace Terminals.Network
                 case 2822: return "Encryption error";
                 case 3078: return "Decryption error";
             }
+
             return null;
         }
     }

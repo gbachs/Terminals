@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace Terminals.Data.DB
+﻿namespace Terminals.Data.DB
 {
     // prepared new feature to obtain complete history per favorite
     // currently not used
-    internal partial class HistoryItem // : IHistoryItem
+    internal class HistoryItem // : IHistoryItem
     {
         //IFavorite IHistoryItem.Favorite
         //{

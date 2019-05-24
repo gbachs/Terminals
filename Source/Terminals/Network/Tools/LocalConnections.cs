@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using Metro.TransportLayer.Tcp;
 
 namespace Terminals.Network
 {
@@ -7,12 +8,12 @@ namespace Terminals.Network
     {
         public LocalConnections()
         {
-            InitializeComponent();
-
+            this.InitializeComponent();
         }
+
         private void timer1_Tick(object sender, EventArgs e)
         {
-            Metro.TransportLayer.Tcp.TcpConnection[] connections = Metro.TransportLayer.Tcp.TcpConnectionManager.GetCurrentTcpConnections();
+            var connections = TcpConnectionManager.GetCurrentTcpConnections();
             //this.dataGridView1.DataSource = null;
             this.dataGridView1.DataSource = connections;
         }
@@ -20,9 +21,9 @@ namespace Terminals.Network
         private void LocalConnections_Load(object sender, EventArgs e)
         {
             this.dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
-            timer1_Tick(null, null);
-            timer1.Enabled = true;
-            timer1.Start();
+            this.timer1_Tick(null, null);
+            this.timer1.Enabled = true;
+            this.timer1.Start();
         }
     }
 }

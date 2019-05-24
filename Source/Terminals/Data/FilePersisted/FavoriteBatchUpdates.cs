@@ -34,7 +34,7 @@ namespace Terminals.Data.FilePersisted
         private void ApplyValueToAllFavorites(List<IFavorite> selectedFavorites,
             string newUserName, Action<IGuardedSecurity, string> applyValue)
         {
-            foreach (IFavorite favorite in selectedFavorites)
+            foreach (var favorite in selectedFavorites)
             {
                 var guarded = new GuardedSecurity(this.persistence, favorite.Security);
                 applyValue(guarded, newUserName);

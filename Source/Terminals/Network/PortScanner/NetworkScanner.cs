@@ -14,35 +14,36 @@ namespace Terminals
 {
     internal partial class NetworkScanner : Form
     {
-        private readonly IPersistence persistence;
+        private readonly ConnectionManager connectionManager;
 
-        private NetworkScanManager manager;
-        private bool validation;
+        private readonly IPersistence persistence;
 
         private readonly Server server;
 
-        private readonly ConnectionManager connectionManager;
+        private NetworkScanManager manager;
+
+        private bool validation;
 
         internal NetworkScanner(IPersistence persistence, ConnectionManager connectionManager)
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             this.persistence = persistence;
             this.connectionManager = connectionManager;
             this.checkListPorts.DataSource = this.connectionManager.GetAvailableProtocols();
             this.CheckAllPorts();
             this.server = new Server(persistence, this.connectionManager);
-            FillTextBoxesFromLocalIp();
-            InitScanManager();
+            this.FillTextBoxesFromLocalIp();
+            this.InitScanManager();
             this.gridScanResults.AutoGenerateColumns = false;
-            Client.OnServerConnection += new ServerConnectionHandler(Client_OnServerConnection);
+            Client.OnServerConnection += this.Client_OnServerConnection;
             this.bsScanResults.DataSource = new SortableList<NetworkScanResult>();
         }
 
         private void FillTextBoxesFromLocalIp()
         {
-            string localIP = NetworkAdapters.TryGetIPv4LocalAddress();
-            string[] ipList = localIP.Split('.');
+            var localIP = NetworkAdapters.TryGetIPv4LocalAddress();
+            var ipList = localIP.Split('.');
             this.ATextbox.Text = ipList[0];
             this.BTextbox.Text = ipList[1];
             this.CTextbox.Text = ipList[2];
@@ -54,22 +55,18 @@ namespace Terminals
         private void InitScanManager()
         {
             this.manager = new NetworkScanManager(this.connectionManager);
-            this.manager.OnAddressScanHit += new NetworkScanHandler(this.manager_OnScanHit);
-            this.manager.OnAddressScanFinished += new NetworkScanHandler(this.manager_OnAddresScanFinished);
+            this.manager.OnAddressScanHit += this.manager_OnScanHit;
+            this.manager.OnAddressScanFinished += this.manager_OnAddresScanFinished;
         }
 
         private void ScanButton_Click(object sender, EventArgs e)
         {
-            scanProgressBar.Value = 0;
+            this.scanProgressBar.Value = 0;
 
-            if (ScanButton.Text == "&Scan")
-            {
+            if (this.ScanButton.Text == "&Scan")
                 this.StartScan();
-            }
             else
-            {
-                StopScan();
-            }
+                this.StopScan();
         }
 
         private void StopScan()
@@ -82,47 +79,47 @@ namespace Terminals
         private void StartScan()
         {
             this.bsScanResults.Clear();
-            ScanStatusLabel.Text = "Initiating Scan...";
-            ScanButton.Text = "Stop";
-            List<int> ports = GetSelectedPorts();
+            this.ScanStatusLabel.Text = "Initiating Scan...";
+            this.ScanButton.Text = "Stop";
+            var ports = this.GetSelectedPorts();
             this.manager.StartScan(this.ATextbox.Text, this.BTextbox.Text, this.CTextbox.Text,
-                                   this.DTextbox.Text, this.ETextbox.Text, ports);
+                this.DTextbox.Text, this.ETextbox.Text, ports);
         }
 
         private List<int> GetSelectedPorts()
         {
-            return checkListPorts.CheckedItems.OfType<string>()
+            return this.checkListPorts.CheckedItems.OfType<string>()
                 .Select(this.connectionManager.GetPort)
                 .ToList();
         }
 
         private void manager_OnAddresScanFinished(ScanItemEventArgs args)
         {
-            this.Invoke(new MethodInvoker(UpdateScanStatus));
+            this.Invoke(new MethodInvoker(this.UpdateScanStatus));
         }
 
         /// <summary>
-        /// Updates the status bar, button state and progress bar.
-        /// The last who sends "is done" autoamticaly informs about the compleated state.
+        ///     Updates the status bar, button state and progress bar.
+        ///     The last who sends "is done" autoamticaly informs about the compleated state.
         /// </summary>
         private void UpdateScanStatus()
         {
             this.scanProgressBar.Maximum = this.manager.AllAddressesToScan;
-            scanProgressBar.Value = this.manager.DoneAddressScans;
-            Int32 pendingAddresses = this.manager.AllAddressesToScan - scanProgressBar.Value;
-            Debug.WriteLine("updating status with pending ({0}): {1}", 
-                            this.manager.ScanIsRunning, pendingAddresses);
+            this.scanProgressBar.Value = this.manager.DoneAddressScans;
+            var pendingAddresses = this.manager.AllAddressesToScan - this.scanProgressBar.Value;
+            Debug.WriteLine("updating status with pending ({0}): {1}",
+                this.manager.ScanIsRunning, pendingAddresses);
 
-
-            ScanStatusLabel.Text = String.Format("Pending items:{0}", pendingAddresses);
-            if (scanProgressBar.Value >= scanProgressBar.Maximum)
-                scanProgressBar.Value = 0;
+            this.ScanStatusLabel.Text = string.Format("Pending items:{0}", pendingAddresses);
+            if (this.scanProgressBar.Value >= this.scanProgressBar.Maximum)
+                this.scanProgressBar.Value = 0;
 
             if (pendingAddresses == 0)
             {
                 this.ScanButton.Text = "&Scan";
-                ScanStatusLabel.Text = String.Format("Completed scan, found: {0} items.", this.bsScanResults.Count);
-                scanProgressBar.Value = 0;
+                this.ScanStatusLabel.Text =
+                    string.Format("Completed scan, found: {0} items.", this.bsScanResults.Count);
+                this.scanProgressBar.Value = 0;
             }
         }
 
@@ -130,7 +127,7 @@ namespace Terminals
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(new NetworkScanHandler(manager_OnScanHit), new object[] { args });
+                this.Invoke(new NetworkScanHandler(this.manager_OnScanHit), args);
             }
             else
             {
@@ -153,36 +150,35 @@ namespace Terminals
 
         private void CheckAllPorts()
         {
-            for (int index = 0; index < this.checkListPorts.Items.Count; index++)
-            {
+            for (var index = 0; index < this.checkListPorts.Items.Count; index++)
                 this.checkListPorts.SetItemChecked(index, true);
-            }
         }
 
         private void AddAllButton_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;
-            String tags = GetTagsToApply();
-            List<FavoriteConfigurationElement> favoritesToImport = GetFavoritesFromBindingSource(tags);
-            ImportSelectedItems(favoritesToImport);
+            var tags = this.GetTagsToApply();
+            var favoritesToImport = this.GetFavoritesFromBindingSource(tags);
+            this.ImportSelectedItems(favoritesToImport);
         }
 
-        private List<FavoriteConfigurationElement> GetFavoritesFromBindingSource(String tags)
+        private List<FavoriteConfigurationElement> GetFavoritesFromBindingSource(string tags)
         {
-            List<FavoriteConfigurationElement> favoritesToImport = new List<FavoriteConfigurationElement>();
+            var favoritesToImport = new List<FavoriteConfigurationElement>();
             foreach (DataGridViewRow scanResultRow in this.gridScanResults.SelectedRows)
             {
-                    var computer = scanResultRow.DataBoundItem as NetworkScanResult;
-                    var favorite = computer.ToFavorite(tags);
-                    favoritesToImport.Add(favorite);
+                var computer = scanResultRow.DataBoundItem as NetworkScanResult;
+                var favorite = computer.ToFavorite(tags);
+                favoritesToImport.Add(favorite);
             }
+
             return favoritesToImport;
         }
 
         private string GetTagsToApply()
         {
-            String tags = this.TagsTextbox.Text;
-            tags = tags.Replace("Groups...", String.Empty).Trim();
+            var tags = this.TagsTextbox.Text;
+            tags = tags.Replace("Groups...", string.Empty).Trim();
             return tags;
         }
 
@@ -198,14 +194,11 @@ namespace Terminals
                 this.button1.Text = "Stop Server";
                 this.server.Start();
             }
+
             if (this.server.ServerOnline)
-            {
                 this.ServerStatusLabel.Text = "Server is ONLINE";
-            }
             else
-            {
                 this.ServerStatusLabel.Text = "Server is OFFLINE";
-            }
         }
 
         private void ImportSelectedItems(List<FavoriteConfigurationElement> favoritesToImport)
@@ -216,7 +209,7 @@ namespace Terminals
 
         private void Client_OnServerConnection(ShareFavoritesEventArgs args)
         {
-            ImportSelectedItems(args.Favorites);
+            this.ImportSelectedItems(args.Favorites);
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -228,7 +221,7 @@ namespace Terminals
         {
             try
             {
-                Client.OnServerConnection -= new ServerConnectionHandler(Client_OnServerConnection);
+                Client.OnServerConnection -= this.Client_OnServerConnection;
                 this.manager.StopScan();
                 this.server.Stop();
                 Client.Stop();
@@ -245,32 +238,32 @@ namespace Terminals
         }
 
         /// <summary>
-        /// Validate text boxes to allow inser only byte.
+        ///     Validate text boxes to allow inser only byte.
         /// </summary>
         private void IPTextbox_TextChanged(object sender, EventArgs e)
         {
-            if (validation)
+            if (this.validation)
                 return; // prevent stack overflow
 
             byte testValue;
-            validation = true;
-            TextBox textBox = sender as TextBox;
-            bool isValid = Byte.TryParse(textBox.Text, NumberStyles.None, null,  out testValue);
+            this.validation = true;
+            var textBox = sender as TextBox;
+            var isValid = byte.TryParse(textBox.Text, NumberStyles.None, null, out testValue);
 
-            if (!isValid && validation)
+            if (!isValid && this.validation)
                 textBox.Text = textBox.Tag.ToString();
             else
                 textBox.Tag = textBox.Text;
 
-            validation = false;
+            this.validation = false;
         }
 
         private void GridScanResults_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            DataGridViewColumn lastSortedColumn = this.gridScanResults.FindLastSortedColumn();
-            DataGridViewColumn column = this.gridScanResults.Columns[e.ColumnIndex];
+            var lastSortedColumn = this.gridScanResults.FindLastSortedColumn();
+            var column = this.gridScanResults.Columns[e.ColumnIndex];
 
-            SortOrder newSortDirection = SortableUnboundGrid.GetNewSortDirection(lastSortedColumn, column);
+            var newSortDirection = SortableUnboundGrid.GetNewSortDirection(lastSortedColumn, column);
             var data = this.bsScanResults.DataSource as SortableList<NetworkScanResult>;
             this.bsScanResults.DataSource = data.SortByProperty(column.DataPropertyName, newSortDirection);
             column.HeaderCell.SortGlyphDirection = newSortDirection;

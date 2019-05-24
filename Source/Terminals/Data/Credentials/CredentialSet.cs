@@ -4,32 +4,23 @@ using System.Xml.Serialization;
 namespace Terminals.Data
 {
     /// <summary>
-    /// Container of stored user authentication.
+    ///     Container of stored user authentication.
     /// </summary>
     [Serializable]
     public class CredentialSet : CredentialBase, ICredentialSet
     {
         private Guid id = Guid.NewGuid();
-        [XmlAttribute("id")]
-        public Guid Id
-        {
-            get
-            {
-                return id;
-            }
-            set
-            {
-                id = value;
-            }
-        }
 
         private string name;
+
+        [XmlAttribute("id")] public Guid Id { get => this.id; set => this.id = value; }
+
         public string Name
         {
-            get { return name; }
+            get => this.name;
             set
             {
-                if (String.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value))
                     return;
 
                 this.name = value;
@@ -38,7 +29,7 @@ namespace Terminals.Data
 
         public override string ToString()
         {
-            return String.Format(@"{0}:{1}\{2}", this.Name, "", "");
+            return string.Format(@"{0}:{1}\{2}", this.Name, "", "");
         }
     }
 }

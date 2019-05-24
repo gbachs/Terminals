@@ -6,15 +6,15 @@ using Terminals.Data.Validation;
 namespace Terminals
 {
     /// <summary>
-    /// Provides unified creation of Favorites
+    ///     Provides unified creation of Favorites
     /// </summary>
     internal class Factory : IFactory
     {
-        private readonly Groups groups;
+        private readonly ConnectionManager connectionManager;
 
         private readonly DataDispatcher dispatcher;
 
-        private readonly ConnectionManager connectionManager;
+        private readonly Groups groups;
 
         internal Factory(Groups groups, DataDispatcher dispatcher, ConnectionManager connectionManager)
         {

@@ -8,16 +8,16 @@ namespace Terminals.Connections
     {
         public delegate void TabChanged(object sender, TabControlEventArgs e);
 
-        public event TabChanged OnTabChanged;
-
         public NetworkingToolsLayout()
         {
             this.InitializeComponent();
         }
 
+        public event TabChanged OnTabChanged;
+
         private void TabbedTools1_Load(object sender, EventArgs e)
         {
-            this.tabbedTools1.OnTabChanged += new TabbedTools.TabChanged(tabbedTools1_OnTabChanged);
+            this.tabbedTools1.OnTabChanged += this.tabbedTools1_OnTabChanged;
         }
 
         public void Execute(NettworkingTools action, string host, IPersistence persistence)
@@ -27,8 +27,8 @@ namespace Terminals.Connections
 
         private void tabbedTools1_OnTabChanged(object sender, TabControlEventArgs e)
         {
-            if(OnTabChanged != null)
-                OnTabChanged(sender, e);
+            if (this.OnTabChanged != null)
+                this.OnTabChanged(sender, e);
         }
     }
 }

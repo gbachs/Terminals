@@ -4,119 +4,97 @@ using System.IO;
 namespace Terminals.Configuration
 {
     /// <summary>
-    /// Data file locations resolution under Data subdirectory
+    ///     Data file locations resolution under Data subdirectory
     /// </summary>
     internal sealed class FileLocations
     {
-        private readonly Settings settings;
-
-        private string configuration;
-
-        private static readonly string PROFILE_DATA_DIRECTORY = 
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-
         private const string PROFILE_PATH = @"Robert_Chartier\Terminals\";
 
         /// <summary>
-        /// Gets the directory name of data directory,
-        /// where all files changed by user should be stored
+        ///     Gets the directory name of data directory,
+        ///     where all files changed by user should be stored
         /// </summary>
         private const string DATA_DIRECTORY = "Data";
 
         /// <summary>
-        /// Gets directory name of the commands thumb images location ("Thumbs").
+        ///     Gets directory name of the commands thumb images location ("Thumbs").
         /// </summary>
         internal const string THUMBS_DIRECTORY = "Thumbs";
 
         /// <summary>
-        /// Gets default name of the credentials file ("Credentials.xml").
+        ///     Gets default name of the credentials file ("Credentials.xml").
         /// </summary>
         internal const string CREDENTIALS_FILENAME = "Credentials.xml";
 
         /// <summary>
-        /// Gets default name of the favorites file ("Favorites.xml").
+        ///     Gets default name of the favorites file ("Favorites.xml").
         /// </summary>
         internal const string FAVORITES_FILENAME = "Favorites.xml";
 
         /// <summary>
-        /// Gets the file name of stored history values ("History.xml").
+        ///     Gets the file name of stored history values ("History.xml").
         /// </summary>
         internal const string HISTORY_FILENAME = "History.xml";
 
         /// <summary>
-        /// Gets the name of custom user options configuration file ("Terminals.config").
+        ///     Gets the name of custom user options configuration file ("Terminals.config").
         /// </summary>
         internal const string CONFIG_FILENAME = "Terminals.config";
 
         /// <summary>
-        /// Gets the file name of xml config file, where toolbar positions are stored ("ToolStrip.settings.config").
+        ///     Gets the file name of xml config file, where toolbar positions are stored ("ToolStrip.settings.config").
         /// </summary>
         internal const string TOOLSTRIPS_FILENAME = "ToolStrip.settings.config";
 
         private const string SQL_MIGRATIONS = "Migrations";
 
-        internal static string ControlPanelImage
+        private static readonly string PROFILE_DATA_DIRECTORY =
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+        private readonly Settings settings;
+
+        private string configuration;
+
+        internal FileLocations(Settings settings)
         {
-            get { return Path.Combine(ThumbsDirectoryFullPath, @"ControlPanel.png"); }
+            this.settings = settings;
         }
 
-        internal static string LastUpdateCheck
-        {
-            get { return GetFullPath("LastUpdateCheck.txt"); }
-        }
+        internal static string ControlPanelImage => Path.Combine(ThumbsDirectoryFullPath, @"ControlPanel.png");
 
-        internal static string WriteAccessLock
-        {
-            get { return GetFullPath("WriteAccessCheck.txt"); }
-        }
+        internal static string LastUpdateCheck => GetFullPath("LastUpdateCheck.txt");
 
-        internal static string LogDirectory
-        {
-            get { return Logging.LogDirectory; }
-        }
+        internal static string WriteAccessLock => GetFullPath("WriteAccessCheck.txt");
 
-        internal static string ThumbsDirectoryFullPath
-        {
-            get { return GetFullPath(THUMBS_DIRECTORY); }
-        }
+        internal static string LogDirectory => Logging.LogDirectory;
 
-        internal static string ToolStripsFullFileName
-        {
-            get { return GetFullPath(TOOLSTRIPS_FILENAME); }
-        }
+        internal static string ThumbsDirectoryFullPath => GetFullPath(THUMBS_DIRECTORY);
 
-        internal static string HistoryFullFileName
-        {
-            get { return GetFullPath(HISTORY_FILENAME); }
-        }
+        internal static string ToolStripsFullFileName => GetFullPath(TOOLSTRIPS_FILENAME);
+
+        internal static string HistoryFullFileName => GetFullPath(HISTORY_FILENAME);
 
         internal static string DefaultCaptureRootDirectory
         {
             get
             {
-                string rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                var rootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
                 return Path.Combine(rootDirectory, "Terminals Captures");
             }
         }
 
         /// <summary>
-        /// Gets full path to the Sql migration scripts directory in application install directory
+        ///     Gets full path to the Sql migration scripts directory in application install directory
         /// </summary>
-        internal static string SqlMigrations
-        {
-            get
-            {
-                return Path.Combine(Program.Info.Location, SQL_MIGRATIONS);
-            }
-        }
+        internal static string SqlMigrations => Path.Combine(Program.Info.Location, SQL_MIGRATIONS);
 
         internal string Configuration
         {
-            get { return this.configuration; }
+            get => this.configuration;
             private set
             {
                 this.configuration = value;
-                FireConfigPathChanged(this.configuration);
+                this.FireConfigPathChanged(this.configuration);
             }
         }
 
@@ -126,16 +104,11 @@ namespace Terminals.Configuration
 
         internal event EventHandler<FileChangedEventArgs> ConfigFileChanged;
 
-        internal FileLocations(Settings settings)
-        {
-            this.settings = settings;
-        }
-
         /// <summary>
-        /// Sets custom file locations for general data files.
-        /// All paths have to be set to absolute file path,  otherwise are ignored.
-        /// You have to call this method only once at startup before files are loaded,
-        /// otherwise their usage isn't consistent.
+        ///     Sets custom file locations for general data files.
+        ///     All paths have to be set to absolute file path,  otherwise are ignored.
+        ///     You have to call this method only once at startup before files are loaded,
+        ///     otherwise their usage isn't consistent.
         /// </summary>
         internal void AssignCustomFileLocations(string configurationFullPath,
             string favoritesFullPath, string credentialsFullPath)
@@ -149,7 +122,7 @@ namespace Terminals.Configuration
 
         private void AssignConfigurationFile(string configurationFullPath)
         {
-            if (String.IsNullOrEmpty(configurationFullPath))
+            if (string.IsNullOrEmpty(configurationFullPath))
                 this.Configuration = GetFullPath(CONFIG_FILENAME);
             else
                 this.Configuration = configurationFullPath;
@@ -157,10 +130,10 @@ namespace Terminals.Configuration
 
         private void AssignFavoritesFile(string favoritesFullPath)
         {
-            if (String.IsNullOrEmpty(favoritesFullPath))
+            if (string.IsNullOrEmpty(favoritesFullPath))
             {
                 this.Favorites = this.settings.SavedFavoritesFileLocation;
-                if (String.IsNullOrEmpty(this.Favorites))
+                if (string.IsNullOrEmpty(this.Favorites))
                     this.Favorites = GetFullPath(FAVORITES_FILENAME);
             }
             else
@@ -171,7 +144,7 @@ namespace Terminals.Configuration
 
         private void AssignCredentialsFile(string credentialsFullPath)
         {
-            if (String.IsNullOrEmpty(credentialsFullPath))
+            if (string.IsNullOrEmpty(credentialsFullPath))
                 this.AssignDefaultCredentialsFile();
             else
                 this.Credentials = credentialsFullPath;
@@ -180,24 +153,24 @@ namespace Terminals.Configuration
         private void AssignDefaultCredentialsFile()
         {
             this.Credentials = this.settings.SavedCredentialsLocation;
-            if (String.IsNullOrEmpty(this.Credentials) || this.Credentials == CREDENTIALS_FILENAME)
+            if (string.IsNullOrEmpty(this.Credentials) || this.Credentials == CREDENTIALS_FILENAME)
                 this.Credentials = GetFullPath(CREDENTIALS_FILENAME);
         }
 
         /// <summary>
-        /// Gets the full file path to the required file or directory in application data directory.
+        ///     Gets the full file path to the required file or directory in application data directory.
         /// </summary>
         /// <param name="relativePath">The relative path to the file from data directory.</param>
         internal static string GetFullPath(string relativePath)
         {
-            string root = GetDataRootDirectoryFullPath();
+            var root = GetDataRootDirectoryFullPath();
             return Path.Combine(root, relativePath);
         }
 
         private static string GetDataRootDirectoryFullPath()
         {
-            string root = Path.Combine(Program.Info.Location, DATA_DIRECTORY);
-            bool localInstallation = !Properties.Settings.Default.Portable;
+            var root = Path.Combine(Program.Info.Location, DATA_DIRECTORY);
+            var localInstallation = !Properties.Settings.Default.Portable;
             if (localInstallation)
                 root = GetProfileDataDirectoryPath();
 
@@ -219,7 +192,7 @@ namespace Terminals.Configuration
 
         internal static string FormatThumbFileName(string fileName)
         {
-            return String.Format(@"{0}\{1}.jpg", ThumbsDirectoryFullPath, fileName);
+            return string.Format(@"{0}\{1}.jpg", ThumbsDirectoryFullPath, fileName);
         }
 
         internal static void EnsureImagesDirectory()
@@ -232,9 +205,10 @@ namespace Terminals.Configuration
             try
             {
                 // Test to make sure that the current user has write access to the current directory.
-                using (StreamWriter sw = File.AppendText(WriteAccessLock))
+                using (var sw = File.AppendText(WriteAccessLock))
                 {
                 }
+
                 return true;
             }
             catch (Exception ex)
@@ -248,7 +222,7 @@ namespace Terminals.Configuration
         {
             if (this.ConfigFileChanged != null)
             {
-                var args = new FileChangedEventArgs() { NewPath = newPath };
+                var args = new FileChangedEventArgs {NewPath = newPath};
                 this.ConfigFileChanged(this, args);
             }
         }

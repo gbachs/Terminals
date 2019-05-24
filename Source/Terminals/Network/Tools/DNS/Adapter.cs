@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Management;
 using System.Text;
 
@@ -8,150 +7,60 @@ namespace Terminals.Network.DNS
     internal class Adapter
     {
         #region Public Properties
-        
-        public System.Management.ManagementObject PropertyData { get; set; }
 
-        public Boolean ArpAlwaysSourceRoute
-        {
-            get
-            {
-                return this.ToBoolean("ArpAlwaysSourceRoute");
-            }
-        }
+        public ManagementObject PropertyData { get; set; }
 
-        public Boolean ArpUseEtherSNAP
-        {
-            get
-            {
-                return this.ToBoolean("ArpUseEtherSNAP");
-            }
-        }
+        public bool ArpAlwaysSourceRoute => this.ToBoolean("ArpAlwaysSourceRoute");
 
-        public String Caption
-        {
-            get
-            {
-                return this.ToString("Caption");
-            }
-        }
+        public bool ArpUseEtherSNAP => this.ToBoolean("ArpUseEtherSNAP");
 
-        public String DatabasePath
-        {
-            get
-            {
-                return this.ToString("DatabasePath");
-            }
-        }
+        public string Caption => this.ToString("Caption");
 
-        public Boolean DeadGWDetectEnabled
-        {
-            get
-            {
-                return this.ToBoolean("DeadGWDetectEnabled");
-            }
-        }
+        public string DatabasePath => this.ToString("DatabasePath");
 
-        public String[] DefaultIPGateway
-        {
-            get
-            {
-                return this.ToStringArray("DefaultIPGateway");
-            }
-        }
+        public bool DeadGWDetectEnabled => this.ToBoolean("DeadGWDetectEnabled");
 
-        public String DefaultIPGatewayList
-        {
-            get
-            {
-                return ToStringList(this.DefaultIPGateway);
-            }
-        }
+        public string[] DefaultIPGateway => this.ToStringArray("DefaultIPGateway");
 
-        public Byte DefaultTOS
-        {
-            get
-            {
-                return this.ToByte("DefaultTOS");
-            }
-        }
+        public string DefaultIPGatewayList => ToStringList(this.DefaultIPGateway);
 
-        public Byte DefaultTTL
-        {
-            get
-            {
-                return this.ToByte("DefaultTTL");
-            }
-        }
+        public byte DefaultTOS => this.ToByte("DefaultTOS");
 
-        public String Description
-        {
-            get
-            {
-                return this.ToString("Description");
-            }
-        }
+        public byte DefaultTTL => this.ToByte("DefaultTTL");
 
-        public Boolean DHCPEnabled
-        {
-            get
-            {
-                return this.ToBoolean("DHCPEnabled");
-            }
-        }
+        public string Description => this.ToString("Description");
 
-        public DateTime DHCPLeaseExpires
-        {
-            get
-            {
-                return this.ToDateTime("DHCPLeaseExpires");
-            }
-        }
+        public bool DHCPEnabled => this.ToBoolean("DHCPEnabled");
 
-        public DateTime DHCPLeaseObtained
-        {
-            get
-            {
-                return this.ToDateTime("DHCPLeaseObtained");
-            }
-        }
+        public DateTime DHCPLeaseExpires => this.ToDateTime("DHCPLeaseExpires");
 
-        public String DHCPServer
-        {
-            get
-            {
-                return this.ToString("DHCPServer");
-            }
-        }
+        public DateTime DHCPLeaseObtained => this.ToDateTime("DHCPLeaseObtained");
 
-        public String DNSDomain
-        {
-            get
-            {
-                return this.ToString("DNSDomain");
-            }
-        }
+        public string DHCPServer => this.ToString("DHCPServer");
 
-        public String DNSDomainSuffixSearchOrder
+        public string DNSDomain => this.ToString("DNSDomain");
+
+        public string DNSDomainSuffixSearchOrder
         {
             get
             {
                 try
                 {
                     if (this.PropertyData.Properties["DNSDomainSuffixSearchOrder"] == null)
-                        return String.Empty;
+                        return string.Empty;
 
-                    Object dns = this.PropertyData.Properties["DNSDomainSuffixSearchOrder"].Value;
+                    var dns = this.PropertyData.Properties["DNSDomainSuffixSearchOrder"].Value;
                     if (dns == null)
-                        return String.Empty;
+                        return string.Empty;
 
-                    Array dnsList = (dns as Array);
+                    var dnsList = dns as Array;
                     if (dnsList == null)
                         return dns.ToString();
 
-                    StringBuilder sb = new StringBuilder();
-                    foreach (Object o in dnsList)
+                    var sb = new StringBuilder();
+                    foreach (var o in dnsList)
                     {
-                        sb.Append(o.ToString());
+                        sb.Append(o);
                         sb.Append(",");
                     }
 
@@ -160,453 +69,139 @@ namespace Terminals.Network.DNS
                 catch (Exception exc)
                 {
                     Logging.Error("see: http://terminals.codeplex.com/workitem/20748", exc);
-                    return String.Empty;
+                    return string.Empty;
                 }
-
             }
         }
 
-        public Boolean DNSEnabledForWINSResolution
-        {
-            get
-            {
-                return this.ToBoolean("DNSEnabledForWINSResolution");
-            }
-        }
+        public bool DNSEnabledForWINSResolution => this.ToBoolean("DNSEnabledForWINSResolution");
 
-        public String DNSHostName
-        {
-            get
-            {
-                return this.ToString("DNSHostName");
-            }
-        }
+        public string DNSHostName => this.ToString("DNSHostName");
 
-        public String[] DNSServerSearchOrder
-        {
-            get
-            {
-                return this.ToStringArray("DNSServerSearchOrder");
-            }
-        }
+        public string[] DNSServerSearchOrder => this.ToStringArray("DNSServerSearchOrder");
 
-        public String DNSServerSearchOrderList
-        {
-            get
-            {
-                return ToStringList(this.DNSServerSearchOrder);
-            }
-        }
+        public string DNSServerSearchOrderList => ToStringList(this.DNSServerSearchOrder);
 
-        public Boolean DomainDNSRegistrationEnabled
-        {
-            get
-            {
-                return this.ToBoolean("DomainDNSRegistrationEnabled");
-            }
-        }
+        public bool DomainDNSRegistrationEnabled => this.ToBoolean("DomainDNSRegistrationEnabled");
 
-        public UInt32 ForwardBufferMemory
-        {
-            get
-            {
-                return this.ToUInt32("ForwardBufferMemory");
-            }
-        }
+        public uint ForwardBufferMemory => this.ToUInt32("ForwardBufferMemory");
 
-        public Boolean FullDNSRegistrationEnabled
-        {
-            get
-            {
-                return this.ToBoolean("FullDNSRegistrationEnabled");
-            }
-        }
+        public bool FullDNSRegistrationEnabled => this.ToBoolean("FullDNSRegistrationEnabled");
 
-        public UInt16[] GatewayCostMetric
-        {
-            get
-            {
-                return this.ToUInt16Array("GatewayCostMetric");
-            }
-        }
+        public ushort[] GatewayCostMetric => this.ToUInt16Array("GatewayCostMetric");
 
-        public String GatewayCostMetricList
-        {
-            get
-            {
-                return ToStringList(this.GatewayCostMetric);
-            }
-        }
+        public string GatewayCostMetricList => ToStringList(this.GatewayCostMetric);
 
-        public UInt32 IGMPLevel
-        {
-            get
-            {
-                return this.ToUInt32("IGMPLevel");
-            }
-        }
+        public uint IGMPLevel => this.ToUInt32("IGMPLevel");
 
-        public UInt32 Index
-        {
-            get
-            {
-                return this.ToUInt32("Index");
-            }
-        }
+        public uint Index => this.ToUInt32("Index");
 
-        public String[] IPAddress
-        {
-            get
-            {
-                return this.ToStringArray("IPAddress");
-            }
-        }
+        public string[] IPAddress => this.ToStringArray("IPAddress");
 
-        public String IPAddressList
-        {
-            get
-            {
-                return ToStringList(this.IPAddress);
-            }
-        }
+        public string IPAddressList => ToStringList(this.IPAddress);
 
-        public UInt32 IPConnectionMetric
-        {
-            get
-            {
-                return this.ToUInt32("IPConnectionMetric");
-            }
-        }
+        public uint IPConnectionMetric => this.ToUInt32("IPConnectionMetric");
 
-        public Boolean IPEnabled
-        {
-            get
-            {
-                return this.ToBoolean("IPEnabled");
-            }
-        }
+        public bool IPEnabled => this.ToBoolean("IPEnabled");
 
-        public Boolean IPFilterSecurityEnabled
-        {
-            get
-            {
-                return this.ToBoolean("IPFilterSecurityEnabled");
-            }
-        }
+        public bool IPFilterSecurityEnabled => this.ToBoolean("IPFilterSecurityEnabled");
 
-        public Boolean IPPortSecurityEnabled
-        {
-            get
-            {
-                return this.ToBoolean("IPPortSecurityEnabled");
-            }
-        }
+        public bool IPPortSecurityEnabled => this.ToBoolean("IPPortSecurityEnabled");
 
-        public String[] IPSecPermitIPProtocols
-        {
-            get
-            {
-                return this.ToStringArray("IPSecPermitIPProtocols");
-            }
-        }
+        public string[] IPSecPermitIPProtocols => this.ToStringArray("IPSecPermitIPProtocols");
 
-        public String IPSecPermitIPProtocolsList
-        {
-            get
-            {
-                return ToStringList(this.IPSecPermitIPProtocols);
-            }
-        }
+        public string IPSecPermitIPProtocolsList => ToStringList(this.IPSecPermitIPProtocols);
 
-        public String[] IPSecPermitTCPPorts
-        {
-            get
-            {
-                return this.ToStringArray("IPSecPermitTCPPorts");
-            }
-        }
+        public string[] IPSecPermitTCPPorts => this.ToStringArray("IPSecPermitTCPPorts");
 
-        public String IPSecPermitTCPPortsList
-        {
-            get
-            {
-                return ToStringList(this.IPSecPermitTCPPorts);
-            }
-        }
+        public string IPSecPermitTCPPortsList => ToStringList(this.IPSecPermitTCPPorts);
 
-        public String[] IPSecPermitUDPPorts
-        {
-            get
-            {
-                return this.ToStringArray("IPSecPermitUDPPorts");
-            }
-        }
+        public string[] IPSecPermitUDPPorts => this.ToStringArray("IPSecPermitUDPPorts");
 
-        public String IPSecPermitUDPPortsList
-        {
-            get
-            {
-                return ToStringList(this.IPSecPermitUDPPorts);
-            }
-        }
+        public string IPSecPermitUDPPortsList => ToStringList(this.IPSecPermitUDPPorts);
 
-        public String[] IPSubnet
-        {
-            get
-            {
-                return this.ToStringArray("IPSubnet");
-            }
-        }
+        public string[] IPSubnet => this.ToStringArray("IPSubnet");
 
-        public String IPSubnetList
-        {
-            get
-            {
+        public string IPSubnetList => ToStringList(this.IPSubnet);
 
-                return ToStringList(this.IPSubnet);
-            }
-        }
+        public bool IPUseZeroBroadcast => this.ToBoolean("IPUseZeroBroadcast");
 
-        public Boolean IPUseZeroBroadcast
-        {
-            get
-            {
-                return this.ToBoolean("IPUseZeroBroadcast");
-            }
-        }
+        public string IPXAddress => this.ToString("IPXAddress");
 
-        public String IPXAddress
-        {
-            get
-            {
-                return this.ToString("IPXAddress");
-            }
-        }
+        public bool IPXEnabled => this.ToBoolean("IPXEnabled");
 
-        public Boolean IPXEnabled
-        {
-            get
-            {
-                return this.ToBoolean("IPXEnabled");
-            }
-        }
+        public uint IPXFrameType => this.ToUInt32("IPXFrameType");
 
-        public UInt32 IPXFrameType
-        {
-            get
-            {
-                return this.ToUInt32("IPXFrameType");
-            }
-        }
+        public uint IPXMediaType => this.ToUInt32("IPXMediaType");
 
-        public UInt32 IPXMediaType
-        {
-            get
-            {
-                return this.ToUInt32("IPXMediaType");
-            }
-        }
+        public string IPXNetworkNumber => this.ToString("IPXNetworkNumber");
 
-        public String IPXNetworkNumber
-        {
-            get
-            {
-                return this.ToString("IPXNetworkNumber");
-            }
-        }
+        public string IPXVirtualNetNumber => this.ToString("IPXVirtualNetNumber");
 
-        public String IPXVirtualNetNumber
-        {
-            get
-            {
-                return this.ToString("IPXVirtualNetNumber");
-            }
-        }
+        public uint KeepAliveInterval => this.ToUInt32("KeepAliveInterval");
 
-        public UInt32 KeepAliveInterval
-        {
-            get
-            {
-                return this.ToUInt32("KeepAliveInterval");
-            }
-        }
+        public uint KeepAliveTime => this.ToUInt32("KeepAliveTime");
 
-        public UInt32 KeepAliveTime
-        {
-            get
-            {
-                return this.ToUInt32("KeepAliveTime");
-            }
-        }
+        public string MACAddress => this.ToString("MACAddress");
 
-        public String MACAddress
-        {
-            get
-            {
-                return this.ToString("MACAddress");
-            }
-        }
+        public uint MTU => this.ToUInt32("MTU");
 
-        public UInt32 MTU
-        {
-            get
-            {
-                return this.ToUInt32("MTU");
-            }
-        }
+        public uint NumForwardPackets => this.ToUInt32("NumForwardPackets");
 
-        public UInt32 NumForwardPackets
-        {
-            get
-            {
-                return this.ToUInt32("NumForwardPackets");
-            }
-        }
+        public bool PMTUBHDetectEnabled => this.ToBoolean("PMTUBHDetectEnabled");
 
-        public Boolean PMTUBHDetectEnabled
-        {
-            get
-            {
-                return this.ToBoolean("PMTUBHDetectEnabled");
-            }
-        }
+        public bool PMTUDiscoveryEnabled => this.ToBoolean("PMTUDiscoveryEnabled");
 
-        public Boolean PMTUDiscoveryEnabled
-        {
-            get
-            {
-                return this.ToBoolean("PMTUDiscoveryEnabled");
-            }
-        }
+        public string ServiceName => this.ToString("ServiceName");
 
-        public String ServiceName
-        {
-            get
-            {
-                return this.ToString("ServiceName");
-            }
-        }
+        public string SettingID => this.ToString("SettingID");
 
-        public String SettingID
-        {
-            get
-            {
-                return this.ToString("SettingID");
-            }
-        }
+        public uint TcpipNetbiosOptions => this.ToUInt32("TcpipNetbiosOptions");
 
-        public UInt32 TcpipNetbiosOptions
-        {
-            get
-            {
-                return this.ToUInt32("TcpipNetbiosOptions");
-            }
-        }
+        public uint TcpMaxConnectRetransmissions => this.ToUInt32("TcpMaxConnectRetransmissions");
 
-        public UInt32 TcpMaxConnectRetransmissions
-        {
-            get
-            {
-                return this.ToUInt32("TcpMaxConnectRetransmissions");
-            }
-        }
+        public uint TcpMaxDataRetransmissions => this.ToUInt32("TcpMaxDataRetransmissions");
 
-        public UInt32 TcpMaxDataRetransmissions
-        {
-            get
-            {
-                return this.ToUInt32("TcpMaxDataRetransmissions");
-            }
-        }
+        public uint TcpNumConnections => this.ToUInt32("TcpNumConnections");
 
-        public UInt32 TcpNumConnections
-        {
-            get
-            {
-                return this.ToUInt32("TcpNumConnections");
-            }
-        }
+        public bool TcpUseRFC1122UrgentPointer => this.ToBoolean("TcpUseRFC1122UrgentPointer");
 
-        public Boolean TcpUseRFC1122UrgentPointer
-        {
-            get
-            {
-                return this.ToBoolean("TcpUseRFC1122UrgentPointer");
-            }
-        }
+        public ushort TcpWindowSize => this.ToUInt16("TcpWindowSize");
 
-        public UInt16 TcpWindowSize
-        {
-            get
-            {
-                return this.ToUInt16("TcpWindowSize");
-            }
-        }
+        public bool WINSEnableLMHostsLookup => this.ToBoolean("WINSEnableLMHostsLookup");
 
-        public Boolean WINSEnableLMHostsLookup
-        {
-            get
-            {
-                return this.ToBoolean("WINSEnableLMHostsLookup");
-            }
-        }
+        public string WINSHostLookupFile => this.ToString("WINSHostLookupFile");
 
-        public String WINSHostLookupFile
-        {
-            get
-            {
-                return this.ToString("WINSHostLookupFile");
-            }
-        }
+        public string WINSPrimaryServer => this.ToString("WINSPrimaryServer");
 
-        public String WINSPrimaryServer
-        {
-            get
-            {
-                return this.ToString("WINSPrimaryServer");
-            }
-        }
+        public string WINSScopeID => this.ToString("WINSScopeID");
 
-        public String WINSScopeID
-        {
-            get
-            {
-                return this.ToString("WINSScopeID");
-            }
-        }
+        public string WINSSecondaryServer => this.ToString("WINSSecondaryServer");
 
-        public String WINSSecondaryServer
-        {
-            get
-            {
-                return this.ToString("WINSSecondaryServer");
-            }
-        }
-
-#endregion
+        #endregion
 
         #region Private methods developer made
-        
-        private String ToString(String property)
+
+        private string ToString(string property)
         {
             try
             {
-                object value = this.PropertyData.Properties[property].Value;
-                return (value == null) ? String.Empty : value.ToString();
+                var value = this.PropertyData.Properties[property].Value;
+                return value == null ? string.Empty : value.ToString();
             }
             catch (Exception ex)
             {
                 LogPropertyConversion(ex, property);
-                return String.Empty;
+                return string.Empty;
             }
         }
 
-        private Boolean ToBoolean(String property)
+        private bool ToBoolean(string property)
         {
             try
             {
-                object value = this.PropertyData.Properties[property].Value;
-                return (value == null) ? false : Convert.ToBoolean(value);
+                var value = this.PropertyData.Properties[property].Value;
+                return value == null ? false : Convert.ToBoolean(value);
             }
             catch (Exception ex)
             {
@@ -615,26 +210,26 @@ namespace Terminals.Network.DNS
             }
         }
 
-        private String[] ToStringArray(String property)
+        private string[] ToStringArray(string property)
         {
             try
             {
-                object value = this.PropertyData.Properties[property].Value;
-                return (value == null) ? new String[] { } : (String[])value;
+                var value = this.PropertyData.Properties[property].Value;
+                return value == null ? new string[] { } : (string[])value;
             }
             catch (Exception ex)
             {
                 LogPropertyConversion(ex, property);
-                return new String[] { };
+                return new string[] { };
             }
         }
 
-        private Byte ToByte(String property)
+        private byte ToByte(string property)
         {
             try
             {
-                object value = this.PropertyData.Properties[property].Value;
-                return (value == null) ? Convert.ToByte(0) : Convert.ToByte(value);
+                var value = this.PropertyData.Properties[property].Value;
+                return value == null ? Convert.ToByte(0) : Convert.ToByte(value);
             }
             catch (Exception ex)
             {
@@ -643,12 +238,12 @@ namespace Terminals.Network.DNS
             }
         }
 
-        private DateTime ToDateTime(String property)
+        private DateTime ToDateTime(string property)
         {
             try
             {
-                object value = this.PropertyData.Properties[property].Value;
-                return (value == null) ? DateTime.MinValue : this.GetDateTime(value.ToString());
+                var value = this.PropertyData.Properties[property].Value;
+                return value == null ? DateTime.MinValue : this.GetDateTime(value.ToString());
             }
             catch (Exception ex)
             {
@@ -657,12 +252,12 @@ namespace Terminals.Network.DNS
             }
         }
 
-        private UInt16 ToUInt16(String property)
+        private ushort ToUInt16(string property)
         {
             try
             {
-                object value = this.PropertyData.Properties[property].Value;
-                return (value == null) ? Convert.ToUInt16(0) : Convert.ToUInt16(value);
+                var value = this.PropertyData.Properties[property].Value;
+                return value == null ? Convert.ToUInt16(0) : Convert.ToUInt16(value);
             }
             catch (Exception ex)
             {
@@ -671,26 +266,26 @@ namespace Terminals.Network.DNS
             }
         }
 
-        private UInt16[] ToUInt16Array(String property)
+        private ushort[] ToUInt16Array(string property)
         {
             try
             {
-                object value = this.PropertyData.Properties[property].Value;
-                return (value == null) ? new UInt16[] { } : (UInt16[])value;
+                var value = this.PropertyData.Properties[property].Value;
+                return value == null ? new ushort[] { } : (ushort[])value;
             }
             catch (Exception ex)
             {
                 LogPropertyConversion(ex, property);
-                return new UInt16[] { };
+                return new ushort[] { };
             }
         }
 
-        private UInt32 ToUInt32(String property)
+        private uint ToUInt32(string property)
         {
             try
             {
-                object value = this.PropertyData.Properties[property].Value;
-                return (value == null) ? 0 : Convert.ToUInt32(value);
+                var value = this.PropertyData.Properties[property].Value;
+                return value == null ? 0 : Convert.ToUInt32(value);
             }
             catch (Exception ex)
             {
@@ -701,15 +296,15 @@ namespace Terminals.Network.DNS
 
         private static void LogPropertyConversion(Exception ex, string propertyName)
         {
-            string message = string.Format("Unable to get property '{0}' value in DNS Adapter", propertyName);
+            var message = string.Format("Unable to get property '{0}' value in DNS Adapter", propertyName);
             Logging.Error(message, ex);
         }
 
-        private static String ToStringList(String[] stringArray)
+        private static string ToStringList(string[] stringArray)
         {
-            Int32 x = 1;
-            StringBuilder sb = new StringBuilder();
-            foreach (String s in stringArray)
+            var x = 1;
+            var sb = new StringBuilder();
+            foreach (var s in stringArray)
             {
                 sb.Append(s);
                 if (x < stringArray.Length)
@@ -721,11 +316,11 @@ namespace Terminals.Network.DNS
             return sb.ToString();
         }
 
-        private static String ToStringList(UInt16[] stringArray)
+        private static string ToStringList(ushort[] stringArray)
         {
-            Int32 x = 1;
-            StringBuilder sb = new StringBuilder();
-            foreach (UInt16 s in stringArray)
+            var x = 1;
+            var sb = new StringBuilder();
+            foreach (var s in stringArray)
             {
                 sb.Append(s);
                 if (x < stringArray.Length)
@@ -741,53 +336,53 @@ namespace Terminals.Network.DNS
         // will generate managed code for existing WMI classes. It also generates
         // datetime conversion routines like this one.
         // Thanks to Chetan Parmar and dotnet247.com for the help.
-        private DateTime GetDateTime(String dmtfDate)
+        private DateTime GetDateTime(string dmtfDate)
         {
-            Int32 year = DateTime.Now.Year;
-            Int32 month = 1;
-            Int32 day = 1;
-            Int32 hour = 0;
-            Int32 minute = 0;
-            Int32 second = 0;
-            Int32 millisec = 0;
-            String dmtf = dmtfDate;
-            String tempString = String.Empty;
+            var year = DateTime.Now.Year;
+            var month = 1;
+            var day = 1;
+            var hour = 0;
+            var minute = 0;
+            var second = 0;
+            var millisec = 0;
+            var dmtf = dmtfDate;
+            var tempString = string.Empty;
 
-            if (String.IsNullOrEmpty(dmtf))
+            if (string.IsNullOrEmpty(dmtf))
                 return DateTime.MinValue;
 
-            if ((dmtf.Length != 25))
+            if (dmtf.Length != 25)
                 return DateTime.MinValue;
 
             tempString = dmtf.Substring(0, 4);
-            if (("****" != tempString))
-                year = Int32.Parse(tempString);
+            if ("****" != tempString)
+                year = int.Parse(tempString);
 
             tempString = dmtf.Substring(4, 2);
-            if (("**" != tempString))
-                month = Int32.Parse(tempString);
+            if ("**" != tempString)
+                month = int.Parse(tempString);
 
             tempString = dmtf.Substring(6, 2);
-            if (("**" != tempString))
-                day = Int32.Parse(tempString);
+            if ("**" != tempString)
+                day = int.Parse(tempString);
 
             tempString = dmtf.Substring(8, 2);
-            if (("**" != tempString))
-                hour = Int32.Parse(tempString);
+            if ("**" != tempString)
+                hour = int.Parse(tempString);
 
             tempString = dmtf.Substring(10, 2);
-            if (("**" != tempString))
-                minute = Int32.Parse(tempString);
+            if ("**" != tempString)
+                minute = int.Parse(tempString);
 
             tempString = dmtf.Substring(12, 2);
-            if (("**" != tempString))
-                second = Int32.Parse(tempString);
+            if ("**" != tempString)
+                second = int.Parse(tempString);
 
             tempString = dmtf.Substring(15, 3);
-            if (("***" != tempString))
-                millisec = Int32.Parse(tempString);
+            if ("***" != tempString)
+                millisec = int.Parse(tempString);
 
-            DateTime dateRet = new DateTime(year, month, day, hour, minute, second, millisec);
+            var dateRet = new DateTime(year, month, day, hour, minute, second, millisec);
             return dateRet;
         }
 

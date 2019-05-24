@@ -3,14 +3,14 @@ using Terminals.CommandLine;
 
 namespace Terminals.Network
 {
-    [ServiceBehaviorAttribute(InstanceContextMode = InstanceContextMode.Single)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     internal class CommandLineService : ICommandLineService
     {
-        private MainForm mainForm;
+        private readonly MainForm mainForm;
 
         internal CommandLineService(MainForm mainForm)
         {
-           this.mainForm = mainForm;
+            this.mainForm = mainForm;
         }
 
         public void ForwardCommand(CommandLineArgs args)

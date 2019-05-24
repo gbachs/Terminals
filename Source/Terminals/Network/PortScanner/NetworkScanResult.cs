@@ -1,30 +1,32 @@
 ﻿using System;
-using Terminals.Connections;
 
 namespace Terminals.Scanner
 {
     internal class NetworkScanResult
     {
-        public String IPAddress { get; set; }
-        public String HostName { get; set; }
-        internal Int32 Port { get; set; }
-        public String ServiceName { get; set; }
+        public string IPAddress { get; set; }
 
-        public override String ToString()
+        public string HostName { get; set; }
+
+        internal int Port { get; set; }
+
+        public string ServiceName { get; set; }
+
+        public override string ToString()
         {
-            return String.Format("NetworkScanResult:{0},{1},{2}",
+            return string.Format("NetworkScanResult:{0},{1},{2}",
                 this.IPAddress, this.ServiceName, this.HostName);
         }
 
-        internal FavoriteConfigurationElement ToFavorite(String tags)
+        internal FavoriteConfigurationElement ToFavorite(string tags)
         {
-            FavoriteConfigurationElement favorite = new FavoriteConfigurationElement();
+            var favorite = new FavoriteConfigurationElement();
             favorite.ServerName = this.IPAddress;
             favorite.Port = this.Port;
             favorite.Protocol = this.ServiceName;
-            if (tags != String.Empty)
+            if (tags != string.Empty)
                 favorite.Tags = tags;
-            favorite.Name = String.Format("{0}_{1}", this.HostName, favorite.Protocol);
+            favorite.Name = string.Format("{0}_{1}", this.HostName, favorite.Protocol);
             favorite.DomainName = Environment.UserDomainName;
             favorite.UserName = Environment.UserName;
             return favorite;

@@ -6,15 +6,15 @@ namespace Terminals.Configuration
     {
         internal GroupConfigurationElementCollection GetGroups()
         {
-            return GetSection().Groups;
+            return this.GetSection().Groups;
         }
 
         /// <summary>
-        /// "Since version 2. only for updates. Use new persistence instead."
+        ///     "Since version 2. only for updates. Use new persistence instead."
         /// </summary>
         internal void ClearGroups()
         {
-            GroupConfigurationElementCollection configGroups = GetGroups();
+            var configGroups = this.GetGroups();
             configGroups.Clear();
         }
     }

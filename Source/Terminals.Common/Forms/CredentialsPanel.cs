@@ -7,29 +7,26 @@ namespace Terminals.Forms.Controls
 {
     public partial class CredentialsPanel : UserControl
     {
+        public const string HIDDEN_PASSWORD = "****************";
+
+        private string favoritePassword = string.Empty;
+
+        public CredentialsPanel()
+        {
+            this.InitializeComponent();
+            this.revealPwdButton.Click += this.RevealOrHidePwd;
+        }
+
         public IMRUSettings Settings { get; set; }
-
-        private String favoritePassword = string.Empty;
-
-        public const String HIDDEN_PASSWORD = "****************";
 
         public bool PasswordLoaded { get; private set; }
 
-        public event EventHandler PasswordChanged
-        {
-            add { this.txtPassword.TextChanged += value; }
-            remove { this.txtPassword.TextChanged -= value; }
-        }
-
         public int TextEditsLeft
         {
-            get
-            {
-                return this.cmbUsers.Left;
-            }
+            get => this.cmbUsers.Left;
             set
             {
-                int newWidth = this.cmbUsers.Left + this.cmbUsers.Width - value; 
+                var newWidth = this.cmbUsers.Left + this.cmbUsers.Width - value;
                 this.cmbUsers.Left = value;
                 this.cmbDomains.Left = value;
                 this.txtPassword.Left = value;
@@ -39,10 +36,10 @@ namespace Terminals.Forms.Controls
             }
         }
 
-        public CredentialsPanel()
+        public event EventHandler PasswordChanged
         {
-            InitializeComponent();
-            this.revealPwdButton.Click += this.RevealOrHidePwd;
+            add => this.txtPassword.TextChanged += value;
+            remove => this.txtPassword.TextChanged -= value;
         }
 
         public void SetUserNameError(ErrorProvider errorProvider, string errroMessage)
@@ -59,8 +56,8 @@ namespace Terminals.Forms.Controls
 
         public void SaveMRUs()
         {
-            this.Settings.AddDomainMRUItem(cmbDomains.Text);
-            this.Settings.AddUserMRUItem(cmbUsers.Text);
+            this.Settings.AddDomainMRUItem(this.cmbDomains.Text);
+            this.Settings.AddUserMRUItem(this.cmbUsers.Text);
         }
 
         public void LoadDirectlyFrom(IGuardedCredential security)
@@ -89,7 +86,8 @@ namespace Terminals.Forms.Controls
             if (!string.IsNullOrEmpty(this.favoritePassword) || string.IsNullOrEmpty(security.EncryptedPassword))
                 return;
 
-            MessageBox.Show("There was an issue with decrypting your password.\n\nPlease provide a new password and save the favorite.");
+            MessageBox.Show(
+                "There was an issue with decrypting your password.\n\nPlease provide a new password and save the favorite.");
             this.txtPassword.Text = string.Empty;
             this.favoritePassword = string.Empty;
             this.txtPassword.Focus();
@@ -124,7 +122,7 @@ namespace Terminals.Forms.Controls
 
         internal void RevealOrHidePwd(object sender, EventArgs e)
         {
-            if (this.revealPwdButton.ImageIndex==1)
+            if (this.revealPwdButton.ImageIndex == 1)
             {
                 this.txtPassword.PasswordChar = '*';
                 this.revealPwdButton.ImageIndex = 0;
@@ -137,4 +135,3 @@ namespace Terminals.Forms.Controls
         }
     }
 }
-

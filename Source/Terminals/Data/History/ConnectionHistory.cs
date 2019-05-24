@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Threading;
 using System.IO;
+using System.Threading;
 using Terminals.Configuration;
 using Terminals.Data;
 using Unified;
@@ -15,36 +15,67 @@ namespace Terminals.History
     internal sealed class ConnectionHistory : IConnectionHistory
     {
         private readonly Favorites favorites;
-        private readonly ManualResetEvent loadingGate = new ManualResetEvent(false);
-        private readonly DataFileWatcher fileWatcher;
-        private HistoryByFavorite currentHistory;
-        public event HistoryRecorded HistoryRecorded;
-        public event Action HistoryClear;
 
         /// <summary>
-        /// Prevent concurrent updates on History file by another program
+        ///     Prevent concurrent updates on History file by another program
         /// </summary>
         private readonly Mutex fileLock = new Mutex(false, "Terminals.CodePlex.com.History");
+
+        private readonly DataFileWatcher fileWatcher;
+
+        private readonly ManualResetEvent loadingGate = new ManualResetEvent(false);
+
+        private HistoryByFavorite currentHistory;
 
         internal ConnectionHistory(Favorites favorites)
         {
             this.favorites = favorites;
-            fileWatcher = new DataFileWatcher(FileLocations.HistoryFullFileName);
-            fileWatcher.FileChanged += new EventHandler(this.OnFileChanged);
-            fileWatcher.StartObservation();
-            ThreadPool.QueueUserWorkItem(new WaitCallback(LoadHistory));
+            this.fileWatcher = new DataFileWatcher(FileLocations.HistoryFullFileName);
+            this.fileWatcher.FileChanged += this.OnFileChanged;
+            this.fileWatcher.StartObservation();
+            ThreadPool.QueueUserWorkItem(this.LoadHistory);
+        }
+
+        public event HistoryRecorded HistoryRecorded;
+
+        public event Action HistoryClear;
+
+        public SortableList<IFavorite> GetDateItems(string historyDateKey)
+        {
+            this.loadingGate.WaitOne();
+            var historyGroupItems = this.GetGroupedByDate()[historyDateKey];
+            var groupFavorites = SelectFavoritesFromHistoryItems(historyGroupItems);
+            return Favorites.OrderByDefaultSorting(groupFavorites);
+        }
+
+        public void RecordHistoryItem(IFavorite favorite)
+        {
+            this.loadingGate.WaitOne();
+            if (this.currentHistory == null || favorite == null)
+                return;
+
+            var favoriteHistoryList = this.GetFavoriteHistoryList(favorite.Id);
+            favoriteHistoryList.Add(new HistoryItem());
+            this.SaveHistory();
+            this.FireOnHistoryRecorded(favorite);
+        }
+
+        public void Clear()
+        {
+            this.currentHistory.Clear();
+            this.SaveHistory();
+            if (this.HistoryClear != null)
+                this.HistoryClear();
         }
 
         private void OnFileChanged(object sender, EventArgs e)
         {
             // don't need locking here, because only today is updated adding new items
-            SortableList<IFavorite> oldTodays = GetOldTodaysHistory();
-            LoadHistory(null);
-            List<IFavorite> newTodays = MergeWithNewTodays(oldTodays);
-            foreach (IFavorite favorite in newTodays)
-            {
-                FireOnHistoryRecorded(favorite);
-            }
+            var oldTodays = this.GetOldTodaysHistory();
+            this.LoadHistory(null);
+            var newTodays = this.MergeWithNewTodays(oldTodays);
+            foreach (var favorite in newTodays)
+                this.FireOnHistoryRecorded(favorite);
         }
 
         private List<IFavorite> MergeWithNewTodays(SortableList<IFavorite> oldTodays)
@@ -64,29 +95,21 @@ namespace Terminals.History
         }
 
         /// <summary>
-        /// Because file watcher is created before the main form in GUI thread.
-        /// This lets to fire the file system watcher events in GUI thread. 
+        ///     Because file watcher is created before the main form in GUI thread.
+        ///     This lets to fire the file system watcher events in GUI thread.
         /// </summary>
         internal void AssignSynchronizationObject(ISynchronizeInvoke synchronizer)
         {
-            fileWatcher.AssignSynchronizer(synchronizer);
-        }
-
-        public SortableList<IFavorite> GetDateItems(string historyDateKey)
-        {
-            this.loadingGate.WaitOne();
-            var historyGroupItems = GetGroupedByDate()[historyDateKey];
-            var groupFavorites = SelectFavoritesFromHistoryItems(historyGroupItems);
-            return Favorites.OrderByDefaultSorting(groupFavorites);
+            this.fileWatcher.AssignSynchronizer(synchronizer);
         }
 
         private static SortableList<IFavorite> SelectFavoritesFromHistoryItems(
             SortableList<IHistoryItem> groupedByDate)
         {
             var selection = new SortableList<IFavorite>();
-            foreach (IHistoryItem favoriteTouch in groupedByDate)
+            foreach (var favoriteTouch in groupedByDate)
             {
-                IFavorite favorite = favoriteTouch.Favorite;
+                var favorite = favoriteTouch.Favorite;
                 if (favorite != null && !selection.Contains(favorite)) // add each favorite only once
                     selection.Add(favorite);
             }
@@ -100,13 +123,13 @@ namespace Terminals.History
         }
 
         /// <summary>
-        /// Load or re-load history from HistoryLocation
+        ///     Load or re-load history from HistoryLocation
         /// </summary>
         private void LoadHistory(object threadState)
         {
             try
             {
-                Stopwatch stopwatch = Stopwatch.StartNew();
+                var stopwatch = Stopwatch.StartNew();
                 this.TryLoadFile();
                 Debug.WriteLine("History Loaded. Duration:{0}ms", stopwatch.ElapsedMilliseconds);
             }
@@ -122,36 +145,38 @@ namespace Terminals.History
 
         private void TryLoadFile()
         {
-            string fileName = FileLocations.HistoryFullFileName;
+            var fileName = FileLocations.HistoryFullFileName;
             if (!string.IsNullOrEmpty(fileName))
             {
                 Logging.InfoFormat("Loading History from: {0}", fileName);
                 if (File.Exists(fileName))
                 {
-                    LoadFile();
+                    this.LoadFile();
                     return;
                 }
             }
 
-            this.currentHistory = new HistoryByFavorite { Favorites = this.favorites };
+            this.currentHistory = new HistoryByFavorite {Favorites = this.favorites};
         }
 
         private void LoadFile()
         {
             try
             {
-                fileLock.WaitOne();
-                var loadedHistory = Serialize.DeserializeXMLFromDisk(FileLocations.HistoryFullFileName, typeof(HistoryByFavorite)) as HistoryByFavorite;
+                this.fileLock.WaitOne();
+                var loadedHistory =
+                    Serialize.DeserializeXMLFromDisk(FileLocations.HistoryFullFileName, typeof(HistoryByFavorite)) as
+                        HistoryByFavorite;
                 loadedHistory.Favorites = this.favorites;
                 this.currentHistory = loadedHistory;
             }
             catch // fails also in case of history upgrade, we don't upgrade history file
             {
-                this.currentHistory = new HistoryByFavorite{ Favorites = this.favorites};
+                this.currentHistory = new HistoryByFavorite {Favorites = this.favorites};
             }
-            finally 
+            finally
             {
-                fileLock.ReleaseMutex();
+                this.fileLock.ReleaseMutex();
             }
         }
 
@@ -159,8 +184,8 @@ namespace Terminals.History
         {
             try
             {
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                fileLock.WaitOne();
+                var stopwatch = Stopwatch.StartNew();
+                this.fileLock.WaitOne();
                 this.fileWatcher.StopObservation();
                 Serialize.SerializeXMLToDisk(this.currentHistory, FileLocations.HistoryFullFileName);
                 Logging.Info(string.Format("History saved. Duration:{0} ms", stopwatch.ElapsedMilliseconds));
@@ -171,21 +196,9 @@ namespace Terminals.History
             }
             finally
             {
-                fileLock.ReleaseMutex();
+                this.fileLock.ReleaseMutex();
                 this.fileWatcher.StartObservation();
             }
-        }
-
-        public void RecordHistoryItem(IFavorite favorite)
-        {
-            this.loadingGate.WaitOne();
-            if (this.currentHistory == null || favorite == null)
-                return;
-
-            List<HistoryItem> favoriteHistoryList = GetFavoriteHistoryList(favorite.Id);
-            favoriteHistoryList.Add(new HistoryItem());
-            this.SaveHistory();
-            this.FireOnHistoryRecorded(favorite);
         }
 
         private void FireOnHistoryRecorded(IFavorite favorite)
@@ -195,14 +208,6 @@ namespace Terminals.History
                 var args = new HistoryRecordedEventArgs(favorite);
                 this.HistoryRecorded(args);
             }
-        }
-
-        public void Clear()
-        {
-            this.currentHistory.Clear();
-            this.SaveHistory();
-            if (HistoryClear != null)
-                HistoryClear();
         }
 
         private List<HistoryItem> GetFavoriteHistoryList(Guid favoriteId)

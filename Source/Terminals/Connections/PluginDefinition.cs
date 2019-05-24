@@ -2,15 +2,15 @@
 {
     internal class PluginDefinition
     {
-        internal string Description { get; private set; }
-
-        internal string FullPath { get; private set; }
-
         public PluginDefinition(string fullPath, string description)
         {
             this.FullPath = fullPath;
             this.Description = description;
         }
+
+        internal string Description { get; }
+
+        internal string FullPath { get; }
 
         public override string ToString()
         {

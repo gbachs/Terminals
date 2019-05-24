@@ -8,15 +8,15 @@ namespace Terminals.Network
     {
         public WakeOnLan()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         private void SendButton_Click(object sender, EventArgs e)
         {
             try
             {
-                MagicPacket wakeUpPacket = new MagicPacket(this.MACTextbox.Text);
-                int byteSend = wakeUpPacket.WakeUp();
+                var wakeUpPacket = new MagicPacket(this.MACTextbox.Text);
+                var byteSend = wakeUpPacket.WakeUp();
                 this.ResultsLabel.Text = string.Format("{0} bytes sent to {1}", byteSend, wakeUpPacket.macAddress);
             }
             catch (Exception exc)
@@ -29,9 +29,7 @@ namespace Terminals.Network
         private void MACTextbox_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-            {
-                SendButton_Click(null, null);
-            }
+                this.SendButton_Click(null, null);
         }
     }
 }

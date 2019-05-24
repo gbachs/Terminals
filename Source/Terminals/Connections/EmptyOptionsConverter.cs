@@ -3,7 +3,7 @@ using Terminals.Common.Connections;
 namespace Terminals.Connections
 {
     /// <summary>
-    /// Missing plugin implementation of related converter
+    ///     Missing plugin implementation of related converter
     /// </summary>
     internal class EmptyOptionsConverter : IOptionsConverter
     {
