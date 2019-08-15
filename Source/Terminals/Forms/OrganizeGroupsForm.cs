@@ -39,7 +39,7 @@ namespace Terminals
 
         private void LoadSelectedGroupFavorites()
         {
-            IGroup selectedGroup = GetSelectedGroup();
+            var selectedGroup = GetSelectedGroup();
             if (selectedGroup != null)
             {
                 this.gridGroupFavorites.DataSource = selectedGroup.Favorites.ToList();
@@ -53,7 +53,7 @@ namespace Terminals
 
         private void TsbAddGroup_Click(object sender, EventArgs e)
         {
-            string newGroupName = NewGroupForm.AskFroGroupName(this.persistence);
+            var newGroupName = NewGroupForm.AskFroGroupName(this.persistence);
             if (string.IsNullOrEmpty(newGroupName))
                 return;
             
@@ -63,7 +63,7 @@ namespace Terminals
 
         private void TsbDeleteGroup_Click(object sender, EventArgs e)
         {
-            IGroup group = GetSelectedGroup();
+            var group = GetSelectedGroup();
             if (group != null && OrganizeFavoritesForm.AskIfRealyDelete("group"))
             {
                 this.persistence.Groups.Delete(group);
@@ -73,7 +73,7 @@ namespace Terminals
 
         private void TsbAddConnection_Click(object sender, EventArgs e)
         {
-            IGroup group = GetSelectedGroup();
+            var group = GetSelectedGroup();
             if (group != null)
                 this.AddFavoritesToGroup(group);
         }
@@ -93,12 +93,12 @@ namespace Terminals
 
         private void TsbDeleteConnection_Click(object sender, EventArgs e)
         {
-            IGroup group = GetSelectedGroup();
+            var group = GetSelectedGroup();
             if (group != null)
             {
                 if (this.gridGroupFavorites.SelectedRows.Count > 0)
                 {
-                    List<IFavorite> selectedFavorites = GetSelectedFavorites();
+                    var selectedFavorites = GetSelectedFavorites();
                     group.RemoveFavorites(selectedFavorites);
                     LoadSelectedGroupFavorites();
                     this.persistence.SaveAndFinishDelayedUpdate();

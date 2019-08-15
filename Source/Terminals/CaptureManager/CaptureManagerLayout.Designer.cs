@@ -39,10 +39,7 @@ namespace Terminals.CaptureManager
             this.imageListTree = new System.Windows.Forms.ImageList(this.components);
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.listViewFiles = new System.Windows.Forms.ListView();
-            this.thumbsContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyImageToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyImagePathToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
             this.viewComboBox = new System.Windows.Forms.ComboBox();
@@ -66,7 +63,6 @@ namespace Terminals.CaptureManager
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            this.thumbsContextMenu.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarZoom)).BeginInit();
             this.gBoxComments.SuspendLayout();
@@ -161,7 +157,6 @@ namespace Terminals.CaptureManager
             // 
             // listViewFiles
             // 
-            this.listViewFiles.ContextMenuStrip = this.thumbsContextMenu;
             this.listViewFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewFiles.GridLines = true;
             this.listViewFiles.LargeImageList = this.imageList1;
@@ -176,16 +171,7 @@ namespace Terminals.CaptureManager
             this.listViewFiles.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView1_KeyDown);
             this.listViewFiles.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
             this.listViewFiles.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
-            // 
-            // thumbsContextMenu
-            // 
-            this.thumbsContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteToolStripMenuItem,
-            this.copyImageToClipboardToolStripMenuItem,
-            this.copyImagePathToClipboardToolStripMenuItem});
-            this.thumbsContextMenu.Name = "thumbsContextMenu";
-            this.thumbsContextMenu.Size = new System.Drawing.Size(233, 70);
-            this.thumbsContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.thumbsContextMenu_Opening);
+         
             // 
             // deleteToolStripMenuItem
             // 
@@ -194,20 +180,7 @@ namespace Terminals.CaptureManager
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteFileToolStripMenuItem_Click);
-            // 
-            // copyImageToClipboardToolStripMenuItem
-            // 
-            this.copyImageToClipboardToolStripMenuItem.Name = "copyImageToClipboardToolStripMenuItem";
-            this.copyImageToClipboardToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.copyImageToClipboardToolStripMenuItem.Text = "Copy Image to clipboard";
-            this.copyImageToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyImageToClipboardToolStripMenuItem_Click);
-            // 
-            // copyImagePathToClipboardToolStripMenuItem
-            // 
-            this.copyImagePathToClipboardToolStripMenuItem.Name = "copyImagePathToClipboardToolStripMenuItem";
-            this.copyImagePathToClipboardToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
-            this.copyImagePathToClipboardToolStripMenuItem.Text = "Copy Image path to clipboard";
-            this.copyImagePathToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyImagePathToClipboardToolStripMenuItem_Click);
+          
             // 
             // imageList1
             // 
@@ -379,7 +352,6 @@ namespace Terminals.CaptureManager
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            this.thumbsContextMenu.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarZoom)).EndInit();
@@ -400,10 +372,7 @@ namespace Terminals.CaptureManager
         private System.Windows.Forms.ContextMenuStrip treeContextMenu;
         private System.Windows.Forms.ToolStripMenuItem newFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteFolderToolStripMenuItem;
-        private System.Windows.Forms.ContextMenuStrip thumbsContextMenu;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem copyImageToClipboardToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem copyImagePathToClipboardToolStripMenuItem;
         private System.Windows.Forms.GroupBox gBoxComments;
         private System.Windows.Forms.Label lblComments;
         private System.Windows.Forms.PictureBox pictureBox1;

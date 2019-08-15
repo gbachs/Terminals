@@ -7,13 +7,7 @@ namespace Terminals
 {
     internal partial class QuickConnect : Form
     {
-        public string ConnectionName
-        {
-            get
-            {
-                return this.inputTextbox.Text;
-            }
-        }
+        public string ConnectionName => this.inputTextbox.Text;
 
         public QuickConnect(IPersistence persistence)
         {
@@ -24,8 +18,8 @@ namespace Terminals
 
         private void LoadFavorites(IPersistence persistence)
         {
-            IFavorites favorites = persistence.Favorites;
-            string[] favoriteNames = favorites.Select(f => f.Name).ToArray();
+            var favorites = persistence.Favorites;
+            var favoriteNames = favorites.Select(f => f.Name).ToArray();
             this.inputTextbox.AutoCompleteCustomSource = new AutoCompleteStringCollection();
             this.inputTextbox.AutoCompleteCustomSource.AddRange(favoriteNames);
         }

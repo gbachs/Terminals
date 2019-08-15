@@ -5,8 +5,7 @@ namespace Terminals.Common.Connections
     {
         public void FromConfigFavorite(OptionsConversionContext context)
         {
-            var options = context.Favorite.ProtocolProperties as TOptions;
-            if (options != null)
+            if (context.Favorite.ProtocolProperties is TOptions options)
             {
                 this.FromConfigFavorite(context.ConfigFavorite, options);
             }
@@ -16,8 +15,7 @@ namespace Terminals.Common.Connections
 
         public void ToConfigFavorite(OptionsConversionContext context)
         {
-            var options = context.Favorite.ProtocolProperties as TOptions;
-            if (options != null)
+            if (context.Favorite.ProtocolProperties is TOptions options)
             {
                 this.ToConfigFavorite(context.ConfigFavorite, options);
             }

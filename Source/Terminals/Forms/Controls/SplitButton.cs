@@ -40,20 +40,14 @@ namespace Terminals.Forms.Controls
         [Browsable(false)]
         public override ContextMenuStrip ContextMenuStrip
         {
-            get
-            {
-                return SplitMenuStrip;
-            }
-            set
-            {
-                SplitMenuStrip = value;
-            }
+            get => SplitMenuStrip;
+            set => SplitMenuStrip = value;
         }
 
         [DefaultValue(null)]
         public ContextMenu SplitMenu
         {
-            get { return m_SplitMenu; }
+            get => m_SplitMenu;
             set
             {
                 //remove the event handlers for the old SplitMenu
@@ -78,10 +72,7 @@ namespace Terminals.Forms.Controls
         [DefaultValue(null)]
         public ContextMenuStrip SplitMenuStrip
         {
-            get
-            {
-                return m_SplitMenuStrip;
-            }
+            get => m_SplitMenuStrip;
             set
             {
                 //remove the event handlers for the old SplitMenuStrip
@@ -116,18 +107,14 @@ namespace Terminals.Forms.Controls
                     showSplit = value;
                     Invalidate();
 
-                    if (Parent != null)
-                        Parent.PerformLayout();
+                    this.Parent?.PerformLayout();
                 }
             }
         }
 
         private PushButtonState State
         {
-            get
-            {
-                return _state;
-            }
+            get => _state;
             set
             {
                 if (!_state.Equals(value))
@@ -324,13 +311,13 @@ namespace Terminals.Forms.Controls
             if (!showSplit)
                 return;
 
-            Graphics g = pevent.Graphics;
-            Rectangle bounds = ClientRectangle;
+            var g = pevent.Graphics;
+            var bounds = ClientRectangle;
 
             // draw the button background as according to the current state.
             if (State != PushButtonState.Pressed && IsDefault && !Application.RenderWithVisualStyles)
             {
-                Rectangle backgroundBounds = bounds;
+                var backgroundBounds = bounds;
                 backgroundBounds.Inflate(-1, -1);
                 ButtonRenderer.DrawButton(g, backgroundBounds, State);
 
@@ -345,14 +332,14 @@ namespace Terminals.Forms.Controls
             // calculate the current dropdown rectangle.
             dropDownRectangle = new Rectangle(bounds.Right - SplitSectionWidth, 0, SplitSectionWidth, bounds.Height);
 
-            int internalBorder = BorderSize;
-            Rectangle focusRect =
+            var internalBorder = BorderSize;
+            var focusRect =
                 new Rectangle(internalBorder - 1,
                               internalBorder - 1,
                               bounds.Width - dropDownRectangle.Width - internalBorder,
                               bounds.Height - (internalBorder * 2) + 2);
 
-            bool drawSplitLine = (State == PushButtonState.Hot || State == PushButtonState.Pressed || !Application.RenderWithVisualStyles);
+            var drawSplitLine = (State == PushButtonState.Hot || State == PushButtonState.Pressed || !Application.RenderWithVisualStyles);
 
 
             if (RightToLeft == RightToLeft.Yes)
@@ -392,7 +379,7 @@ namespace Terminals.Forms.Controls
 
         public override Size GetPreferredSize(Size proposedSize)
         {
-            Size preferredSize = base.GetPreferredSize(proposedSize);
+            var preferredSize = base.GetPreferredSize(proposedSize);
 
             //autosize correctly for splitbuttons
             if (showSplit)
@@ -444,12 +431,12 @@ namespace Terminals.Forms.Controls
 
         private void PaintArrow(Graphics g, Rectangle dropDownRect)
         {
-            Point middle = new Point(Convert.ToInt32(dropDownRect.Left + dropDownRect.Width / 2), Convert.ToInt32(dropDownRect.Top + dropDownRect.Height / 2));
+            var middle = new Point(Convert.ToInt32(dropDownRect.Left + dropDownRect.Width / 2), Convert.ToInt32(dropDownRect.Top + dropDownRect.Height / 2));
 
             //if the width is odd - favor pushing it over one pixel right.
             middle.X += (dropDownRect.Width % 2);
 
-            Point[] arrow = new[] { new Point(middle.X - 2, middle.Y - 1), new Point(middle.X + 3, middle.Y - 1), new Point(middle.X, middle.Y + 2) };
+            var arrow = new[] { new Point(middle.X - 2, middle.Y - 1), new Point(middle.X + 3, middle.Y - 1), new Point(middle.X, middle.Y + 2) };
 
             if (Enabled)
                 g.FillPolygon(SystemBrushes.ControlText, arrow);
@@ -459,9 +446,9 @@ namespace Terminals.Forms.Controls
 
         private Size CalculateButtonAutoSize()
         {
-            Size ret_size = Size.Empty;
-            Size text_size = TextRenderer.MeasureText(Text, Font);
-            Size image_size = Image == null ? Size.Empty : Image.Size;
+            var ret_size = Size.Empty;
+            var text_size = TextRenderer.MeasureText(Text, Font);
+            var image_size = Image == null ? Size.Empty : Image.Size;
 
             // Pad the text size
             if (Text.Length != 0)
@@ -507,8 +494,8 @@ namespace Terminals.Forms.Controls
 
         private void CalculateButtonTextAndImageLayout(ref Rectangle content_rect, out Rectangle textRectangle, out Rectangle imageRectangle)
         {
-            Size text_size = TextRenderer.MeasureText(Text, Font, content_rect.Size, textFormatFlags);
-            Size image_size = Image == null ? Size.Empty : Image.Size;
+            var text_size = TextRenderer.MeasureText(Text, Font, content_rect.Size, textFormatFlags);
+            var image_size = Image == null ? Size.Empty : Image.Size;
 
             textRectangle = Rectangle.Empty;
             imageRectangle = Rectangle.Empty;
@@ -600,8 +587,8 @@ namespace Terminals.Forms.Controls
 
         private void LayoutTextBeforeOrAfterImage(Rectangle totalArea, bool textFirst, Size textSize, Size imageSize, out Rectangle textRect, out Rectangle imageRect)
         {
-            int element_spacing = 0;	// Spacing between the Text and the Image
-            int total_width = textSize.Width + element_spacing + imageSize.Width;
+            var element_spacing = 0;	// Spacing between the Text and the Image
+            var total_width = textSize.Width + element_spacing + imageSize.Width;
 
             if (!textFirst)
                 element_spacing += 2;
@@ -613,14 +600,14 @@ namespace Terminals.Forms.Controls
                 total_width = totalArea.Width;
             }
 
-            int excess_width = totalArea.Width - total_width;
-            int offset = 0;
+            var excess_width = totalArea.Width - total_width;
+            var offset = 0;
 
             Rectangle final_text_rect;
             Rectangle final_image_rect;
 
-            HorizontalAlignment h_text = GetHorizontalAlignment(TextAlign);
-            HorizontalAlignment h_image = GetHorizontalAlignment(ImageAlign);
+            var h_text = GetHorizontalAlignment(TextAlign);
+            var h_image = GetHorizontalAlignment(ImageAlign);
 
             if (h_image == HorizontalAlignment.Left)
                 offset = 0;
@@ -648,8 +635,8 @@ namespace Terminals.Forms.Controls
 
         private void LayoutTextAboveOrBelowImage(Rectangle totalArea, bool textFirst, Size textSize, Size imageSize, out Rectangle textRect, out Rectangle imageRect)
         {
-            int element_spacing = 0;	// Spacing between the Text and the Image
-            int total_height = textSize.Height + element_spacing + imageSize.Height;
+            var element_spacing = 0;	// Spacing between the Text and the Image
+            var total_height = textSize.Height + element_spacing + imageSize.Height;
 
             if (textFirst)
                 element_spacing += 2;
@@ -664,14 +651,14 @@ namespace Terminals.Forms.Controls
                 total_height = totalArea.Height;
             }
 
-            int excess_height = totalArea.Height - total_height;
-            int offset = 0;
+            var excess_height = totalArea.Height - total_height;
+            var offset = 0;
 
             Rectangle final_text_rect;
             Rectangle final_image_rect;
 
-            VerticalAlignment v_text = GetVerticalAlignment(TextAlign);
-            VerticalAlignment v_image = GetVerticalAlignment(ImageAlign);
+            var v_text = GetVerticalAlignment(TextAlign);
+            var v_image = GetVerticalAlignment(ImageAlign);
 
             if (v_image == VerticalAlignment.Top)
                 offset = 0;
@@ -744,8 +731,8 @@ namespace Terminals.Forms.Controls
 
         internal static Rectangle AlignInRectangle(Rectangle outer, Size inner, System.Drawing.ContentAlignment align)
         {
-            int x = 0;
-            int y = 0;
+            var x = 0;
+            var y = 0;
 
             if (align == System.Drawing.ContentAlignment.BottomLeft || align == System.Drawing.ContentAlignment.MiddleLeft || align == System.Drawing.ContentAlignment.TopLeft)
                 x = outer.X;
@@ -781,9 +768,9 @@ namespace Terminals.Forms.Controls
             {
                 m_SplitMenu.Show(this, new Point(0, Height));
             }
-            else if (m_SplitMenuStrip != null)
+            else
             {
-                m_SplitMenuStrip.Show(this, new Point(0, Height), ToolStripDropDownDirection.BelowRight);
+                this.m_SplitMenuStrip?.Show(this, new Point(0, this.Height), ToolStripDropDownDirection.BelowRight);
             }
         }
 

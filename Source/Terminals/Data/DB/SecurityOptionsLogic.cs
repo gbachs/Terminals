@@ -34,10 +34,7 @@ namespace Terminals.Data.DB
         {
             get
             {
-                if (this.CachedCredentials != null)
-                    return this.CachedCredentials.EncryptedUserName;
-
-                return null;
+                return this.CachedCredentials?.EncryptedUserName;
             }
             set
             {
@@ -53,10 +50,7 @@ namespace Terminals.Data.DB
         {
             get
             {
-                if (this.CachedCredentials != null)
-                    return this.CachedCredentials.EncryptedDomain;
-
-                return null;
+                return this.CachedCredentials?.EncryptedDomain;
             }
             set
             {
@@ -72,10 +66,7 @@ namespace Terminals.Data.DB
         {
             get
             {
-                if (this.CachedCredentials != null)
-                    return this.CachedCredentials.EncryptedPassword;
-
-                return null;
+                return this.CachedCredentials?.EncryptedPassword;
             }
             set
             {

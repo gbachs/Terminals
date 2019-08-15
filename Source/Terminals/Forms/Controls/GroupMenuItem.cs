@@ -20,26 +20,15 @@ namespace Terminals.Forms.Controls
         /// </summary>
         internal IGroup Group { get; private set; }
 
-        internal virtual List<IFavorite> Favorites
-        {
-            get
-            {
-                return this.Group.Favorites;
-            }
-        }
+        internal virtual List<IFavorite> Favorites => this.Group.Favorites;
 
         /// <summary>
         /// Gets the value indicating, that this node contains only dummy node
         /// and contains no favorite nodes
         /// </summary>
-        internal Boolean IsEmpty
-        {
-            get
-            {
-                return this.DropDown.Items.Count == 1 &&
-                String.IsNullOrEmpty(this.DropDown.Items[0].Name);
-            }
-        }
+        internal Boolean IsEmpty =>
+            this.DropDown.Items.Count == 1 &&
+            String.IsNullOrEmpty(this.DropDown.Items[0].Name);
 
         internal GroupMenuItem(IGroup group, bool createDummyItem = true)
             : this(group.Name, createDummyItem)

@@ -46,10 +46,7 @@ namespace Terminals.Network.DNS
             {
                 try
                 {
-                    if (this.PropertyData.Properties["DNSDomainSuffixSearchOrder"] == null)
-                        return string.Empty;
-
-                    var dns = this.PropertyData.Properties["DNSDomainSuffixSearchOrder"].Value;
+                    var dns = PropertyData.Properties["DNSDomainSuffixSearchOrder"]?.Value;
                     if (dns == null)
                         return string.Empty;
 

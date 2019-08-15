@@ -10,20 +10,11 @@ namespace Terminals.Forms
     {
         internal PersistenceSecurity Security { get; set; }
 
-        private bool PasswordsMatch
-        {
-            get { return this.PasswordTextbox.Text.Equals(this.ConfirmPasswordTextBox.Text); }
-        }
+        private bool PasswordsMatch => this.PasswordTextbox.Text.Equals(this.ConfirmPasswordTextBox.Text);
 
-        private bool PasswordsAreEntered
-        {
-            get
-            {
-                return !String.IsNullOrEmpty(this.PasswordTextbox.Text) &&
-                       !String.IsNullOrEmpty(this.ConfirmPasswordTextBox.Text);
-            }
-        }
-        
+        private bool PasswordsAreEntered =>
+            !String.IsNullOrEmpty(this.PasswordTextbox.Text) &&
+            !String.IsNullOrEmpty(this.ConfirmPasswordTextBox.Text);
 
         public MasterPasswordOptionPanel()
         {
@@ -34,7 +25,7 @@ namespace Terminals.Forms
 
         public void LoadSettings()
         {
-            bool isMasterPasswordDefined = this.Security.IsMasterPasswordDefined;
+            var isMasterPasswordDefined = this.Security.IsMasterPasswordDefined;
             this.chkPasswordProtectTerminals.Checked = isMasterPasswordDefined;
             this.PasswordTextbox.Enabled = isMasterPasswordDefined;
             this.ConfirmPasswordTextBox.Enabled = isMasterPasswordDefined;

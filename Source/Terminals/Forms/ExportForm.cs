@@ -50,7 +50,7 @@ namespace Terminals.Forms
                 if (this.favsTree.SelectedNode != null)
                     this.RunExport();
 
-                string message = "Done exporting, you can find your exported file at " + this.saveFileDialog.FileName;
+                var message = "Done exporting, you can find your exported file at " + this.saveFileDialog.FileName;
                 MessageBox.Show(message, "Terminals export");
                 this.Close();
             }
@@ -58,10 +58,10 @@ namespace Terminals.Forms
 
         private void RunExport() 
         {
-            List<FavoriteConfigurationElement> favorites = this.GetFavoritesToExport();
+            var favorites = this.GetFavoritesToExport();
             // filter index is 1 based
-            int filterSplitIndex = (this.saveFileDialog.FilterIndex - 1) * 2;
-            string providerFilter = this.saveFileDialog.Filter.Split('|')[filterSplitIndex];
+            var filterSplitIndex = (this.saveFileDialog.FilterIndex - 1) * 2;
+            var providerFilter = this.saveFileDialog.Filter.Split('|')[filterSplitIndex];
             var options = new ExportOptions
                 {
                     ProviderFilter = providerFilter,
@@ -74,7 +74,7 @@ namespace Terminals.Forms
 
         private List<FavoriteConfigurationElement> GetFavoritesToExport()
         {
-            List<IFavorite> favorites = TreeListNodes.FindAllCheckedFavorites(this.favsTree.Nodes);
+            var favorites = TreeListNodes.FindAllCheckedFavorites(this.favsTree.Nodes);
             return this.ConvertFavoritesToExport(favorites);
         }
 
@@ -88,8 +88,7 @@ namespace Terminals.Forms
         private void FavsTree_AfterCheck(object sender, TreeViewEventArgs e)
         {
             var groupNode = e.Node as GroupTreeNode;
-            if (groupNode != null)
-                groupNode.CheckChildsByParent();
+            groupNode?.CheckChildsByParent();
         }
 
         private void BtnSelect_Click(object sender, EventArgs e)

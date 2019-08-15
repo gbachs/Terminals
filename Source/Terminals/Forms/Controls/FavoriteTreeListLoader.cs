@@ -25,22 +25,13 @@ namespace Terminals.Forms.Controls
 
         private readonly FavoriteIcons favoriteIcons;
 
-        private TreeNodeCollection RootNodes
-        {
-            get { return this.treeList.Nodes; }
-        }
+        private TreeNodeCollection RootNodes => this.treeList.Nodes;
 
         /// <summary>
         /// This prevents performance problems, when someone forgets to unregister.
         /// Returns true, if the associated treeview is already dead; otherwise false.
         /// </summary>
-        private Boolean IsOrphan
-        {
-            get
-            {
-                return this.treeList.IsDisposed;
-            }
-        }
+        private Boolean IsOrphan => this.treeList.IsDisposed;
 
         internal FavoriteTreeListLoader(FavoritesTreeView treeListToFill, IPersistence persistence, FavoriteIcons favoriteIcons)
         {
@@ -58,7 +49,7 @@ namespace Terminals.Forms.Controls
 
         private void OnTreeViewExpand(object sender, TreeViewEventArgs e)
         {
-            GroupTreeNode groupNode = e.Node as GroupTreeNode;
+            var groupNode = e.Node as GroupTreeNode;
             if (groupNode != null)
             {
                 this.LoadGroupNode(groupNode);
@@ -86,8 +77,8 @@ namespace Terminals.Forms.Controls
 
         private void PerformFavoritesUpdate(FavoritesChangedEventArgs args)
         {
-            GroupTreeNode selectedGroup = this.treeList.FindSelectedGroupNode();
-            IFavorite selectedFavorite = this.treeList.SelectedFavorite;
+            var selectedGroup = this.treeList.FindSelectedGroupNode();
+            var selectedFavorite = this.treeList.SelectedFavorite;
             var updater = new FavoritesLevelUpdate(this.favoriteIcons, this.RootNodes, args, this.toolTipBuilder);
             updater.Run();
             this.treeList.RestoreSelectedFavorite(selectedGroup, selectedFavorite);
@@ -113,15 +104,15 @@ namespace Terminals.Forms.Controls
 
             var nodes = new TreeListNodes(this.RootNodes, this.toolTipBuilder, this.favoriteIcons);
             // dont load everything, it is done by lazy loading after expand
-            IOrderedEnumerable<IGroup> rootGroups = GetSortedRootGroups();
+            var rootGroups = GetSortedRootGroups();
             nodes.InsertGroupNodes(rootGroups);
-            List<IFavorite> untaggedFavorites = GetUntaggedFavorites(this.favorites);
+            var untaggedFavorites = GetUntaggedFavorites(this.favorites);
             nodes.AddFavoriteNodes(untaggedFavorites);
         }
 
         internal static List<IFavorite> GetUntaggedFavorites(IEnumerable<IFavorite> favorites)
         {
-            IEnumerable<IFavorite> relevantFavorites = favorites.Where(candidate => candidate.Groups.Count == 0);
+            var relevantFavorites = favorites.Where(candidate => candidate.Groups.Count == 0);
             return Favorites.OrderByDefaultSorting(relevantFavorites);
         }
 
@@ -160,7 +151,7 @@ namespace Terminals.Forms.Controls
 
         private void AddGroupNodes(GroupTreeNode groupNode)
         {
-            IEnumerable<IGroup> childGroups = this.GetChildGroups(groupNode.Group);
+            var childGroups = this.GetChildGroups(groupNode.Group);
             var nodes = new TreeListNodes(groupNode.Nodes, this.toolTipBuilder, this.favoriteIcons);
             nodes.InsertGroupNodes(childGroups);
         }

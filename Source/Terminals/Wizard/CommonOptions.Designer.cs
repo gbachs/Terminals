@@ -34,7 +34,6 @@ namespace Terminals.Wizard
             this.SingleCheckbox = new System.Windows.Forms.CheckBox();
             this.WarnCheckbox = new System.Windows.Forms.CheckBox();
             this.autoSwitchOnCapture = new System.Windows.Forms.CheckBox();
-            this.LoadDefaultShortcutsCheckbox = new System.Windows.Forms.CheckBox();
             this.ImportRDP = new System.Windows.Forms.CheckBox();
             this.CaptureToClipboard = new System.Windows.Forms.CheckBox();
             this.CaptureToFolder = new System.Windows.Forms.CheckBox();
@@ -106,18 +105,7 @@ namespace Terminals.Wizard
             this.autoSwitchOnCapture.TabIndex = 8;
             this.autoSwitchOnCapture.Text = "Automatically switch to Capture Manager";
             this.autoSwitchOnCapture.UseVisualStyleBackColor = true;
-            // 
-            // LoadDefaultShortcutsCheckbox
-            // 
-            this.LoadDefaultShortcutsCheckbox.AutoSize = true;
-            this.LoadDefaultShortcutsCheckbox.Checked = true;
-            this.LoadDefaultShortcutsCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.LoadDefaultShortcutsCheckbox.Location = new System.Drawing.Point(28, 162);
-            this.LoadDefaultShortcutsCheckbox.Name = "LoadDefaultShortcutsCheckbox";
-            this.LoadDefaultShortcutsCheckbox.Size = new System.Drawing.Size(131, 17);
-            this.LoadDefaultShortcutsCheckbox.TabIndex = 9;
-            this.LoadDefaultShortcutsCheckbox.Text = "Load default shortcuts";
-            this.LoadDefaultShortcutsCheckbox.UseVisualStyleBackColor = true;
+         
             // 
             // ImportRDP
             // 
@@ -163,7 +151,6 @@ namespace Terminals.Wizard
             this.Controls.Add(this.CaptureToFolder);
             this.Controls.Add(this.CaptureToClipboard);
             this.Controls.Add(this.ImportRDP);
-            this.Controls.Add(this.LoadDefaultShortcutsCheckbox);
             this.Controls.Add(this.autoSwitchOnCapture);
             this.Controls.Add(this.WarnCheckbox);
             this.Controls.Add(this.SingleCheckbox);
@@ -185,7 +172,6 @@ namespace Terminals.Wizard
         private System.Windows.Forms.CheckBox SingleCheckbox;
         private System.Windows.Forms.CheckBox WarnCheckbox;
         private System.Windows.Forms.CheckBox autoSwitchOnCapture;
-        private System.Windows.Forms.CheckBox LoadDefaultShortcutsCheckbox;
         private System.Windows.Forms.CheckBox ImportRDP;
         private System.Windows.Forms.CheckBox CaptureToClipboard;
         private System.Windows.Forms.CheckBox CaptureToFolder;

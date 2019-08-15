@@ -10,22 +10,16 @@ namespace Terminals.Forms.Controls
     /// </summary>
     internal class GroupsLevelUpdate : TreeNodesLevelUpdate<GroupsChangedArgs, GroupTreeNode>
     {
-        protected override bool RemoveCurrent
-        {
-            get
-            {
-                return this.CurrentNode.HasGroupIn(this.Changes.Removed);
-            }
-        }
+        protected override bool RemoveCurrent => this.CurrentNode.HasGroupIn(this.Changes.Removed);
 
         private IEnumerable<IGroup> GroupsToAdd
         {
             get
             {
-                List<IGroup> toAdd = this.Changes.Added.Where(this.IsThisLevelGroup)
+                var toAdd = this.Changes.Added.Where(this.IsThisLevelGroup)
                                                        .ToList();
 
-                IEnumerable<IGroup> moveCandidates = this.MovedGroups();
+                var moveCandidates = this.MovedGroups();
                 toAdd.AddRange(moveCandidates);
                 // if persistence sends added and updated at once, than we have to filter the already added
                 return toAdd.Distinct();
@@ -92,9 +86,9 @@ namespace Terminals.Forms.Controls
 
         private void AddMissingGroupNodes()
         {
-            foreach (IGroup newGroup in this.GroupsToAdd)
+            foreach (var newGroup in this.GroupsToAdd)
             {
-                int index = this.Nodes.FindGroupNodeInsertIndex(newGroup);
+                var index = this.Nodes.FindGroupNodeInsertIndex(newGroup);
                 this.Nodes.InsertGroupNode(newGroup, index);
             }
         }
@@ -116,7 +110,7 @@ namespace Terminals.Forms.Controls
         /// </summary>
         private void UpdateContent()
         {
-            IGroup updatedGroup = this.SelectUpdatedGroup();
+            var updatedGroup = this.SelectUpdatedGroup();
             if (updatedGroup == null)
                 return;
 
@@ -130,13 +124,13 @@ namespace Terminals.Forms.Controls
 
         private IGroup SelectUpdatedGroup()
         {
-            IGroup currentGroup = this.CurrentNode.Group;
+            var currentGroup = this.CurrentNode.Group;
             return this.Changes.Updated.FirstOrDefault(candidate => candidate.StoreIdEquals(currentGroup));
         }
 
         private void UpdateGroupByRename(IGroup updatedGroup)
         {
-            int index = this.Nodes.FindGroupNodeInsertIndex(updatedGroup);
+            var index = this.Nodes.FindGroupNodeInsertIndex(updatedGroup);
             this.Nodes.InsertNodePreservingOrder(index, this.CurrentNode);
             // dont apply the name before we fix the position
             this.CurrentNode.UpdateByGroup(updatedGroup);

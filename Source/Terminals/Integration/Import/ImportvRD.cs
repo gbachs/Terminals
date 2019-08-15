@@ -91,10 +91,10 @@ namespace Terminals.Integration.Import
                                 connections.Add(connection);
                             }
                         }
-                        else if (item is vRDConfigurationFileConnectionsFolder)
+                        else
                         {
                             //scan in recurse folders
-                            vRDConfigurationFileConnectionsFolder folder = (item as vRDConfigurationFileConnectionsFolder);
+                            vRDConfigurationFileConnectionsFolder folder = item as vRDConfigurationFileConnectionsFolder;
                             if (folder != null)
                             {
                                 folders.Add(folder);

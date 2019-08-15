@@ -59,7 +59,7 @@ namespace Terminals.Forms
         private void SetFormSize()
         {
             // The option title label is the anchor for the form's width
-            Int32 formWidth = this.OptionTitelLabel.Location.X + this.OptionTitelLabel.Width + 15;
+            var formWidth = this.OptionTitelLabel.Location.X + this.OptionTitelLabel.Width + 15;
             this.Width = formWidth;
         }
 
@@ -93,7 +93,7 @@ namespace Terminals.Forms
 
         private void DrawBottomLine()
         {
-            Label lbl = new Label();
+            var lbl = new Label();
             lbl.AutoSize = false;
             lbl.BorderStyle = BorderStyle.Fixed3D;
             lbl.SetBounds(
@@ -141,15 +141,15 @@ namespace Terminals.Forms
 
         private void SelectNewPanel()
         {
-            string panelName = "panel" + this.OptionsTreeView.SelectedNode.Tag;
+            var panelName = "panel" + this.OptionsTreeView.SelectedNode.Tag;
             System.Diagnostics.Debug.WriteLine("Selected panel: " + panelName);
             this.currentPanel = this.Controls[panelName] as UserControl;
         }
 
         private void UpdatePanelPosition()
         {
-            Int32 x = this.OptionTitelLabel.Left;
-            Int32 y = this.OptionTitelLabel.Top + this.OptionTitelLabel.Height + 3;
+            var x = this.OptionTitelLabel.Left;
+            var y = this.OptionTitelLabel.Top + this.OptionTitelLabel.Height + 3;
             this.currentPanel.Location = new Point(x, y);
         }
 
@@ -173,7 +173,7 @@ namespace Terminals.Forms
 
         private void SaveAllPanels()
         {
-            foreach (IOptionPanel optionPanel in FindOptionPanels())
+            foreach (var optionPanel in FindOptionPanels())
             {
                 optionPanel.SaveSettings();
             }
@@ -181,7 +181,7 @@ namespace Terminals.Forms
 
         private void LoadSettings()
         {
-            foreach (IOptionPanel optionPanel in FindOptionPanels())
+            foreach (var optionPanel in FindOptionPanels())
             {
                 optionPanel.LoadSettings();
             }

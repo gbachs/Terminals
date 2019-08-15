@@ -44,11 +44,11 @@ namespace Bdev.Net.Dns
         internal Response(byte[] message)
         {
             // the bit flags are in bytes 2 and 3
-            byte flags1 = message[2];
-            byte flags2 = message[3];
+            var flags1 = message[2];
+            var flags2 = message[3];
 
             // get return code from lowest 4 bits of byte 3
-            int returnCode = flags2 & 15;
+            var returnCode = flags2 & 15;
                 
             // if its in the reserved section, set to other
             if (returnCode > 6) returnCode = 6;
@@ -66,10 +66,10 @@ namespace Bdev.Net.Dns
             _additionalRecords = new AdditionalRecord[GetShort(message, 10)];
 
             // need a pointer to do this, position just after the header
-            Pointer pointer = new Pointer(message, 12);
+            var pointer = new Pointer(message, 12);
 
             // and now populate them, they always follow this order
-            for (int index = 0; index < _questions.Length; index++)
+            for (var index = 0; index < _questions.Length; index++)
             {
                 try
                 {
@@ -82,15 +82,15 @@ namespace Bdev.Net.Dns
                     throw new InvalidResponseException(ex);
                 }
             }
-            for (int index = 0; index < _answers.Length; index++)
+            for (var index = 0; index < _answers.Length; index++)
             {
                 _answers[index] = new Answer(pointer);
             }
-            for (int index = 0; index < _nameServers.Length; index++)
+            for (var index = 0; index < _nameServers.Length; index++)
             {
                 _nameServers[index] = new NameServer(pointer);
             }
-            for (int index = 0; index < _additionalRecords.Length; index++)
+            for (var index = 0; index < _additionalRecords.Length; index++)
             {
                 _additionalRecords[index] = new AdditionalRecord(pointer);
             }

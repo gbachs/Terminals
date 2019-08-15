@@ -21,10 +21,7 @@ namespace Terminals
         {
             get
             {
-                if (this.Connection == null)
-                    return null;
-
-                return this.Connection.Favorite;
+                return Connection?.Favorite;
             }
         }
 
@@ -32,10 +29,7 @@ namespace Terminals
         {
             get
             {
-                if (this.Connection == null)
-                    return null;
-
-                return this.Connection.OriginFavorite;
+                return Connection?.OriginFavorite;
             }
         }
 

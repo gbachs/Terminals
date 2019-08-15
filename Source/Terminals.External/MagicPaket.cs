@@ -37,8 +37,8 @@ namespace NetTools
         {
             get 
             {
-                String strMacAdress = String.Empty;
-                for (Int32 i = 0; i < this.wolMacAddr.Length; i++)
+                var strMacAdress = String.Empty;
+                for (var i = 0; i < this.wolMacAddr.Length; i++)
                 {
                     strMacAdress += this.wolMacAddr[i].ToString("X2");
                 }
@@ -49,8 +49,8 @@ namespace NetTools
 
         protected static Byte[] Mac2Byte(String strMacAddress)
         {
-            String macAddr = String.Empty;
-            Byte[] macBytes = new Byte[BYTELENGHT];
+            var macAddr = String.Empty;
+            var macBytes = new Byte[BYTELENGHT];
             //remove all non 0-9, A-F, a-f characters
             macAddr = Regex.Replace(strMacAddress, @"[^0-9A-Fa-f]", "");
             //check if it is now a valid mac adress
@@ -58,7 +58,7 @@ namespace NetTools
                 throw new ArgumentException("Mac Adress must be "+ (BYTELENGHT*2).ToString() +" digits of 0-9, A-F, a-f characters in length.");
 
             String hex;
-            for (Int32 i=0; i < macBytes.Length;i++)
+            for (var i=0; i < macBytes.Length;i++)
             {
                 hex = new String(new Char[] {macAddr[i*2], macAddr[i*2+1]});
                 macBytes[(i)] = byte.Parse(hex, System.Globalization.NumberStyles.HexNumber);
@@ -69,15 +69,15 @@ namespace NetTools
         
         protected static Byte[] CreatePayload(Byte[] macAddress)
         {
-            Byte[] payloadData = new Byte[HEADER+MAGICPACKETLENGTH*BYTELENGHT];
-            for (Int32 i=0; i < HEADER; i++) 
+            var payloadData = new Byte[HEADER+MAGICPACKETLENGTH*BYTELENGHT];
+            for (var i=0; i < HEADER; i++) 
             {
                 payloadData[i] = Byte.Parse("FF", System.Globalization.NumberStyles.HexNumber);
             }
 
-            for (Int32 i=0; i < MAGICPACKETLENGTH; i++)
+            for (var i=0; i < MAGICPACKETLENGTH; i++)
             {
-                for (Int32 j=0;j < BYTELENGHT;j++)
+                for (var j=0;j < BYTELENGHT;j++)
                 {
                     payloadData[((i * BYTELENGHT) + j) + HEADER] = macAddress[j];
                 }
@@ -96,7 +96,7 @@ namespace NetTools
             Int32 byteSend;
 
             //create a new client socket...
-            Socket socketClient = new Socket(EndPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+            var socketClient = new Socket(EndPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
             try
             {
                 //open connection...

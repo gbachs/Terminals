@@ -54,8 +54,7 @@ namespace Terminals.Connections
 
         protected void Log(string text)
         {
-            if (this.OnLog != null)
-                this.OnLog(text);
+            this.OnLog?.Invoke(text);
         }
 
         /// <summary>
@@ -75,13 +74,12 @@ namespace Terminals.Connections
         /// </summary>
         protected void FireDisconnected()
         {
-            if (this.OnDisconnected != null)
-                this.OnDisconnected(this);
+            this.OnDisconnected?.Invoke(this);
         }
 
         protected IGuardedSecurity ResolveFavoriteCredentials()
         {
-            IGuardedSecurity security = this.CredentialFactory.CreateSecurityOptoins(this.Favorite.Security);
+            var security = this.CredentialFactory.CreateSecurityOptoins(this.Favorite.Security);
             return security.GetResolvedCredentials();
         }
     }

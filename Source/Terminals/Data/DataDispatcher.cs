@@ -127,8 +127,7 @@ namespace Terminals.Data
 
             Debug.WriteLine(args.ToString());
 
-            if (this.FavoritesChanged != null)
-                this.FavoritesChanged(args);
+            this.FavoritesChanged?.Invoke(args);
         }
 
         internal void ReportGroupsAdded(List<IGroup> addedGroups)
@@ -182,8 +181,7 @@ namespace Terminals.Data
 
             Debug.WriteLine(args.ToString());
 
-            if (this.GroupsChanged != null)
-                this.GroupsChanged(args);
+            this.GroupsChanged?.Invoke(args);
         }
 
         internal void ReportActionError<TActionParams1, TActionParams2>(Action<TActionParams1, TActionParams2> action,

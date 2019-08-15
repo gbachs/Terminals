@@ -100,14 +100,8 @@ namespace Metro.NetworkLayer.ARP
 		/// </summary>
 		public int AdapterIndex
 		{
-			get
-			{
-				return m_adapterIndex;
-			}
-			set
-			{
-				m_adapterIndex = value;
-			}
+			get => m_adapterIndex;
+			set => m_adapterIndex = value;
 		}
 		
 		
@@ -116,14 +110,8 @@ namespace Metro.NetworkLayer.ARP
 		/// </summary>
 		public MACAddress MediaAccessControlAddress
 		{
-			get
-			{
-				return m_macAddress;
-			}
-			set
-			{
-				m_macAddress = value;
-			}
+			get => m_macAddress;
+			set => m_macAddress = value;
 		}
 		
 		
@@ -132,14 +120,8 @@ namespace Metro.NetworkLayer.ARP
 		/// </summary>	
 		public IPAddress IPAddress
 		{
-			get
-			{
-				return m_ipAddress;
-			}
-			set
-			{
-				m_ipAddress = value;
-			}
+			get => m_ipAddress;
+			set => m_ipAddress = value;
 		}
 		
 		
@@ -148,14 +130,8 @@ namespace Metro.NetworkLayer.ARP
 		/// </summary>
 		public ArpEntryType EntryType
 		{
-			get
-			{
-				return m_type;
-			}
-			set
-			{
-				m_type = value;
-			}
+			get => m_type;
+			set => m_type = value;
 		}
 		
 		

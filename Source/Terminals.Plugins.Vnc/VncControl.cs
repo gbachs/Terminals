@@ -18,7 +18,7 @@ namespace Terminals.Forms.EditFavorite
                 return;
 
             vncOptions.AutoScale = this.vncAutoScaleCheckbox.Checked;
-            vncOptions.DisplayNumber = (Int32)this.vncDisplayNumberInput.Value;
+            vncOptions.DisplayNumber = (int)this.vncDisplayNumberInput.Value;
             vncOptions.ViewOnly = this.VncViewOnlyCheckbox.Checked;
         }
 

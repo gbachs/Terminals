@@ -13,10 +13,7 @@ namespace Terminals
 
         private readonly TabControlFilter filter;
 
-        private IFavorite SelectedOriginFavorite
-        {
-            get { return this.filter.SelectedOriginFavorite; }
-        }
+        private IFavorite SelectedOriginFavorite => this.filter.SelectedOriginFavorite;
 
         internal PopupTerminal()
         {
@@ -50,7 +47,7 @@ namespace Terminals
 
         private void PopupTerminal_Load(object sender, EventArgs e)
         {
-            IConnection connection = this.filter.SelectedConnection;
+            var connection = this.filter.SelectedConnection;
             if (connection != null) // dont run the timer for not connected tab
             {
                 this.closeTimer = new Timer();
@@ -65,7 +62,7 @@ namespace Terminals
         /// </summary>
         private void CloseTimer_Tick(object sender, EventArgs e)
         {
-            IConnection connection = this.filter.SelectedConnection;
+            var connection = this.filter.SelectedConnection;
             if (connection != null && !connection.Connected)
             {
                 this.closeTimer.Stop();
@@ -75,7 +72,7 @@ namespace Terminals
 
         private void AttachToTerminalsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TerminalTabControlItem activeTab = this.tabControl1.SelectedItem as TerminalTabControlItem;
+            var activeTab = this.tabControl1.SelectedItem as TerminalTabControlItem;
             if (activeTab != null)
             {
                 this.mainTabsControler.AttachTabFromWindow(activeTab);
@@ -87,7 +84,7 @@ namespace Terminals
         private void PopupTerminal_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.mainTabsControler.UnRegisterPopUp(this);
-            TerminalTabControlItem activeTab = this.tabControl1.SelectedItem as TerminalTabControlItem;
+            var activeTab = this.tabControl1.SelectedItem as TerminalTabControlItem;
             if (activeTab != null)
             {
                 // doesnt metter yet. Nobody closes connections

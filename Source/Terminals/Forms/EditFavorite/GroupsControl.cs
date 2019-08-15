@@ -55,11 +55,11 @@ namespace Terminals.Forms.EditFavorite
 
         private void AddGroup()
         {
-            string newGroupName = this.txtGroupName.Text;
+            var newGroupName = this.txtGroupName.Text;
             if (!this.validator.ValidateGroupName(this.txtGroupName))
                 return;
             // not unique name already handled by validation
-            IGroup candidate = this.persistence.Factory.CreateGroup(newGroupName);
+            var candidate = this.persistence.Factory.CreateGroup(newGroupName);
             this.AddGroupIfNotAlreadyThere(candidate);
         }
 
@@ -74,7 +74,7 @@ namespace Terminals.Forms.EditFavorite
         private void AddGroupIfNotAlreadyThere(IGroup selectedGroup)
         {
             // this also prevents duplicities in newly created groups not stored in persistence yet
-            bool containsName = SelectedGroupsContainGroupName(selectedGroup);
+            var containsName = SelectedGroupsContainGroupName(selectedGroup);
             if (!containsName)
             {
                 var selectedGroupItem = new GroupListViewItem(selectedGroup);
@@ -120,7 +120,7 @@ namespace Terminals.Forms.EditFavorite
 
         private static void BindGroupsToListView(ListView listViewToFill, IEnumerable<IGroup> groups)
         {
-            foreach (IGroup group in groups)
+            foreach (var group in groups)
             {
                 var groupItem = new GroupListViewItem(group);
                 listViewToFill.Items.Add(groupItem);
@@ -135,7 +135,7 @@ namespace Terminals.Forms.EditFavorite
 
         internal void BindGroups()
         {
-            IOrderedEnumerable<IGroup> sortedGroups = this.persistence.Groups.OrderBy(group => group.Name);
+            var sortedGroups = this.persistence.Groups.OrderBy(group => group.Name);
             BindGroupsToListView(this.AllTagsListView, sortedGroups);
         }
     }

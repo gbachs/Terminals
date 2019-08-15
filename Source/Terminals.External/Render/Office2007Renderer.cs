@@ -189,17 +189,17 @@ namespace Terminals.Forms.Rendering
                 (e.ArrowRectangle.Height > 0))
             {
                 // Create a path that is used to fill the arrow
-                using (GraphicsPath arrowPath = CreateArrowPath(e.Item,
+                using (var arrowPath = CreateArrowPath(e.Item,
                                                                 e.ArrowRectangle, 
                                                                 e.Direction))
                 {
                     // Get the rectangle that encloses the arrow and expand slightly
                     // so that the gradient is always within the expanding bounds
-                    RectangleF boundsF = arrowPath.GetBounds();
+                    var boundsF = arrowPath.GetBounds();
                     boundsF.Inflate(1f, 1f);
 
-                    Color color1 = (e.Item.Enabled ? _arrowLight : _arrowDisabled);
-                    Color color2 = (e.Item.Enabled ? _arrowDark : _arrowDisabled);
+                    var color1 = (e.Item.Enabled ? _arrowLight : _arrowDisabled);
+                    var color2 = (e.Item.Enabled ? _arrowDark : _arrowDisabled);
 
                     float angle = 0;
 
@@ -221,7 +221,7 @@ namespace Terminals.Forms.Rendering
                     }
 
                     // Draw the actual arrow using a gradient
-                    using (LinearGradientBrush arrowBrush = new LinearGradientBrush(boundsF, color1, color2, angle))
+                    using (var arrowBrush = new LinearGradientBrush(boundsF, color1, color2, angle))
                         e.Graphics.FillPath(arrowBrush, arrowPath);
                 }
             }
@@ -236,7 +236,7 @@ namespace Terminals.Forms.Rendering
         protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
         {
             // Cast to correct type
-            ToolStripButton button = (ToolStripButton)e.Item;
+            var button = (ToolStripButton)e.Item;
 
             if (button.Selected || button.Pressed || button.Checked)
                 RenderToolButtonBackground(e.Graphics, button, e.ToolStrip);
@@ -263,7 +263,7 @@ namespace Terminals.Forms.Rendering
         protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
         {
             // Staring size of the checkbox is the image rectangle
-            Rectangle checkBox = e.ImageRectangle;
+            var checkBox = e.ImageRectangle;
 
             // Make the border of the check box 1 pixel bigger on all sides, as a minimum
             checkBox.Inflate(1, 1);
@@ -271,7 +271,7 @@ namespace Terminals.Forms.Rendering
             // Can we extend upwards?
             if (checkBox.Top > _checkInset)
             {
-                int diff = checkBox.Top - _checkInset;
+                var diff = checkBox.Top - _checkInset;
                 checkBox.Y -= diff;
                 checkBox.Height += diff;
             }
@@ -279,33 +279,33 @@ namespace Terminals.Forms.Rendering
             // Can we extend downwards?
             if (checkBox.Height <= (e.Item.Bounds.Height - (_checkInset * 2)))
             {
-                int diff = e.Item.Bounds.Height - (_checkInset * 2) - checkBox.Height;
+                var diff = e.Item.Bounds.Height - (_checkInset * 2) - checkBox.Height;
                 checkBox.Height += diff;
             }
 
             // Drawing with anti aliasing to create smoother appearance
-            using (UseAntiAlias uaa = new UseAntiAlias(e.Graphics))
+            using (var uaa = new UseAntiAlias(e.Graphics))
             {
                 // Create border path for the check box
-                using (GraphicsPath borderPath = CreateBorderPath(checkBox, _cutMenuItemBack))
+                using (var borderPath = CreateBorderPath(checkBox, _cutMenuItemBack))
                 {
                     // Fill the background in a solid color
-                    using (SolidBrush fillBrush = new SolidBrush(ColorTable.CheckBackground))
+                    using (var fillBrush = new SolidBrush(ColorTable.CheckBackground))
                         e.Graphics.FillPath(fillBrush, borderPath);
 
                     // Draw the border around the check box
-                    using (Pen borderPen = new Pen(_contextCheckBorder))
+                    using (var borderPen = new Pen(_contextCheckBorder))
                         e.Graphics.DrawPath(borderPen, borderPath);
 
                     // If there is not an image, then we can draw the tick, square etc...
                     if (e.Image != null)
                     {
-                        CheckState checkState = CheckState.Unchecked;
+                        var checkState = CheckState.Unchecked;
 
                         // Extract the check state from the item
                         if (e.Item is ToolStripMenuItem)
                         {
-                            ToolStripMenuItem item = (ToolStripMenuItem)e.Item;
+                            var item = (ToolStripMenuItem)e.Item;
                             checkState = item.CheckState;
                         }
 
@@ -314,19 +314,19 @@ namespace Terminals.Forms.Rendering
                         {
                             case CheckState.Checked:
                                 // Create a path for the tick
-                                using (GraphicsPath tickPath = CreateTickPath(checkBox))
+                                using (var tickPath = CreateTickPath(checkBox))
                                 {
                                     // Draw the tick with a thickish brush
-                                    using (Pen tickPen = new Pen(_contextCheckTick,_contextCheckTickThickness))
+                                    using (var tickPen = new Pen(_contextCheckTick,_contextCheckTickThickness))
                                         e.Graphics.DrawPath(tickPen, tickPath);
                                 }
                                 break;
                             case CheckState.Indeterminate:
                                 // Create a path for the indeterminate diamond
-                                using (GraphicsPath tickPath = CreateIndeterminatePath(checkBox))
+                                using (var tickPath = CreateIndeterminatePath(checkBox))
                                 {
                                     // Draw the tick with a thickish brush
-                                    using (SolidBrush tickBrush = new SolidBrush(_contextCheckTick))
+                                    using (var tickBrush = new SolidBrush(_contextCheckTick))
                                         e.Graphics.FillPath(tickBrush, tickPath);
                                 }
                                 break;
@@ -363,7 +363,7 @@ namespace Terminals.Forms.Rendering
                 }
 
                 // All text is draw using the ClearTypeGridFit text rendering hint
-                using (UseClearTypeGridFit clearTypeGridFit = new UseClearTypeGridFit(e.Graphics))
+                using (var clearTypeGridFit = new UseClearTypeGridFit(e.Graphics))
                     base.OnRenderItemText(e);
             }
             else
@@ -434,7 +434,7 @@ namespace Terminals.Forms.Rendering
                         else
                         {
                             // Get the mouse position in tool strip coordinates
-                            Point mousePos = e.ToolStrip.PointToClient(Control.MousePosition);
+                            var mousePos = e.ToolStrip.PointToClient(Control.MousePosition);
 
                             // If the mouse is not in the item area, then draw disabled
                             if (!e.Item.Bounds.Contains(mousePos))
@@ -466,13 +466,13 @@ namespace Terminals.Forms.Rendering
             if (e.Item.Selected || e.Item.Pressed)
             {
                 // Cast to correct type
-                ToolStripSplitButton splitButton = (ToolStripSplitButton)e.Item;
+                var splitButton = (ToolStripSplitButton)e.Item;
 
                 // Draw the border and background
                 RenderToolSplitButtonBackground(e.Graphics, splitButton, e.ToolStrip);
 
                 // Get the rectangle that needs to show the arrow
-                Rectangle arrowBounds = splitButton.DropDownButtonBounds;
+                var arrowBounds = splitButton.DropDownButtonBounds;
 
                 // Draw the arrow on top of the background
                 OnRenderArrow(new ToolStripArrowRenderEventArgs(e.Graphics,
@@ -499,20 +499,20 @@ namespace Terminals.Forms.Rendering
                             lightBrush = new SolidBrush(_gripLight))
              {
                 // Do we need to invert the drawing edge?
-                bool rtl = (e.ToolStrip.RightToLeft == RightToLeft.Yes);
+                var rtl = (e.ToolStrip.RightToLeft == RightToLeft.Yes);
 
                 // Find vertical position of the lowest grip line
-                int y = e.AffectedBounds.Bottom - _gripSize * 2 + 1;
+                var y = e.AffectedBounds.Bottom - _gripSize * 2 + 1;
 
                 // Draw three lines of grips
-                for (int i = _gripLines; i >= 1; i--)
+                for (var i = _gripLines; i >= 1; i--)
                 {
                     // Find the rightmost grip position on the line
-                    int x = (rtl ? e.AffectedBounds.Left + 1 :
+                    var x = (rtl ? e.AffectedBounds.Left + 1 :
                                    e.AffectedBounds.Right - _gripSize * 2 + 1);
 
                     // Draw grips from right to left on line
-                    for (int j = 0; j < i; j++)
+                    for (var j = 0; j < i; j++)
                     {
                         // Just the single grip glyph
                         DrawGripGlyph(e.Graphics, x, y, darkBrush, lightBrush);
@@ -542,7 +542,7 @@ namespace Terminals.Forms.Rendering
             if ((e.ToolStripContentPanel.Width > 0) &&
                 (e.ToolStripContentPanel.Height > 0))
             {
-                using (LinearGradientBrush backBrush = new LinearGradientBrush(e.ToolStripContentPanel.ClientRectangle,
+                using (var backBrush = new LinearGradientBrush(e.ToolStripContentPanel.ClientRectangle,
                                                                                ColorTable.ToolStripContentPanelGradientEnd,
                                                                                ColorTable.ToolStripContentPanelGradientBegin,
                                                                                90f))
@@ -604,10 +604,10 @@ namespace Terminals.Forms.Rendering
                                       clipPath = CreateClipBorderPath(e.AffectedBounds, _cutContextMenu))
                 {
                     // Clip all drawing to within the border path
-                    using (UseClipping clipping = new UseClipping(e.Graphics, clipPath))
+                    using (var clipping = new UseClipping(e.Graphics, clipPath))
                     {
                         // Create the background brush
-                        using (SolidBrush backBrush = new SolidBrush(_contextMenuBack))
+                        using (var backBrush = new SolidBrush(_contextMenuBack))
                             e.Graphics.FillPath(backBrush, borderPath);
                     }
                 }
@@ -615,12 +615,12 @@ namespace Terminals.Forms.Rendering
             else if (e.ToolStrip is StatusStrip)
             {
                 // We do not paint the top two pixel lines, so are drawn by the status strip border render method
-                RectangleF backRect = new RectangleF(0, 1.5f, e.ToolStrip.Width, e.ToolStrip.Height - 2);
+                var backRect = new RectangleF(0, 1.5f, e.ToolStrip.Width, e.ToolStrip.Height - 2);
 
                 // Cannot paint a zero sized area
                 if ((backRect.Width > 0) && (backRect.Height > 0))
                 {
-                    using (LinearGradientBrush backBrush = new LinearGradientBrush(backRect, 
+                    using (var backBrush = new LinearGradientBrush(backRect, 
                                                                                    ColorTable.StatusStripGradientBegin,
                                                                                    ColorTable.StatusStripGradientEnd, 
                                                                                    90f))
@@ -648,10 +648,10 @@ namespace Terminals.Forms.Rendering
                 (e.ToolStrip is ToolStripDropDownMenu))
             {
                 // Start with the total margin area
-                Rectangle marginRect = e.AffectedBounds;
+                var marginRect = e.AffectedBounds;
 
                 // Do we need to draw with separator on the opposite edge?
-                bool rtl = (e.ToolStrip.RightToLeft == RightToLeft.Yes);
+                var rtl = (e.ToolStrip.RightToLeft == RightToLeft.Yes);
 
                 marginRect.Y += _marginInset;
                 marginRect.Height -= _marginInset * 2;
@@ -663,7 +663,7 @@ namespace Terminals.Forms.Rendering
                     marginRect.X += _marginInset / 2;
 
                 // Draw the entire margine area in a solid color
-                using (SolidBrush backBrush = new SolidBrush(ColorTable.ImageMarginGradientBegin))
+                using (var backBrush = new SolidBrush(ColorTable.ImageMarginGradientBegin))
                     e.Graphics.FillRectangle(backBrush, marginRect);
 
                 // Create the light and dark line pens
@@ -703,7 +703,7 @@ namespace Terminals.Forms.Rendering
             {
                 // If there is a connected area to be drawn
                 if (!e.ConnectedArea.IsEmpty)
-                    using (SolidBrush excludeBrush = new SolidBrush(_contextMenuBack))
+                    using (var excludeBrush = new SolidBrush(_contextMenuBack))
                         e.Graphics.FillRectangle(excludeBrush, e.ConnectedArea);
 
                 // Create border and clipping paths
@@ -716,10 +716,10 @@ namespace Terminals.Forms.Rendering
                                insidePen = new Pen(_separatorMenuLight))
                     {
                         // Clip all drawing to within the border path
-                        using (UseClipping clipping = new UseClipping(e.Graphics, clipPath))
+                        using (var clipping = new UseClipping(e.Graphics, clipPath))
                         {
                             // Drawing with anti aliasing to create smoother appearance
-                            using (UseAntiAlias uaa = new UseAntiAlias(e.Graphics))
+                            using (var uaa = new UseAntiAlias(e.Graphics))
                             {
                                 // Draw the inside area first
                                 e.Graphics.DrawPath(insidePen, insidePath);
@@ -782,7 +782,7 @@ namespace Terminals.Forms.Rendering
                 if (button.Selected)
                 {
                     // Get the mouse position in tool strip coordinates
-                    Point mousePos = toolstrip.PointToClient(Control.MousePosition);
+                    var mousePos = toolstrip.PointToClient(Control.MousePosition);
 
                     // If the mouse is not in the item area, then draw disabled
                     if (!button.Bounds.Contains(mousePos))
@@ -808,7 +808,7 @@ namespace Terminals.Forms.Rendering
                 else
                 {
                     // Get the mouse position in tool strip coordinates
-                    Point mousePos = toolstrip.PointToClient(Control.MousePosition);
+                    var mousePos = toolstrip.PointToClient(Control.MousePosition);
 
                     // If the mouse is not in the item area, then draw disabled
                     if (!item.Bounds.Contains(mousePos))
@@ -843,7 +843,7 @@ namespace Terminals.Forms.Rendering
                 else
                 {
                     // Get the mouse position in tool strip coordinates
-                    Point mousePos = toolstrip.PointToClient(Control.MousePosition);
+                    var mousePos = toolstrip.PointToClient(Control.MousePosition);
 
                     // If the mouse is not in the item area, then draw disabled
                     if (!splitButton.Bounds.Contains(mousePos))
@@ -868,15 +868,15 @@ namespace Terminals.Forms.Rendering
                                                GradientItemColors colorsSplit)
         {
             // Create entire area and just the drop button area rectangles
-            Rectangle backRect = new Rectangle(Point.Empty, splitButton.Bounds.Size);
-            Rectangle backRectDrop = splitButton.DropDownButtonBounds;
+            var backRect = new Rectangle(Point.Empty, splitButton.Bounds.Size);
+            var backRectDrop = splitButton.DropDownButtonBounds;
 
             // Cannot paint zero sized areas
             if ((backRect.Width > 0) && (backRectDrop.Width > 0) &&
                 (backRect.Height > 0) && (backRectDrop.Height > 0))
             {
                 // Area that is the normal button starts as everything
-                Rectangle backRectButton = backRect;
+                var backRectButton = backRect;
                 
                 // The X offset to draw the split line
                 int splitOffset;
@@ -898,7 +898,7 @@ namespace Terminals.Forms.Rendering
                 }
 
                 // Create border path around the item
-                using (GraphicsPath borderPath = CreateBorderPath(backRect, _cutMenuItemBack))
+                using (var borderPath = CreateBorderPath(backRect, _cutMenuItemBack))
                 {
                     // Draw the normal button area background
                     DrawGradientBack(g, backRectButton, colorsButton);
@@ -907,14 +907,14 @@ namespace Terminals.Forms.Rendering
                     DrawGradientBack(g, backRectDrop, colorsDrop);
 
                     // Draw the split line between the areas
-                    using (LinearGradientBrush splitBrush = new LinearGradientBrush(new Rectangle(backRect.X + splitOffset, backRect.Top, 1, backRect.Height + 1),
+                    using (var splitBrush = new LinearGradientBrush(new Rectangle(backRect.X + splitOffset, backRect.Top, 1, backRect.Height + 1),
                                                                                     colorsSplit.Border1, colorsSplit.Border2, 90f))
                     {
                         // Sigma curve, so go from color1 to color2 and back to color1 again
                         splitBrush.SetSigmaBellShape(0.5f);
 
                         // Convert the brush to a pen for DrawPath call
-                        using (Pen splitPen = new Pen(splitBrush))
+                        using (var splitPen = new Pen(splitBrush))
                             g.DrawLine(splitPen, backRect.X + splitOffset, backRect.Top + 1, backRect.X + splitOffset, backRect.Bottom - 1);
                     }
 
@@ -927,7 +927,7 @@ namespace Terminals.Forms.Rendering
         private void DrawContextMenuHeader(Graphics g, ToolStripItem item)
         {
             // Get the rectangle the is the items area
-            Rectangle itemRect = new Rectangle(Point.Empty, item.Bounds.Size);
+            var itemRect = new Rectangle(Point.Empty, item.Bounds.Size);
 
             // Create border and clipping paths
             using (GraphicsPath borderPath = CreateBorderPath(itemRect, _cutToolItemMenu),
@@ -935,14 +935,14 @@ namespace Terminals.Forms.Rendering
                                   clipPath = CreateClipBorderPath(itemRect, _cutToolItemMenu))
             {
                 // Clip all drawing to within the border path
-                using (UseClipping clipping = new UseClipping(g, clipPath))
+                using (var clipping = new UseClipping(g, clipPath))
                 {
                     // Draw the entire background area first
-                    using (SolidBrush backBrush = new SolidBrush(_separatorMenuLight))
+                    using (var backBrush = new SolidBrush(_separatorMenuLight))
                         g.FillPath(backBrush, borderPath);
 
                     // Draw the border
-                    using (Pen borderPen = new Pen(ColorTable.MenuBorder))
+                    using (var borderPen = new Pen(ColorTable.MenuBorder))
                         g.DrawPath(borderPen, borderPath);
                 }
             }
@@ -953,7 +953,7 @@ namespace Terminals.Forms.Rendering
                                                  GradientItemColors colors)
         {
             // Do we need to draw with separator on the opposite edge?
-            Rectangle backRect = new Rectangle(2, 0, item.Bounds.Width - 3, item.Bounds.Height);
+            var backRect = new Rectangle(2, 0, item.Bounds.Width - 3, item.Bounds.Height);
 
             // Perform actual drawing into the background
             DrawGradientItem(g, backRect, colors);
@@ -981,11 +981,11 @@ namespace Terminals.Forms.Rendering
             // Reduce rect draw drawing inside the border
             backRect.Inflate(-1, -1);
 
-            int y2 = backRect.Height / 2;
-            Rectangle backRect1 = new Rectangle(backRect.X, backRect.Y, backRect.Width, y2);
-            Rectangle backRect2 = new Rectangle(backRect.X, backRect.Y + y2, backRect.Width, backRect.Height - y2);
-            Rectangle backRect1I = backRect1;
-            Rectangle backRect2I = backRect2;
+            var y2 = backRect.Height / 2;
+            var backRect1 = new Rectangle(backRect.X, backRect.Y, backRect.Width, y2);
+            var backRect2 = new Rectangle(backRect.X, backRect.Y + y2, backRect.Width, backRect.Height - y2);
+            var backRect1I = backRect1;
+            var backRect2I = backRect2;
             backRect1I.Inflate(1, 1);
             backRect2I.Inflate(1, 1);
 
@@ -1024,22 +1024,22 @@ namespace Terminals.Forms.Rendering
                                         GradientItemColors colors)
         {
             // Drawing with anti aliasing to create smoother appearance
-            using (UseAntiAlias uaa = new UseAntiAlias(g))
+            using (var uaa = new UseAntiAlias(g))
             {
-                Rectangle backRectI = backRect;
+                var backRectI = backRect;
                 backRectI.Inflate(1, 1);
 
                 // Finally draw the border around the menu item
-                using (LinearGradientBrush borderBrush = new LinearGradientBrush(backRectI, colors.Border1, colors.Border2, 90f))
+                using (var borderBrush = new LinearGradientBrush(backRectI, colors.Border1, colors.Border2, 90f))
                 {
                     // Sigma curve, so go from color1 to color2 and back to color1 again
                     borderBrush.SetSigmaBellShape(0.5f);
 
                     // Convert the brush to a pen for DrawPath call
-                    using (Pen borderPen = new Pen(borderBrush))
+                    using (var borderPen = new Pen(borderBrush))
                     {
                         // Create border path around the entire item
-                        using (GraphicsPath borderPath = CreateBorderPath(backRect, _cutMenuItemBack))
+                        using (var borderPath = CreateBorderPath(backRect, _cutMenuItemBack))
                             g.DrawPath(borderPen, borderPath);
                     }
                 }
@@ -1066,9 +1066,9 @@ namespace Terminals.Forms.Rendering
         {
             if (vertical)
             {
-                int l = rect.Width / 2;
-                int t = rect.Y;
-                int b = rect.Bottom;
+                var l = rect.Width / 2;
+                var t = rect.Y;
+                var b = rect.Bottom;
 
                 // Draw vertical lines centered
                 g.DrawLine(darkPen, l, t, l, b);
@@ -1076,9 +1076,9 @@ namespace Terminals.Forms.Rendering
             }
             else
             {
-                int y = rect.Height / 2;
-                int l = rect.X + (rtl ? 0 : horizontalInset);
-                int r = rect.Right - (rtl ? horizontalInset : 0);
+                var y = rect.Height / 2;
+                var l = rect.X + (rtl ? 0 : horizontalInset);
+                var r = rect.Right - (rtl ? horizontalInset : 0);
 
                 // Draw horizontal lines centered
                 g.DrawLine(darkPen, l, y, r, y);
@@ -1099,23 +1099,23 @@ namespace Terminals.Forms.Rendering
             rect.Height--;
 
             // Create an array of points to draw lines between
-            List<PointF> pts = new List<PointF>();
+            var pts = new List<PointF>();
 
             float l = rect.X;
             float t = rect.Y;
             float r = rect.Right;
             float b = rect.Bottom;
-            float x0 = rect.X + cut;
-            float x3 = rect.Right - cut;
-            float y0 = rect.Y + cut;
-            float y3 = rect.Bottom - cut;
-            float cutBack = (cut == 0f ? 1 : cut);
+            var x0 = rect.X + cut;
+            var x3 = rect.Right - cut;
+            var y0 = rect.Y + cut;
+            var y3 = rect.Bottom - cut;
+            var cutBack = (cut == 0f ? 1 : cut);
 
             // Does the exclude intercept the top line
             if ((rect.Y >= exclude.Top) && (rect.Y <= exclude.Bottom))
             {
-                float x1 = exclude.X - 1 - cut;
-                float x2 = exclude.Right + cut;
+                var x1 = exclude.X - 1 - cut;
+                var x2 = exclude.Right + cut;
 
                 if (x0 <= x1)
                 {
@@ -1157,10 +1157,10 @@ namespace Terminals.Forms.Rendering
             pts.Add(new PointF(l, y0));
 
             // Create path using a simple set of lines that cut the corner
-            GraphicsPath path = new GraphicsPath();
+            var path = new GraphicsPath();
 
             // Add a line between each set of points
-            for (int i = 1; i < pts.Count; i++)
+            for (var i = 1; i < pts.Count; i++)
                 path.AddLine(pts[i - 1], pts[i]);
 
             // Add a line to join the last to the first
@@ -1176,7 +1176,7 @@ namespace Terminals.Forms.Rendering
             rect.Height--;
 
             // Create path using a simple set of lines that cut the corner
-            GraphicsPath path = new GraphicsPath();
+            var path = new GraphicsPath();
             path.AddLine(rect.Left + cut, rect.Top, rect.Right - cut, rect.Top);
             path.AddLine(rect.Right - cut, rect.Top, rect.Right, rect.Top + cut);
             path.AddLine(rect.Right, rect.Top + cut, rect.Right, rect.Bottom - cut);
@@ -1255,7 +1255,7 @@ namespace Terminals.Forms.Rendering
             }
 
             // Create triangle using a series of lines
-            GraphicsPath path = new GraphicsPath();
+            var path = new GraphicsPath();
 
             switch (direction)
             {
@@ -1287,10 +1287,10 @@ namespace Terminals.Forms.Rendering
         private GraphicsPath CreateTickPath(Rectangle rect)
         {
             // Get the center point of the rect
-            int x = rect.X + rect.Width / 2;
-            int y = rect.Y + rect.Height / 2;
+            var x = rect.X + rect.Width / 2;
+            var y = rect.Y + rect.Height / 2;
 
-            GraphicsPath path = new GraphicsPath();
+            var path = new GraphicsPath();
             path.AddLine(x - 4, y, x - 2, y + 4);
             path.AddLine(x - 2, y + 4, x + 3, y - 5);
             return path;
@@ -1299,10 +1299,10 @@ namespace Terminals.Forms.Rendering
         private GraphicsPath CreateIndeterminatePath(Rectangle rect)
         {
             // Get the center point of the rect
-            int x = rect.X + rect.Width / 2;
-            int y = rect.Y + rect.Height / 2;
+            var x = rect.X + rect.Width / 2;
+            var y = rect.Y + rect.Height / 2;
 
-            GraphicsPath path = new GraphicsPath();
+            var path = new GraphicsPath();
             path.AddLine(x - 3, y, x, y - 3);
             path.AddLine(x, y - 3, x + 3, y);
             path.AddLine(x + 3, y, x, y + 3);

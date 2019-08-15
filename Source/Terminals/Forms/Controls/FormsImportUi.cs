@@ -23,13 +23,13 @@ namespace Terminals.Forms.Controls
 
         public DialogResult AskIfOverwriteOrRename(Int32 conflictingFavoritesCount)
         {
-            DialogResult overwriteResult = DialogResult.No;
+            var overwriteResult = DialogResult.No;
 
             if (conflictingFavoritesCount > 0)
             {
-                String messagePrefix = String.Format("There are {0} connections to import, which already exist.",
+                var messagePrefix = String.Format("There are {0} connections to import, which already exist.",
                                                      conflictingFavoritesCount);
-                String message = messagePrefix +
+                var message = messagePrefix +
                                  "\r\nDo you want to rename them?\r\n\r\nSelect" +
                                  "\r\n- Yes to rename the newly imported items with \"" + ImportWithDialogs.IMPORT_SUFFIX + "\" suffix" +
                                  "\r\n- No to overwrite existing items" +
@@ -44,7 +44,7 @@ namespace Terminals.Forms.Controls
 
         public void ShowResultMessage(Int32 importedItemsCount)
         {
-            String message = "1 item was added to your favorites.";
+            var message = "1 item was added to your favorites.";
             if (importedItemsCount > 1)
                 message = String.Format("{0} items were added to your favorites.", importedItemsCount);
             MessageBox.Show(message, "Terminals import result", MessageBoxButtons.OK);

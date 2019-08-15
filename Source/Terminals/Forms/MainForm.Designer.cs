@@ -33,8 +33,6 @@ namespace Terminals
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.ShortcutsContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.ilTagConnections = new System.Windows.Forms.ImageList(this.components);
             this.ilTags = new System.Windows.Forms.ImageList(this.components);
             this.timerHover = new System.Windows.Forms.Timer(this.components);
@@ -79,7 +77,6 @@ namespace Terminals
             this.toolStripMenuItemCaptureManager = new System.Windows.Forms.ToolStripMenuItem();
             this.networkingToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripOrganizeShortucts = new System.Windows.Forms.ToolStripMenuItem();
             this.credentialManagementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.openSshAgentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -105,7 +102,6 @@ namespace Terminals
             this.tsbCMD = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.favoriteToolBar = new System.Windows.Forms.ToolStrip();
-            this.SpecialCommandsToolStrip = new System.Windows.Forms.ToolStrip();
             this.toolbarStd = new System.Windows.Forms.ToolStrip();
             this.tsbNewTerminal = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -131,7 +127,6 @@ namespace Terminals
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
-            this.ShortcutsContextMenu.SuspendLayout();
             this.toolStripContainer.ContentPanel.SuspendLayout();
             this.toolStripContainer.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer.SuspendLayout();
@@ -149,20 +144,6 @@ namespace Terminals
             this.tsRemoteToolbar.SuspendLayout();
             this.toolbarStd.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // ShortcutsContextMenu
-            // 
-            this.ShortcutsContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem3});
-            this.ShortcutsContextMenu.Name = "ShortcutsContextMenu";
-            this.ShortcutsContextMenu.Size = new System.Drawing.Size(175, 26);
-            this.ShortcutsContextMenu.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ShortcutsContextMenu_MouseClick);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(174, 22);
-            this.toolStripMenuItem3.Text = "Organize Shortcuts";
             // 
             // ilTagConnections
             // 
@@ -232,7 +213,6 @@ namespace Terminals
             this.toolStripContainer.TopToolStripPanel.Controls.Add(this.menuStrip);
             this.toolStripContainer.TopToolStripPanel.Controls.Add(this.tsRemoteToolbar);
             this.toolStripContainer.TopToolStripPanel.Controls.Add(this.favoriteToolBar);
-            this.toolStripContainer.TopToolStripPanel.Controls.Add(this.SpecialCommandsToolStrip);
             this.toolStripContainer.TopToolStripPanel.Controls.Add(this.toolbarStd);
             // 
             // splitContainer1
@@ -469,7 +449,6 @@ namespace Terminals
             this.shortcutsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.shortcutsToolStripMenuItem.Text = "S&hortcuts";
             this.shortcutsToolStripMenuItem.ToolTipText = "Show/Hide Shourtcutes";
-            this.shortcutsToolStripMenuItem.Click += new System.EventHandler(this.ShortcutsToolStripMenuItem_Click);
             // 
             // lockToolbarsToolStripMenuItem
             // 
@@ -576,7 +555,6 @@ namespace Terminals
             this.toolStripMenuItemCaptureManager,
             this.networkingToolsToolStripMenuItem,
             this.toolStripSeparator8,
-            this.toolStripOrganizeShortucts,
             this.credentialManagementToolStripMenuItem,
             this.toolStripSeparator7,
             this.openSshAgentToolStripMenuItem,
@@ -631,17 +609,7 @@ namespace Terminals
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
             this.toolStripSeparator8.Size = new System.Drawing.Size(273, 6);
-            // 
-            // toolStripOrganizeShortucts
-            // 
-            this.toolStripOrganizeShortucts.Image = global::Terminals.Properties.Resources.application_edit;
-            this.toolStripOrganizeShortucts.Name = "toolStripOrganizeShortucts";
-            this.toolStripOrganizeShortucts.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.O)));
-            this.toolStripOrganizeShortucts.Size = new System.Drawing.Size(276, 22);
-            this.toolStripOrganizeShortucts.Text = "Or&ganize Shortcuts";
-            this.toolStripOrganizeShortucts.ToolTipText = "Organize Shortcuts";
-            this.toolStripOrganizeShortucts.Click += new System.EventHandler(this.ToolStripMenuItem3_Click);
+         
             // 
             // credentialManagementToolStripMenuItem
             // 
@@ -695,7 +663,6 @@ namespace Terminals
             this.rebuildShortcutsToolStripMenuItem.Size = new System.Drawing.Size(276, 22);
             this.rebuildShortcutsToolStripMenuItem.Text = "Rebuild Shortcuts";
             this.rebuildShortcutsToolStripMenuItem.ToolTipText = "Recreates Shortcuts list to default state.";
-            this.rebuildShortcutsToolStripMenuItem.Click += new System.EventHandler(this.RebuildShortcutsToolStripMenuItem_Click);
             // 
             // rebuildToolbarsToolStripMenuItem
             // 
@@ -848,17 +815,7 @@ namespace Terminals
             this.favoriteToolBar.Name = "favoriteToolBar";
             this.favoriteToolBar.Size = new System.Drawing.Size(111, 25);
             this.favoriteToolBar.TabIndex = 4;
-            // 
-            // SpecialCommandsToolStrip
-            // 
-            this.SpecialCommandsToolStrip.ContextMenuStrip = this.ShortcutsContextMenu;
-            this.SpecialCommandsToolStrip.Dock = System.Windows.Forms.DockStyle.None;
-            this.SpecialCommandsToolStrip.Location = new System.Drawing.Point(662, 49);
-            this.SpecialCommandsToolStrip.Name = "SpecialCommandsToolStrip";
-            this.SpecialCommandsToolStrip.Size = new System.Drawing.Size(43, 25);
-            this.SpecialCommandsToolStrip.TabIndex = 6;
-            this.SpecialCommandsToolStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.SpecialCommandsToolStrip_ItemClicked);
-            this.SpecialCommandsToolStrip.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SpecialCommandsToolStrip_MouseClick);
+         
             // 
             // toolbarStd
             // 
@@ -1140,7 +1097,6 @@ namespace Terminals
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyUp);
             this.Move += new System.EventHandler(this.MainForm_Move);
             this.Resize += new System.EventHandler(this.MainForm_Resize);
-            this.ShortcutsContextMenu.ResumeLayout(false);
             this.toolStripContainer.ContentPanel.ResumeLayout(false);
             this.toolStripContainer.TopToolStripPanel.ResumeLayout(false);
             this.toolStripContainer.TopToolStripPanel.PerformLayout();
@@ -1222,10 +1178,6 @@ namespace Terminals
         private System.Windows.Forms.ToolStrip favoriteToolBar;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
-        private System.Windows.Forms.ToolStripMenuItem toolStripOrganizeShortucts;
-        private System.Windows.Forms.ContextMenuStrip ShortcutsContextMenu;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
-        private System.Windows.Forms.ToolStrip SpecialCommandsToolStrip;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripMenuItem networkingToolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemCaptureManager;

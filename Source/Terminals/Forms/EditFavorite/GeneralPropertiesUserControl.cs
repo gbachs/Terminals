@@ -19,16 +19,16 @@ namespace Terminals.Forms.EditFavorite
         private ConnectionManager connectionManager;
         private IFavorites favorites;
 
-        internal string ServerNameText { get { return this.cmbServers.Text.Trim(); } }
+        internal string ServerNameText => this.cmbServers.Text.Trim();
 
-        internal string ProtocolText { get { return this.ProtocolComboBox.Text; } }
+        internal string ProtocolText => this.ProtocolComboBox.Text;
 
-        internal string PortText { get { return this.txtPort.Text; } }
+        internal string PortText => this.txtPort.Text;
 
-        internal bool UrlVisible { get { return this.httpUrlTextBox.Visible; } }
+        internal bool UrlVisible => this.httpUrlTextBox.Visible;
 
-        internal bool ShowOnToolbar { get { return this.chkAddtoToolbar.Checked; } }
-        
+        internal bool ShowOnToolbar => this.chkAddtoToolbar.Checked;
+
         private String currentToolBarFileName;
         
         private NewTerminalFormValidator validator;
@@ -99,7 +99,7 @@ namespace Terminals.Forms.EditFavorite
 
         private void PictureBox2_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog openFileDialog = CreateIconSelectionDialog())
+            using (var openFileDialog = CreateIconSelectionDialog())
             {
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                     this.TryToAssignNewToolbarIcon(openFileDialog.FileName);
@@ -133,7 +133,7 @@ namespace Terminals.Forms.EditFavorite
 
         private void TryToLoadSelectedImage(string newImagefilePath)
         {
-            string newFileInThumbsDir = FavoriteIcons.CopySelectedImageToThumbsDir(newImagefilePath);
+            var newFileInThumbsDir = FavoriteIcons.CopySelectedImageToThumbsDir(newImagefilePath);
             this.pictureBox2.Image = Image.FromFile(newImagefilePath);
             this.currentToolBarFileName = newFileInThumbsDir;
         }
@@ -142,8 +142,7 @@ namespace Terminals.Forms.EditFavorite
         {
             this.SetOkButtonState();
 
-            if (this.ServerNameChanged != null)
-                this.ServerNameChanged(this.ServerNameText);
+            this.ServerNameChanged?.Invoke(this.ServerNameText);
         }
 
         private void CmbServers_SelectedIndexChanged(object sender, EventArgs e)
@@ -172,10 +171,10 @@ namespace Terminals.Forms.EditFavorite
             port = KnownConnectionConstants.RDPPort;
             if (connection != null && connection.Trim() != String.Empty && connection.Contains(":"))
             {
-                int separatorIndex = connection.IndexOf(":", StringComparison.Ordinal);
-                String parsedServer = connection.Substring(0, separatorIndex);
-                String rawPort = connection.Substring(separatorIndex + 1);
-                Int32 parsedPort = KnownConnectionConstants.RDPPort;
+                var separatorIndex = connection.IndexOf(":", StringComparison.Ordinal);
+                var parsedServer = connection.Substring(0, separatorIndex);
+                var rawPort = connection.Substring(separatorIndex + 1);
+                var parsedPort = KnownConnectionConstants.RDPPort;
                 if (rawPort.Trim() != String.Empty)
                 {
                     rawPort = rawPort.Trim();
@@ -197,15 +196,14 @@ namespace Terminals.Forms.EditFavorite
                 this.SetControlsForWeb();
 
             this.FireProtocolChanged();
-            int defaultPort = this.connectionManager.GetPort(this.ProtocolText);
+            var defaultPort = this.connectionManager.GetPort(this.ProtocolText);
             this.txtPort.Text = defaultPort.ToString(CultureInfo.InvariantCulture);
             this.SetOkButtonState();
         }
 
         private void FireProtocolChanged()
         {
-            if (this.ProtocolChanged != null)
-                this.ProtocolChanged(this.ProtocolComboBox.Text);
+            this.ProtocolChanged?.Invoke(this.ProtocolComboBox.Text);
         }
 
         private void SetControlsForWeb()
@@ -230,7 +228,7 @@ namespace Terminals.Forms.EditFavorite
         {
             if (this.connectionManager.IsProtocolWebBased(this.ProtocolComboBox.Text))
             {
-                Uri newUrl = GetFullUrlFromHttpTextBox();
+                var newUrl = GetFullUrlFromHttpTextBox();
                 if (newUrl != null)
                 {
                     this.cmbServers.Text = newUrl.Host;
@@ -243,14 +241,13 @@ namespace Terminals.Forms.EditFavorite
 
         private void SetOkButtonState()
         {
-            if (SetOkButtonRequested != null)
-                SetOkButtonRequested(this, EventArgs.Empty);
+            this.SetOkButtonRequested?.Invoke(this, EventArgs.Empty);
         }
 
         internal Uri GetFullUrlFromHttpTextBox()
         {
-            string newUrlText = this.httpUrlTextBox.Text.ToLower();
-            string protocolPrefix = this.ProtocolComboBox.Text.ToLower();
+            var newUrlText = this.httpUrlTextBox.Text.ToLower();
+            var protocolPrefix = this.ProtocolComboBox.Text.ToLower();
 
             if (!newUrlText.StartsWith(KnownConnectionConstants.HTTP.ToLower()) &&
                 !newUrlText.StartsWith(KnownConnectionConstants.HTTPS.ToLower()))
@@ -275,7 +272,7 @@ namespace Terminals.Forms.EditFavorite
         {
             favorite.Name = (String.IsNullOrEmpty(this.txtName.Text) ? this.cmbServers.Text : this.txtName.Text);
             favorite.ServerName = this.cmbServers.Text;
-            string protocol = this.ProtocolComboBox.Text;
+            var protocol = this.ProtocolComboBox.Text;
             this.connectionManager.ChangeProtocol(favorite, protocol);
             Int32 port;
             Int32.TryParse(this.PortText, out port);
@@ -349,7 +346,7 @@ namespace Terminals.Forms.EditFavorite
         internal void AssingAvailablePlugins(string[] protocols)
         {
             this.ProtocolComboBox.DataSource = protocols;
-            int rdpIndex = protocols.ToList().IndexOf(KnownConnectionConstants.RDP);
+            var rdpIndex = protocols.ToList().IndexOf(KnownConnectionConstants.RDP);
 
             if (rdpIndex >= 0)
                 this.ProtocolComboBox.SelectedIndex = rdpIndex;

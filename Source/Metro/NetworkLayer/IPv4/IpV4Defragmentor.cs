@@ -83,14 +83,8 @@ namespace Metro.NetworkLayer.IpV4
 			/// </summary>
 			public ArrayList Fragments
 			{
-				get
-				{
-					return m_fragments;
-				}
-				set
-				{
-					m_fragments = value;
-				}
+				get => m_fragments;
+				set => m_fragments = value;
 			}
 
 
@@ -101,14 +95,8 @@ namespace Metro.NetworkLayer.IpV4
 			/// </summary>
 			public int TotalDataSize
 			{
-				get
-				{
-					return m_totalDataSize;
-				}
-				set
-				{
-					m_totalDataSize = value;
-				}
+				get => m_totalDataSize;
+				set => m_totalDataSize = value;
 			}
 			
 			
@@ -118,14 +106,8 @@ namespace Metro.NetworkLayer.IpV4
 			/// </summary>
 			public int CurrentDataSize
 			{
-				get
-				{
-					return m_currentDataSize;
-				}
-				set
-				{
-					m_currentDataSize = value;
-				}
+				get => m_currentDataSize;
+				set => m_currentDataSize = value;
 			}
 			
 			

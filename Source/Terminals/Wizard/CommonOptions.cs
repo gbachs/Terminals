@@ -20,45 +20,19 @@ namespace Terminals.Wizard
             this.autoSwitchOnCapture.Enabled = settings.EnableCaptureToFolder;
         }
 
-        public bool MinimizeToTray
-        {
-            get { return this.MinimizeCheckbox.Checked; }
-        }
+        public bool MinimizeToTray => this.MinimizeCheckbox.Checked;
 
-        public bool AllowOnlySingleInstance
-        {
-            get { return this.SingleCheckbox.Checked; }
-        }
+        public bool AllowOnlySingleInstance => this.SingleCheckbox.Checked;
 
-        public bool WarnOnDisconnect
-        {
-            get { return this.WarnCheckbox.Checked; }
-        }
+        public bool WarnOnDisconnect => this.WarnCheckbox.Checked;
 
-        public bool LoadDefaultShortcuts
-        {
-            get { return this.LoadDefaultShortcutsCheckbox.Checked; }
-        }
+        public bool ImportRDPConnections => this.ImportRDP.Checked;
 
-        public bool ImportRDPConnections
-        {
-            get { return this.ImportRDP.Checked; }
-        }
+        public bool EnableCaptureToClipboard => this.CaptureToClipboard.Checked;
 
-        public bool EnableCaptureToClipboard
-        {
-            get { return this.CaptureToClipboard.Checked; }
-        }
+        public bool EnableCaptureToFolder => this.CaptureToFolder.Checked;
 
-        public bool EnableCaptureToFolder
-        {
-            get { return this.CaptureToFolder.Checked; }
-        }
-
-        public bool AutoSwitchOnCapture
-        {
-            get { return this.autoSwitchOnCapture.Checked; }
-        }
+        public bool AutoSwitchOnCapture => this.autoSwitchOnCapture.Checked;
 
         private void CaptureToFolder_CheckedChanged(object sender, EventArgs e)
         {

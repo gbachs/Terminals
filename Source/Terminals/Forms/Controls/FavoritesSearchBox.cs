@@ -66,7 +66,7 @@ namespace Terminals.Forms.Controls
 
         private void RefreshSearch()
         {
-            string searchText = this.searchTextBox.SearchText;
+            var searchText = this.searchTextBox.SearchText;
             if (string.IsNullOrEmpty(searchText))
                 this.Cancel();
             else
@@ -83,9 +83,9 @@ namespace Terminals.Forms.Controls
         {
             this.Cancel(); // may be previous search
             this.cancellationTokenSource = new CancellationTokenSource();
-            CancellationToken token = this.cancellationTokenSource.Token;
+            var token = this.cancellationTokenSource.Token;
             var criteria = new FavoritesSearch(this.persistence.Favorites, token, searchText);
-            Task<List<IFavorite>> searchTask = criteria.FindAsync();
+            var searchTask = criteria.FindAsync();
             searchTask.ContinueWith(this.FinishSearch, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
@@ -99,8 +99,7 @@ namespace Terminals.Forms.Controls
         {
             var backup = this.cancellationTokenSource;
             this.cancellationTokenSource = null;
-            if (backup != null)
-                backup.Dispose();
+            backup?.Dispose();
         }
 
         private void AssignDataSource(Task<List<IFavorite>> searchTask)
@@ -119,20 +118,17 @@ namespace Terminals.Forms.Controls
 
         private void FireCanceled()
         {
-            if (this.Canceled != null)
-                this.Canceled(this, EventArgs.Empty);
+            this.Canceled?.Invoke(this, EventArgs.Empty);
         }
 
         private void Cancel()
         {
-            if (this.cancellationTokenSource != null)
-                this.cancellationTokenSource.Cancel();
+            this.cancellationTokenSource?.Cancel();
         }
 
         private void FireFound(List<IFavorite> found)
         {
-            if (this.Found != null)
-                this.Found(this, new FavoritesFoundEventArgs(found));
+            this.Found?.Invoke(this, new FavoritesFoundEventArgs(found));
         }
     }
 }

@@ -52,7 +52,7 @@ namespace Terminals.Updates
 
         private bool IsMasterPasswordValid(string masterPassword)
         {
-            bool isValid = PasswordFunctions.MasterPasswordIsValid(masterPassword, Settings.Instance.MasterPasswordHash);
+            var isValid = PasswordFunctions.MasterPasswordIsValid(masterPassword, Settings.Instance.MasterPasswordHash);
             if (isValid)
             {
                 this.AssignFieldsByOldMasterPassword(masterPassword);
@@ -72,18 +72,18 @@ namespace Terminals.Updates
             if (!this.isAuthenticated)
                 return credentialsFileContent;
 
-            XDocument credentialsDocument = XDocument.Parse(credentialsFileContent);
+            var credentialsDocument = XDocument.Parse(credentialsFileContent);
             if (credentialsDocument.Root == null)
                 return credentialsFileContent;
 
-            IEnumerable<XElement> credentials = credentialsDocument.Root.Descendants("CredentialSet");
+            var credentials = credentialsDocument.Root.Descendants("CredentialSet");
             this.UpgradeAllCredentials(credentials);
             return credentialsDocument.ToString();
         }
 
         private void UpgradeAllCredentials(IEnumerable<XElement> credentials)
         {
-            foreach (XElement credential in credentials)
+            foreach (var credential in credentials)
             {
                 this.MigratePasswordElement(credential, "EncryptedPassword");
                 this.MigrateNotEncryptedElement(credential, "EncryptedUserName");
@@ -93,7 +93,7 @@ namespace Terminals.Updates
 
         private void MigratePasswordElement(XElement element, string elementName)
         {
-            XElement passwordElement = element.Element(elementName);
+            var passwordElement = element.Element(elementName);
             if (passwordElement == null)
                 return;
 
@@ -102,7 +102,7 @@ namespace Terminals.Updates
 
         private void MigrateNotEncryptedElement(XElement element, string elementName)
         {
-            XElement plainTextElement = element.Element(elementName);
+            var plainTextElement = element.Element(elementName);
             if (plainTextElement == null)
                 return;
 
@@ -125,8 +125,8 @@ namespace Terminals.Updates
 
         private void UpdateFavorites(XElement rootElement)
         {
-            List<XElement> favorites = FindAllFavoriteElements(rootElement);
-            foreach (XElement favorite in favorites)
+            var favorites = FindAllFavoriteElements(rootElement);
+            foreach (var favorite in favorites)
             {
                 this.UpgradeFavorite(favorite);
             }
@@ -147,10 +147,7 @@ namespace Terminals.Updates
 
         private void UpdateSettingsPasswords(XDocument configFile)
         {
-            if (configFile.Root == null)
-                return;
-
-            var settingsElement = configFile.Root.Element("settings");
+            var settingsElement = configFile.Root?.Element("settings");
             if (settingsElement == null)
                 return;
 
@@ -169,7 +166,7 @@ namespace Terminals.Updates
 
         private void ConfirmMasterPassword(XElement settingsElement)
         {
-            XAttribute masterPassword = settingsElement.Attribute("terminalsPassword");
+            var masterPassword = settingsElement.Attribute("terminalsPassword");
             if (masterPassword == null)
                 return;
 
@@ -178,7 +175,7 @@ namespace Terminals.Updates
 
         private void MigratePasswordAttribute(XElement element, string attributeName)
         {
-            XAttribute passwordAttribute = element.Attribute(attributeName);
+            var passwordAttribute = element.Attribute(attributeName);
             if (passwordAttribute == null)
                 return;
 
@@ -187,13 +184,13 @@ namespace Terminals.Updates
 
         private string MigratePassword(string oldPassword)
         {
-            string securityPassword = PasswordFunctions.DecryptPassword(oldPassword, this.oldKey);
+            var securityPassword = PasswordFunctions.DecryptPassword(oldPassword, this.oldKey);
             return PasswordFunctions2.EncryptPassword(securityPassword, this.newKey);
         }
 
         private void MigrateNotEncryptedAttribute(XElement element, string attributeName)
         {
-            XAttribute plainTextAttribute = element.Attribute(attributeName);
+            var plainTextAttribute = element.Attribute(attributeName);
             if (plainTextAttribute == null)
                 return;
 

@@ -25,14 +25,14 @@ namespace TabControl
 
         public TabControlItem Item
         {
-            get { return _item; }
-            set { _item = value; }
+            get => _item;
+            set => _item = value;
         }
 
         public bool Cancel
         {
-            get { return _cancel; }
-            set { _cancel = value; }
+            get => _cancel;
+            set => _cancel = value;
         }
     }
 
@@ -51,15 +51,9 @@ namespace TabControl
             itm = item;
         }
 
-        public TabControlItemChangeTypes ChangeType
-        {
-            get { return changeType; }
-        }
+        public TabControlItemChangeTypes ChangeType => changeType;
 
-        public TabControlItem Item
-        {
-            get { return itm; }
-        }
+        public TabControlItem Item => itm;
     }
 
     #endregion
@@ -77,15 +71,9 @@ namespace TabControl
             this.item = item;
         }
 
-        public Point Location
-        {
-            get { return location; }
-        }
+        public Point Location => location;
 
-        public TabControlItem Item
-        {
-            get { return item; }
-        }
+        public TabControlItem Item => item;
     }
 
     #endregion

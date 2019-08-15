@@ -48,72 +48,72 @@ namespace Unified.Encryption.Hash {
 		/// <param name="hshType">The type of hash.</param>
 		/// <returns>True if the hash validates, false otherwise.</returns>
 		public static bool CheckHash(string strOriginal, string strHash, HashType hshType) {
-			string strOrigHash = GetHash(strOriginal, hshType);
+			var strOrigHash = GetHash(strOriginal, hshType);
 			return (strOrigHash == strHash);
 		} /* CheckHash */
 		#endregion
 		
 		#region Hashers
 		private static string GetMD5(string strPlain) {
-			UnicodeEncoding UE = new UnicodeEncoding();
+			var UE = new UnicodeEncoding();
 			byte[] HashValue, MessageBytes = UE.GetBytes(strPlain);
 			MD5 md5 = new MD5CryptoServiceProvider();
-			string strHex = "";
+			var strHex = "";
 			
 			HashValue = md5.ComputeHash(MessageBytes);
-			foreach(byte b in HashValue) {
+			foreach(var b in HashValue) {
 				strHex += String.Format("{0:x2}", b);
 			}
 			return strHex;
 		} /* GetMD5 */
 		
 		private static string GetSHA1(string strPlain) {
-			UnicodeEncoding UE = new UnicodeEncoding();
+			var UE = new UnicodeEncoding();
 			byte[] HashValue, MessageBytes = UE.GetBytes(strPlain);
-			SHA1Managed SHhash = new SHA1Managed();
-			string strHex = "";
+			var SHhash = new SHA1Managed();
+			var strHex = "";
 
 			HashValue = SHhash.ComputeHash(MessageBytes);
-			foreach(byte b in HashValue) {
+			foreach(var b in HashValue) {
 				strHex += String.Format("{0:x2}", b);
 			}
 			return strHex;
 		} /* GetSHA1 */
 		
 		private static string GetSHA256(string strPlain) {
-			UnicodeEncoding UE = new UnicodeEncoding();
+			var UE = new UnicodeEncoding();
 			byte[] HashValue, MessageBytes = UE.GetBytes(strPlain);
-			SHA256Managed SHhash = new SHA256Managed();
-			string strHex = "";
+			var SHhash = new SHA256Managed();
+			var strHex = "";
 
 			HashValue = SHhash.ComputeHash(MessageBytes);
-			foreach(byte b in HashValue) {
+			foreach(var b in HashValue) {
 				strHex += String.Format("{0:x2}", b);
 			}
 			return strHex;
 		} /* GetSHA256 */
 		
 		private static string GetSHA384(string strPlain) {
-			UnicodeEncoding UE = new UnicodeEncoding();
+			var UE = new UnicodeEncoding();
 			byte[] HashValue, MessageBytes = UE.GetBytes(strPlain);
-			SHA384Managed SHhash = new SHA384Managed();
-			string strHex = "";
+			var SHhash = new SHA384Managed();
+			var strHex = "";
 
 			HashValue = SHhash.ComputeHash(MessageBytes);
-			foreach(byte b in HashValue) {
+			foreach(var b in HashValue) {
 				strHex += String.Format("{0:x2}", b);
 			}
 			return strHex;
 		} /* GetSHA384 */
 		
 		private static string GetSHA512(string strPlain) {
-			UnicodeEncoding UE = new UnicodeEncoding();
+			var UE = new UnicodeEncoding();
 			byte[] HashValue, MessageBytes = UE.GetBytes(strPlain);
-			SHA512Managed SHhash = new SHA512Managed();
-			string strHex = "";
+			var SHhash = new SHA512Managed();
+			var strHex = "";
 
 			HashValue = SHhash.ComputeHash(MessageBytes);
-			foreach(byte b in HashValue) {
+			foreach(var b in HashValue) {
 				strHex += String.Format("{0:x2}", b);
 			}
 			return strHex;

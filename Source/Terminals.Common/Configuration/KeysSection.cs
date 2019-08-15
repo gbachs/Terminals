@@ -3,64 +3,51 @@ using System.Configuration;
 
 namespace Terminals.Common.Configuration
 {
-	/// <summary>
-	/// SSHKeysSection is a special configuration section for SSH keys.
-	/// </summary>
-	public class KeysSection : ConfigurationSection
-	{
-        [ConfigurationProperty("name", 
+    /// <summary>
+    /// SSHKeysSection is a special configuration section for SSH keys.
+    /// </summary>
+    public class KeysSection : ConfigurationSection
+    {
+        [ConfigurationProperty("name",
             DefaultValue = "SSH",
-            IsRequired = true, 
+            IsRequired = true,
             IsKey = false)]
-		public string Name
-        {
-            get{return (string)this["name"];}
-            set{this["name"] = value;}
-        }
+        public string Name { get => (string)this["name"]; set => this["name"] = value; }
 
-		// Declare a collection element represented
+        // Declare a collection element represented
         // in the configuration file by the sub-section
         // <keys> <add .../> </keys> 
         // Note: the "IsDefaultCollection = false" 
         // instructs the .NET Framework to build a nested 
         // section like <keys> ...</keys>.
-        [ConfigurationProperty("keys",IsDefaultCollection = false)]
-        public KeysCollection Keys
-        {
-            get
-            {
-                return (KeysCollection)base["keys"];
-            }
-            set
-            {
-            	this["keys"] = value;
-            }
-        }
+        [ConfigurationProperty("keys", IsDefaultCollection = false)]
+        public KeysCollection Keys { get => (KeysCollection)base["keys"]; set => this["keys"] = value; }
 
         public void AddKey(string name, string key)
         {
-        	this.Keys.Add(new KeyConfigElement(name, key));
+            this.Keys.Add(new KeyConfigElement(name, key));
         }
- 
+
         public string Key(string name)
         {
-        	return this.Keys[name].Key;
+            return this.Keys[name].Key;
         }
-	}	
-	[ConfigurationCollection(typeof(KeyConfigElement),
-    	CollectionType=ConfigurationElementCollectionType.AddRemoveClearMap)]
+    }
+
+    [ConfigurationCollection(typeof(KeyConfigElement),
+        CollectionType = ConfigurationElementCollectionType.AddRemoveClearMap)]
     public class KeysCollection : ConfigurationElementCollection
     {
         public KeysCollection()
         {
         }
-        
-		protected override ConfigurationElement CreateNewElement()
-		{
-			return new KeyConfigElement();
-		}
 
-        protected override Object 
+        protected override ConfigurationElement CreateNewElement()
+        {
+            return new KeyConfigElement();
+        }
+
+        protected override Object
             GetElementKey(ConfigurationElement element)
         {
             return (element as KeyConfigElement).Name;
@@ -68,27 +55,19 @@ namespace Terminals.Common.Configuration
 
         public KeyConfigElement this[int index]
         {
-            get
-            {
-                return (KeyConfigElement)this.BaseGet(index);
-            }
+            get => (KeyConfigElement)this.BaseGet(index);
             set
             {
                 if (this.BaseGet(index) != null)
                 {
                     this.BaseRemoveAt(index);
                 }
+
                 this.BaseAdd(index, value);
             }
         }
 
-        new public KeyConfigElement this[string Name]
-        {
-            get
-            {
-                return (KeyConfigElement)this.BaseGet(Name);
-            }
-        }
+        new public KeyConfigElement this[string Name] => (KeyConfigElement)this.BaseGet(Name);
 
         public void Add(KeyConfigElement key)
         {
@@ -120,33 +99,25 @@ namespace Terminals.Common.Configuration
         }
 
         [ConfigurationProperty("name", IsRequired = true, IsKey = true)]
-        public string Name
-        {
-            get{return (string)this["name"];}
-            set{this["name"] = value;}
-        }
+        public string Name { get => (string)this["name"]; set => this["name"] = value; }
 
-        [ConfigurationProperty("key",IsRequired = true)]
-        public string Key
-        {
-            get{return (string)this["key"];}
-            set{this["key"] = value;}
-        }
+        [ConfigurationProperty("key", IsRequired = true)]
+        public string Key { get => (string)this["key"]; set => this["key"] = value; }
 
         protected override void DeserializeElement(
-           System.Xml.XmlReader reader, 
+            System.Xml.XmlReader reader,
             bool serializeCollectionKey)
         {
-            base.DeserializeElement(reader, 
+            base.DeserializeElement(reader,
                 serializeCollectionKey);
             // You can your custom processing code here.
         }
 
         protected override bool SerializeElement(
-            System.Xml.XmlWriter writer, 
+            System.Xml.XmlWriter writer,
             bool serializeCollectionKey)
         {
-            bool ret = base.SerializeElement(writer, 
+            bool ret = base.SerializeElement(writer,
                 serializeCollectionKey);
             // You can enter your custom processing code here.
             return ret;

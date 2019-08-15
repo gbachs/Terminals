@@ -44,28 +44,16 @@ namespace VncSharp
 		/// <summary>
 		/// Gets the Width of the remote Desktop.
 		/// </summary>
-		public int DesktopWidth {
-			get { 
-				return width; 
-			}
-		}
-		
+		public int DesktopWidth => width;
+
 		/// <summary>
 		/// Gets the Height of the remote Desktop.
 		/// </summary>
-		public int DesktopHeight {
-			get { 
-				return height; 
-			}
-		}
-		
+		public int DesktopHeight => height;
+
 		/// <summary>
 		/// Gets the name of the remote Desktop, if any.
 		/// </summary>
-		public string DesktopName {
-			get { 
-				return name; 
-			}
-		}
+		public string DesktopName => name;
 	}
 }

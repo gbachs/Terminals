@@ -206,14 +206,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IpV4SecurityLevelType SecurityLevel
 		{
-			get
-			{
-				return m_level;
-			}
-			set
-			{
-				m_level = value;
-			}
+			get => m_level;
+			set => m_level = value;
 		}
 		
 		
@@ -224,14 +218,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public ushort Compartment
 		{
-			get
-			{
-				return m_compartment;
-			}
-			set
-			{
-				m_compartment = value;
-			}
+			get => m_compartment;
+			set => m_compartment = value;
 		}
 		
 		
@@ -243,14 +231,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public ushort HandlingRestrictions
 		{
-			get
-			{
-				return m_handling;
-			}
-			set
-			{
-				m_handling = value;
-			}
+			get => m_handling;
+			set => m_handling = value;
 		}
 		
 		
@@ -261,14 +243,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public uint TransmissionControlCode
 		{
-			get
-			{
-				return m_tcc;
-			}
-			set
-			{
-				m_tcc = value;
-			}
+			get => m_tcc;
+			set => m_tcc = value;
 		}
 		
 		
@@ -418,14 +394,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public byte Pointer
 		{
-			get
-			{	
-				return m_pointer;
-			}
-			set
-			{
-				m_pointer = value;
-			}
+			get => m_pointer;
+			set => m_pointer = value;
 		}
 		
 		
@@ -435,14 +405,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IPAddress[] Route
 		{
-			get
-			{
-				return m_routeData;
-			}
-			set
-			{
-				m_routeData = value;
-			}
+			get => m_routeData;
+			set => m_routeData = value;
 		}
 		
 		
@@ -587,14 +551,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public ushort StreamIdentifier
 		{
-			get
-			{
-				return m_id;
-			}
-			set
-			{
-				m_id = value;
-			}
+			get => m_id;
+			set => m_id = value;
 		}	
 	
 	
@@ -735,14 +693,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public byte Pointer
 		{
-			get
-			{
-				return m_pointer;
-			}
-			set
-			{
-				m_pointer = value;
-			}	
+			get => m_pointer;
+			set => m_pointer = value;
 		}
 		
 		
@@ -752,10 +704,7 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public byte Overflow
 		{
-			get
-			{
-				return m_overflow;
-			}
+			get => m_overflow;
 			set
 			{
 				if (value > 16) 
@@ -773,14 +722,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IpV4TimestampType OptionType
 		{
-			get
-			{
-				return m_type;
-			}
-			set
-			{
-				m_type = value;
-			}	
+			get => m_type;
+			set => m_type = value;
 		}
 		
 		
@@ -794,14 +737,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public uint[] Timestamps
 		{
-			get
-			{
-				return m_timestamps;
-			}
-			set
-			{
-				m_timestamps = value;
-			}	
+			get => m_timestamps;
+			set => m_timestamps = value;
 		}
 		
 		
@@ -810,14 +747,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IPAddress[] Addressstamps
 		{
-			get
-			{
-				return m_addressstamps;
-			}
-			set
-			{
-				m_addressstamps = value;
-			}	
+			get => m_addressstamps;
+			set => m_addressstamps = value;
 		}
 		
 		

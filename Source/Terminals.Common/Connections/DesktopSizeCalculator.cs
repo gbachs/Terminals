@@ -36,19 +36,19 @@ namespace Terminals.Connections
 
         private static Size CalculateDefaultSize(IFavorite favorite)
         {
-            IDisplayOptions display = favorite.Display;
+            var display = favorite.Display;
             return new Size(display.Width, display.Height);
         }
 
         private static Size CalculateAutoScaleSize(Connection connection)
         {
-            Control parent = connection.Parent;
+            var parent = connection.Parent;
             return GetMaxAvailableSize(parent.Width, parent.Height);
         }
 
         private static Size CalculateFullScreenSize(Connection connection)
         {
-            Rectangle controlBounds = Screen.FromControl(connection).Bounds;
+            var controlBounds = Screen.FromControl(connection).Bounds;
             var width = controlBounds.Width - 13;
             var height = controlBounds.Height - 1;
             return GetMaxAvailableSize(width, height);

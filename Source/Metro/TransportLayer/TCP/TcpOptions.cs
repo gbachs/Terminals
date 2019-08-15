@@ -67,14 +67,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public ushort MaxSegmentSize
 		{
-			get
-			{
-				return m_maxSegmentSize;
-			}
-			set
-			{
-				m_maxSegmentSize = value;
-			}
+			get => m_maxSegmentSize;
+			set => m_maxSegmentSize = value;
 		}
 		
 		

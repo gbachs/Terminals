@@ -38,10 +38,7 @@ namespace TabControl
 
                 return (TabControlItem)List[index];
             }
-            set
-            {
-                List[index] = (TabControlItem)value;
-            }
+            set => List[index] = (TabControlItem)value;
         }
 
         [Browsable(false)]

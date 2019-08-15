@@ -212,8 +212,7 @@ namespace Terminals.Network
 
         private void OnRouteHopFound(TraceRouteHopData hop)
         {
-            if (this.RouteHopFound != null)
-                this.RouteHopFound(this, new RouteHopFoundEventArgs(hop, this.Idle));
+            this.RouteHopFound?.Invoke(this, new RouteHopFoundEventArgs(hop, this.Idle));
         }
 
         /// <summary>

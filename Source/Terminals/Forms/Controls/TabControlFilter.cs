@@ -8,13 +8,7 @@ namespace Terminals
 {
     internal class TabControlFilter
     {
-        internal bool HasSelected
-        {
-            get
-            {
-                return this.tabControl.SelectedItem != null;
-            }
-        }
+        internal bool HasSelected => this.tabControl.SelectedItem != null;
 
         internal IFavorite SelectedOriginFavorite
         {
@@ -49,13 +43,7 @@ namespace Terminals
             }
         }
 
-        internal TerminalTabControlItem Selected
-        {
-            get
-            {
-                return this.tabControl.SelectedItem as TerminalTabControlItem;
-            }
-        }
+        internal TerminalTabControlItem Selected => this.tabControl.SelectedItem as TerminalTabControlItem;
 
         private readonly TabControl.TabControl tabControl;
 
@@ -82,15 +70,12 @@ namespace Terminals
             var tab = this.tabControl.Items.OfType<TerminalTabControlItem>()
                 .FirstOrDefault(candidate => candidate.Title == tabTitle);
 
-            if (tab != null)
-                return tab.Favorite;
-
-            return null;
+            return tab?.Favorite;
         }
 
         internal TerminalTabControlItem FindCaptureManagerTab()
         {
-            string captureManagerTitle = Program.Resources.GetString("CaptureManager");
+            var captureManagerTitle = Program.Resources.GetString("CaptureManager");
 
             return this.tabControl.Items
                 .OfType<TerminalTabControlItem>()

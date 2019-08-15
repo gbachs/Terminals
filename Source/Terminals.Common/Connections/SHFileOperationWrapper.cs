@@ -184,13 +184,13 @@ namespace Terminals
 
         public bool DoOperation()
         {
-            Native.SHFILEOPSTRUCT FileOpStruct = new Native.SHFILEOPSTRUCT();
+            var FileOpStruct = new Native.SHFILEOPSTRUCT();
             
             FileOpStruct.hwnd = OwnerWindow;
             FileOpStruct.wFunc = (uint)Operation;
 
-            String multiSource = StringArrayToMultiString(SourceFiles);
-            String multiDest = StringArrayToMultiString(DestFiles);
+            var multiSource = StringArrayToMultiString(SourceFiles);
+            var multiDest = StringArrayToMultiString(DestFiles);
             FileOpStruct.pFrom = Marshal.StringToHGlobalUni(multiSource);
             FileOpStruct.pTo = Marshal.StringToHGlobalUni(multiDest);
             
@@ -219,12 +219,12 @@ namespace Terminals
         
         private String StringArrayToMultiString(String[] stringArray)
         {
-            String multiString = "";
+            var multiString = "";
 
             if (stringArray == null)
                 return "";
 
-            for (int i=0 ; i<stringArray.Length ; i++)
+            for (var i=0 ; i<stringArray.Length ; i++)
                 multiString += stringArray[i] + '\0';
             
             multiString += '\0';

@@ -149,14 +149,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public IPEndPoint LocalEndPoint
 		{
-			get
-			{
-				return m_localEndPoint;
-			}
-			set
-			{
-				m_localEndPoint = value;
-			}
+			get => m_localEndPoint;
+			set => m_localEndPoint = value;
 		}
 		
 		
@@ -165,14 +159,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public IPEndPoint RemoteEndPoint
 		{
-			get
-			{
-				return m_remoteEndPoint;
-			}
-			set
-			{
-				m_remoteEndPoint = value;
-			}
+			get => m_remoteEndPoint;
+			set => m_remoteEndPoint = value;
 		}
 		
 		
@@ -181,14 +169,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public TcpState State
 		{
-			get
-			{
-				return m_state;
-			}
-			set
-			{
-				m_state = value;
-			}
+			get => m_state;
+			set => m_state = value;
 		}
 		
 		

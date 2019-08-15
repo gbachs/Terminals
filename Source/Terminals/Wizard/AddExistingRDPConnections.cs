@@ -13,13 +13,13 @@ namespace Terminals.Wizard
 {
     internal partial class AddExistingRDPConnections : UserControl
     {
-        private MethodInvoker _miv;
-        private NetworkInterfaceList _nil;
+        private readonly MethodInvoker _miv;
+        private readonly NetworkInterfaceList _nil;
         private IPAddress _endPointAddress;
-        private List<TcpSynScanner> _scannerList = new List<TcpSynScanner>(1275);
+        private readonly List<TcpSynScanner> _scannerList = new List<TcpSynScanner>(1275);
         private int _scannerCount = 0;
         private int _pendingRequests = 0;
-        private object _uiElementsLock = new object();
+        private readonly object _uiElementsLock = new object();
 
         private ConnectionManager connectionManager;
 
@@ -227,8 +227,8 @@ namespace Terminals.Wizard
                 ConnectionsCountLabel.Text = this.DiscoveredConnections.Count.ToString();
                 PendingRequestsLabel.Text = _pendingRequests.ToString();
 
-                if (_pendingRequests <= 0 && OnDiscoveryCompleted != null)
-                    OnDiscoveryCompleted();
+                if (this._pendingRequests <= 0)
+                    OnDiscoveryCompleted?.Invoke();
 
                 Application.DoEvents();
             }

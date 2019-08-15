@@ -138,14 +138,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public bool FragmentPackets
 		{
-			get
-			{
-				return m_fragment;
-			}
-			set
-			{
-				m_fragment = value;
-			}
+			get => m_fragment;
+			set => m_fragment = value;
 		}
 		
 		

@@ -32,10 +32,10 @@ namespace Unified.Encryption {
         }
 
         public byte[] Encrypt(byte[] bytesData, byte[] bytesKey) {
-            MemoryStream memoryStream = new MemoryStream();
+            var memoryStream = new MemoryStream();
             transformer.IV = initVec;
-            ICryptoTransform iCryptoTransform = transformer.GetCryptoServiceProvider(bytesKey);
-            CryptoStream cryptoStream = new CryptoStream(memoryStream, iCryptoTransform, CryptoStreamMode.Write);
+            var iCryptoTransform = transformer.GetCryptoServiceProvider(bytesKey);
+            var cryptoStream = new CryptoStream(memoryStream, iCryptoTransform, CryptoStreamMode.Write);
             try {
                 cryptoStream.Write(bytesData, 0, (int)bytesData.Length);
             }

@@ -60,26 +60,12 @@ namespace Metro.Filtering
 			/// <summary>
 			///		The indexer.
 			/// </summary>
-			public string this [int index]
-			{
-				get 
-				{ 
-					return (string)owner.m_sourcePortFilter[index]; 
-				}
-			}
-
+			public string this [int index] => (string)owner.m_sourcePortFilter[index];
 
 			/// <summary>
 			///		The length of the array.
 			/// </summary>
-			public int Length
-			{
-				get 
-				{ 
-					return owner.m_sourcePortFilter.Count; 
-				}
-			}
-
+			public int Length => owner.m_sourcePortFilter.Count;
 
 			#endregion
 			
@@ -120,26 +106,12 @@ namespace Metro.Filtering
 			/// <summary>
 			/// The indexer.
 			/// </summary>
-			public string this [int index]
-			{
-				get 
-				{ 
-					return (string)owner.m_destPortFilter[index]; 
-				}
-			}
-
+			public string this [int index] => (string)owner.m_destPortFilter[index];
 
 			/// <summary>
 			///		The length of the array.
 			/// </summary>
-			public int Length
-			{
-				get 
-				{ 
-					return owner.m_destPortFilter.Count; 
-				}
-			}
-
+			public int Length => owner.m_destPortFilter.Count;
 
 			#endregion
 			
@@ -205,28 +177,14 @@ namespace Metro.Filtering
 		///		The array of source port filters. The packet must pass at least one of these
 		///		to proceed.
 		/// </summary>
-		public TdpSourcePortFilterIndexer SourcePortFilter
-		{
-			get
-			{
-				return m_sourcePortFilterIndexer;
-			}
-		}
-		
-		
+		public TdpSourcePortFilterIndexer SourcePortFilter => m_sourcePortFilterIndexer;
+
 		/// <summary>
 		///		The array of destination port filters. The packet must pass at least one of these
 		///		to proceed.
 		/// </summary>
-		public DestinationPortFilterIndexer DestinationPortFilter
-		{
-			get
-			{
-				return m_destPortFilterIndexer;
-			}
-		}
-		
-		
+		public DestinationPortFilterIndexer DestinationPortFilter => m_destPortFilterIndexer;
+
 		#endregion
 		
 		#region Public Methods

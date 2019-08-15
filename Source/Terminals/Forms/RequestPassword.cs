@@ -11,13 +11,7 @@ namespace Terminals.Security
             InitializeComponent();
         }
 
-        private string Password
-        {
-            get
-            {
-                return this.PasswordTextBox.Text;
-            }
-        }
+        private string Password => this.PasswordTextBox.Text;
 
         private void OkButton_Click(object sender, EventArgs e)
         {
@@ -45,7 +39,7 @@ namespace Terminals.Security
 
         internal static AuthenticationPrompt KnowsUserPassword(bool previousTrySuccess)
         {
-            using (RequestPassword requestPassword = new RequestPassword())
+            using (var requestPassword = new RequestPassword())
             {
                 if(previousTrySuccess)
                     requestPassword.SetWrongPasswordInfo();
@@ -57,7 +51,7 @@ namespace Terminals.Security
 
         private static AuthenticationPrompt CreatePromptResults(RequestPassword requestPassword)
         {
-            bool canceled = requestPassword.DialogResult == DialogResult.Cancel;
+            var canceled = requestPassword.DialogResult == DialogResult.Cancel;
             return new AuthenticationPrompt
                 {
                     Password = requestPassword.Password,

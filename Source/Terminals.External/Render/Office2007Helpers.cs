@@ -103,7 +103,7 @@ namespace Terminals.Forms.Rendering
         {
             _g = g;
             _old = g.Clip;
-            Region clip = _old.Clone();
+            var clip = _old.Clone();
             clip.Intersect(path);
             _g.Clip = clip;
         }
@@ -117,7 +117,7 @@ namespace Terminals.Forms.Rendering
         {
             _g = g;
             _old = g.Clip;
-            Region clip = _old.Clone();
+            var clip = _old.Clone();
             clip.Intersect(region);
             _g.Clip = clip;
         }

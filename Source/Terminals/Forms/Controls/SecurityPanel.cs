@@ -13,14 +13,14 @@ namespace Terminals.Forms.Controls
     {
         private IPersistence persistence;
 
-        internal bool PasswordLoaded { get { return this.credentialsPanel1.PasswordLoaded; } }
+        internal bool PasswordLoaded => this.credentialsPanel1.PasswordLoaded;
 
         internal event Action<bool> SelectedCredentailChanged;
 
         public event EventHandler PasswordChanged
         {
-            add { this.credentialsPanel1.PasswordChanged += value; }
-            remove { this.credentialsPanel1.PasswordChanged -= value; }
+            add => this.credentialsPanel1.PasswordChanged += value;
+            remove => this.credentialsPanel1.PasswordChanged -= value;
         }
 
         internal SecurityPanel()
@@ -39,7 +39,7 @@ namespace Terminals.Forms.Controls
         private void CredentialDropdown_SelectedIndexChanged(object sender, EventArgs e)
         {
             var set = this.credentialDropdown.SelectedItem as ICredentialSet;
-            bool hasSelectedCredential = set != null;
+            var hasSelectedCredential = set != null;
 
             if (hasSelectedCredential)
             {
@@ -53,13 +53,12 @@ namespace Terminals.Forms.Controls
 
         private void FireSelectedCredentialChanged(bool selectedCredential)
         {
-            if (SelectedCredentailChanged != null)
-                SelectedCredentailChanged(selectedCredential);
+            this.SelectedCredentailChanged?.Invoke(selectedCredential);
         }
 
         internal void SaveTo(ISecurityOptions security, bool savePassword)
         {
-            ICredentialSet selectedCredential = this.credentialDropdown.SelectedItem as ICredentialSet;
+            var selectedCredential = this.credentialDropdown.SelectedItem as ICredentialSet;
             security.Credential = selectedCredential == null ? Guid.Empty : selectedCredential.Id;
             var guarded = new GuardedSecurity(this.persistence, security);
             this.credentialsPanel1.SaveUserAndDomain(guarded);
@@ -73,7 +72,7 @@ namespace Terminals.Forms.Controls
         private void CredentialManagerPicturebox_Click(object sender, EventArgs e)
         {
             // backup previously selected item
-            Guid selectedCredentialId = Guid.Empty;
+            var selectedCredentialId = Guid.Empty;
             var selectedCredential = this.credentialDropdown.SelectedItem as ICredentialSet;
             if (selectedCredential != null)
                 selectedCredentialId = selectedCredential.Id;
@@ -97,7 +96,7 @@ namespace Terminals.Forms.Controls
             IEnumerable<ICredentialSet> credentials = this.persistence.Credentials;
             if (credentials != null)
             {
-                foreach (ICredentialSet item in credentials)
+                foreach (var item in credentials)
                 {
                     this.credentialDropdown.Items.Add(item);
                 }

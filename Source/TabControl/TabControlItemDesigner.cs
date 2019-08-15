@@ -60,13 +60,7 @@ namespace TabControl
             properties.Remove("AutoSizeMode");
         }
 
-        public override SelectionRules SelectionRules
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public override SelectionRules SelectionRules => 0;
 
         public override bool CanBeParentedTo(IDesigner parentDesigner)
         {

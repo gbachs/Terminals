@@ -19,21 +19,21 @@ namespace Terminals.Forms.OptionPanels
 
         internal IEnumerable<SelectedPlugin> LoadPlugins()
         {
-            IEnumerable<PluginDefinition> allAvailable = this.loader.FindAvailablePlugins();
+            var allAvailable = this.loader.FindAvailablePlugins();
             return allAvailable.Select(this.ToSelectedPlugin)
                 .ToList();
         }
 
         private SelectedPlugin ToSelectedPlugin(PluginDefinition plugin)
         {
-            string[] disabledPlugins = this.settings.DisabledPlugins;
-            bool isEnabled = !disabledPlugins.Contains(plugin.FullPath);
+            var disabledPlugins = this.settings.DisabledPlugins;
+            var isEnabled = !disabledPlugins.Contains(plugin.FullPath);
             return new SelectedPlugin(plugin.Description, plugin.FullPath, isEnabled);
         }
 
         internal void SaveSelected(List<SelectedPlugin> allPlugins)
         {
-            string[] disabledPlugins = SelectDisabledPluginPaths(allPlugins);
+            var disabledPlugins = SelectDisabledPluginPaths(allPlugins);
             this.settings.DisabledPlugins = disabledPlugins;
         }
 

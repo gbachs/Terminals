@@ -22,22 +22,19 @@ namespace Terminals
 
         public Guid EditedId { get; private set; }
 
-        public string ProtocolText { get { return this.favoritePropertiesControl1.ProtocolText;  } }
+        public string ProtocolText => this.favoritePropertiesControl1.ProtocolText;
 
-        public string ServerNameText { get { return this.favoritePropertiesControl1.ServerNameText; } }
+        public string ServerNameText => this.favoritePropertiesControl1.ServerNameText;
 
-        public string PortText { get { return this.favoritePropertiesControl1.PortText; } }
+        public string PortText => this.favoritePropertiesControl1.PortText;
 
-        public bool EditingNew { get { return this.EditedId == Guid.Empty; } }
+        public bool EditingNew => this.EditedId == Guid.Empty;
 
         private readonly IPersistence persistence;
 
         private readonly FavoriteIcons favoriteIcons;
 
-        private IFavorites PersistedFavorites
-        {
-            get { return this.persistence.Favorites; }
-        }
+        private IFavorites PersistedFavorites => this.persistence.Favorites;
 
         private new TerminalFormDialogResult DialogResult { get; set; }
 
@@ -206,7 +203,7 @@ namespace Terminals
                 if (!isValid)
                     return false;
 
-                IFavorite favorite = ResolveFavortie();
+                var favorite = ResolveFavortie();
                 this.FillFavoriteFromControls(favorite);
 
                 if (defaultFav)
@@ -233,9 +230,9 @@ namespace Terminals
         private static void EntityLogValidationErrors(DbEntityValidationException entityValidation)
         {
             Logging.Error("Entity exception", entityValidation);
-            foreach (DbEntityValidationResult validationResult in entityValidation.EntityValidationErrors)
+            foreach (var validationResult in entityValidation.EntityValidationErrors)
             {
-                foreach (DbValidationError propertyError in validationResult.ValidationErrors)
+                foreach (var propertyError in validationResult.ValidationErrors)
                 {
                     Logging.Error(string.Format("Validation error '{0}': {1}", propertyError.PropertyName, propertyError.ErrorMessage));
                 }
@@ -291,7 +288,7 @@ namespace Terminals
             else
                 settings.EditFavoriteButton(this.EditedId, favorite.Id, this.favoritePropertiesControl1.ShowOnToolbar);
 
-            List<IGroup> updatedGroups = this.favoritePropertiesControl1.GetNewlySelectedGroups();
+            var updatedGroups = this.favoritePropertiesControl1.GetNewlySelectedGroups();
             PersistedFavorites.UpdateFavorite(favorite, updatedGroups);
             this.persistence.SaveAndFinishDelayedUpdate();
             settings.SaveAndFinishDelayedUpdate();

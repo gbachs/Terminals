@@ -38,10 +38,7 @@ namespace Terminals.Forms
 
         private bool IsSqlServerAuth
         {
-            get
-            {
-                return this.sqlServerAuthenticationComboBox.Text == "SQL Server Authentication";
-            }
+            get => this.sqlServerAuthenticationComboBox.Text == "SQL Server Authentication";
             set
             {
                 if (value)
@@ -67,7 +64,7 @@ namespace Terminals.Forms
         private void ActivateCheckBoxes()
         {
             // we have to check both, because when false, the user control only uncheck
-            bool filePersistence = settings.PersistenceType == FilePersistence.TYPE_ID;
+            var filePersistence = settings.PersistenceType == FilePersistence.TYPE_ID;
             this.rbtnSqlPersistence.Checked = !filePersistence;
             this.rbtnFilePersistence.Checked = filePersistence;
         }
@@ -102,7 +99,7 @@ namespace Terminals.Forms
 
         private void OnRbtnFilePersistenceCheckedChanged(object sender, EventArgs e)
         {
-            bool enableSqlControls = !this.rbtnFilePersistence.Checked;
+            var enableSqlControls = !this.rbtnFilePersistence.Checked;
             this.sqlServerOptionsPanel.Enabled = rbtnSqlPersistence.Checked;
             this.btnTestSqlConnection.Enabled = enableSqlControls;
             this.txtDbPassword.Enabled = enableSqlControls;
@@ -111,7 +108,7 @@ namespace Terminals.Forms
         private void OnBntTestSqlConnectionClick(object sender, EventArgs e)
         {
             this.testLabel.Visible = true;
-            string databasePassword = this.GetFilledDatabasePassword();
+            var databasePassword = this.GetFilledDatabasePassword();
             var connectionProperties = new Tuple<string, string>(this.ConnectionString, databasePassword);
             var t = Task<TestConnectionResult>.Factory.StartNew(TryTestDatabaseConnection, connectionProperties);
             t.ContinueWith(this.ShowConnectionTestResult, TaskScheduler.FromCurrentSynchronizationContext());
@@ -133,11 +130,11 @@ namespace Terminals.Forms
 
         private void ShowConnectionTestResult(Task<TestConnectionResult> antecedent)
         {
-            TestConnectionResult connectionResult = antecedent.Result;
+            var connectionResult = antecedent.Result;
 
             if (connectionResult.Successful)
             {
-                string message = string.Format("Test connection succeeded.");
+                var message = string.Format("Test connection succeeded.");
                 // todo enable database versioning, see also commented code in ShowFailedConnectionTestMessage and ButtonCreateNewDatabaseClick.
                 // string message = string.Format("Test connection succeeded. (Version: {0})", connectionResult.CurrentVersion);
                 MessageBox.Show(message, MESSAGE_HEADER, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -152,7 +149,7 @@ namespace Terminals.Forms
 
         private static void ShowFailedConnectionTestMessage(TestConnectionResult connectionResult)
         {
-            string message = string.Format("Test database failed.\r\nReason:{0}", connectionResult.ErroMessage);
+            var message = string.Format("Test database failed.\r\nReason:{0}", connectionResult.ErroMessage);
 
             //if (connectionResult.IsMinimalVersion)
             //{
@@ -189,7 +186,7 @@ namespace Terminals.Forms
         private void FillServersComboboxItems(List<string> availableServers)
         {
             this.serversComboBox.Items.Clear();
-            foreach (string instance in availableServers)
+            foreach (var instance in availableServers)
             {
                 this.serversComboBox.Items.Add(instance);
             }
@@ -198,14 +195,14 @@ namespace Terminals.Forms
         private void ButtonFindDatabasesClick(object sender, EventArgs e)
         {
             tableQueryLabel.Visible = true;
-            string connectionString = FillNewGeneralConnectionString();
+            var connectionString = FillNewGeneralConnectionString();
             var t = Task<List<string>>.Factory.StartNew((cs) => DatabaseConnections.FindDatabasesOnServer(cs.ToString()), connectionString);
             t.ContinueWith(this.FinishDatabasesReload, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private void FinishDatabasesReload(Task<List<string>> antecedent)
         {
-            object[] databases = antecedent.Result.Cast<object>().ToArray();
+            var databases = antecedent.Result.Cast<object>().ToArray();
             this.databaseCombobox.Items.Clear();
             this.databaseCombobox.Items.AddRange(databases);
             tableQueryLabel.Visible = false;
@@ -280,13 +277,13 @@ namespace Terminals.Forms
 
         private void OnBtnSetPasswordClick(object sender, EventArgs e)
         {
-            Tuple<bool, string, string> passwordPrompt = AskForDatabasePasswords();
+            var passwordPrompt = AskForDatabasePasswords();
             if (!passwordPrompt.Item1)
                 return;
 
             this.Cursor = Cursors.WaitCursor;
             var connectionProperties = new Tuple<string, string, string>(this.ConnectionString, passwordPrompt.Item2, passwordPrompt.Item3);
-            Task<TestConnectionResult> t = Task<TestConnectionResult>.Factory.StartNew(TrySetNewDatabasePassword, connectionProperties);
+            var t = Task<TestConnectionResult>.Factory.StartNew(TrySetNewDatabasePassword, connectionProperties);
             t.ContinueWith(this.ShowPasswordSetResult, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
@@ -307,7 +304,7 @@ namespace Terminals.Forms
             }
             else
             {
-                string messsage = string.Format("There was an error, when setting new password:\r\n{0}", result.ErroMessage);
+                var messsage = string.Format("There was an error, when setting new password:\r\n{0}", result.ErroMessage);
                 MessageBox.Show(messsage, header, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             this.Cursor = Cursors.Default;

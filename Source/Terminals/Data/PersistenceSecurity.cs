@@ -67,8 +67,7 @@ namespace Terminals.Data
 
             // start of not secured transaction. Old key is still present,
             // but passwords are already encrypted by new Key
-            if (this.OnUpdatePasswordsByNewMasterPassword != null)
-                this.OnUpdatePasswordsByNewMasterPassword(newMasterKey);
+            this.OnUpdatePasswordsByNewMasterPassword?.Invoke(newMasterKey);
 
             this.settings.UpdateConfigurationPasswords(newMasterKey, storedMasterPassword);
             // finish transaction, the passwords now reflect the new key

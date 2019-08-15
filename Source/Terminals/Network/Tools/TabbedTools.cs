@@ -54,8 +54,7 @@ namespace Terminals.Connections
 
         private void TabControl1_Selected(object sender, TabControlEventArgs e)
         {
-            if (this.OnTabChanged != null)
-                this.OnTabChanged(sender, e);
+            this.OnTabChanged?.Invoke(sender, e);
         }
 
         public void HideTab(int index)

@@ -17,33 +17,19 @@ namespace Terminals.Forms.Controls
         /// <summary>
         /// Gets associated data objects, which should be shown in this group
         /// </summary>
-        internal List<IFavorite> Favorites
-        {
-            get
-            {
-                return Data.Favorites.OrderByDefaultSorting(this.Group.Favorites);
-            }
-        }
+        internal List<IFavorite> Favorites => Data.Favorites.OrderByDefaultSorting(this.Group.Favorites);
 
         /// <summary>
         /// Gets the value indicating lazy loading not performed yet,
         /// e.g. node contains only dummy node and contains no favorite nodes
         /// </summary>
-        internal Boolean NotLoadedYet
-        {
-            get
-            {
-                return this.Nodes.Count == 1 &&
-                String.IsNullOrEmpty(this.Nodes[0].Name);
-            }
-        }
+        internal Boolean NotLoadedYet =>
+            this.Nodes.Count == 1 &&
+            String.IsNullOrEmpty(this.Nodes[0].Name);
 
         internal IGroup Group { get; private set; }
 
-        internal bool IsOrphan
-        {
-            get { return this.TreeView == null; }
-        }
+        internal bool IsOrphan => this.TreeView == null;
 
         internal GroupTreeNode(IGroup group, string imageKey)
             : this(group)

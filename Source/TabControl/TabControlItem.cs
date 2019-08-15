@@ -33,7 +33,7 @@ namespace TabControl
         [DefaultValue(true)]
         public new bool Visible
         {
-            get { return visible; }
+            get => visible;
             set
             {
                 if (visible == value)
@@ -49,7 +49,7 @@ namespace TabControl
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool IsDrawn
         {
-            get { return isDrawn; }
+            get => isDrawn;
             set
             {
                 if (isDrawn == value)
@@ -62,23 +62,20 @@ namespace TabControl
         [DefaultValue(true)]
         public bool CanClose
         {
-            get { return canClose; }
-            set { canClose = value; }
+            get => canClose;
+            set => canClose = value;
         }
 
         public RectangleF StripRect
         {
-            get { return stripRect; }
-            internal set { stripRect = value; }
+            get => stripRect;
+            internal set => stripRect = value;
         }
 
         [DefaultValue("Name")]
         public string Title
         {
-            get
-            {
-                return title;
-            }
+            get => title;
             set
             {
                 if (title == value)
@@ -92,11 +89,8 @@ namespace TabControl
         [DefaultValue("Name")]
         public string ToolTipText
         {
-            get { return toolTipText; }
-            set 
-            { 
-                toolTipText = value; 
-            }
+            get => toolTipText;
+            set => toolTipText = value;
         }
 
         /// <summary>
@@ -106,7 +100,7 @@ namespace TabControl
         [Browsable(false)]
         public bool Selected
         {
-            get { return selected; }
+            get => selected;
             set
             {
                 if (selected == value)
@@ -219,10 +213,7 @@ namespace TabControl
         #region ICaptionSupport Members
 
         [Browsable(false)]
-        public string Caption
-        {
-            get { return Text; }
-        }
+        public string Caption => Text;
 
         #endregion
         

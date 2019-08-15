@@ -185,7 +185,7 @@ namespace Unified.Network.SNTP
 			get
 			{
 				// Isolate the two most significant bits
-				byte val = (byte)(NTPData[0] >> 6);
+				var val = (byte)(NTPData[0] >> 6);
 				switch(val)
 				{
 					case 0: return _LeapIndicator.NoWarning;
@@ -204,7 +204,7 @@ namespace Unified.Network.SNTP
 			get
 			{
 				// Isolate bits 3 - 5
-				byte val = (byte)((NTPData[0] & 0x38) >> 3);
+				var val = (byte)((NTPData[0] & 0x38) >> 3);
 				return val;
 			}
 		}
@@ -215,7 +215,7 @@ namespace Unified.Network.SNTP
 			get
 			{
 				// Isolate bits 0 - 3
-				byte val = (byte)(NTPData[0] & 0x7);
+				var val = (byte)(NTPData[0] & 0x7);
 				switch(val)
 				{
 					case 0:
@@ -242,7 +242,7 @@ namespace Unified.Network.SNTP
 		{
 			get
 			{
-				byte val = (byte)NTPData[1];
+				var val = (byte)NTPData[1];
 				if(val == 0) 
 					return _Stratum.Unspecified;
 				else
@@ -277,7 +277,7 @@ namespace Unified.Network.SNTP
 		{
 			get
 			{
-				int temp = 0;
+				var temp = 0;
 				temp = 256 * (256 * (256 * NTPData[4] + NTPData[5]) + NTPData[6]) + NTPData[7];
 				return 1000 * (((double)temp) / 0x10000);
 			}
@@ -288,7 +288,7 @@ namespace Unified.Network.SNTP
 		{
 			get
 			{
-				int temp = 0;
+				var temp = 0;
 				temp = 256 * (256 * (256 * NTPData[8] + NTPData[9]) + NTPData[10]) + NTPData[11];
 				return 1000 * (((double)temp) / 0x10000);
 			}
@@ -299,7 +299,7 @@ namespace Unified.Network.SNTP
 		{
 			get
 			{
-				string val = "";
+				var val = "";
 				
 				switch(Stratum)
 				{
@@ -315,16 +315,16 @@ namespace Unified.Network.SNTP
 						switch(VersionNumber)
 						{
 							case 3:	// Version 3, Reference ID is an IPv4 address
-								string Address = NTPData[offReferenceID + 0].ToString() + "." +
+								var Address = NTPData[offReferenceID + 0].ToString() + "." +
 									NTPData[offReferenceID + 1].ToString() + "." +
 									NTPData[offReferenceID + 2].ToString() + "." +
 									NTPData[offReferenceID + 3].ToString();
 								try
 								{
 								
-									IPAddress RefAddr = System.Net.IPAddress.Parse(Address);
+									var RefAddr = System.Net.IPAddress.Parse(Address);
 									//IPHostEntry Host = Dns.GetHostByAddress(RefAddr);
-									IPHostEntry Host = Dns.GetHostEntry(RefAddr);
+									var Host = Dns.GetHostEntry(RefAddr);
 									val = Host.HostName + " (" + Address + ")";
 								}
 								catch(Exception)
@@ -335,10 +335,10 @@ namespace Unified.Network.SNTP
 								break;
 
 							case 4: // Version 4, Reference ID is the timestamp of last update
-								DateTime time = ComputeDate(GetMilliSeconds(offReferenceID));
+								var time = ComputeDate(GetMilliSeconds(offReferenceID));
 								// Take care of the time zone
-								long offset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Ticks;
-								TimeSpan offspan = TimeSpan.FromTicks(offset);
+								var offset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Ticks;
+								var offspan = TimeSpan.FromTicks(offset);
 								val = (time + offspan).ToString();
 								break;
 
@@ -359,10 +359,10 @@ namespace Unified.Network.SNTP
 		{
 			get
 			{
-				DateTime time = ComputeDate(GetMilliSeconds(offReferenceTimestamp));
+				var time = ComputeDate(GetMilliSeconds(offReferenceTimestamp));
 				// Take care of the time zone
-				long offset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Ticks;
-				TimeSpan offspan = TimeSpan.FromTicks(offset);
+				var offset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Ticks;
+				var offspan = TimeSpan.FromTicks(offset);
 				return time + offspan;
 			}
 		}
@@ -381,10 +381,10 @@ namespace Unified.Network.SNTP
 		{
 			get
 			{
-				DateTime time = ComputeDate(GetMilliSeconds(offReceiveTimestamp));
+				var time = ComputeDate(GetMilliSeconds(offReceiveTimestamp));
 				// Take care of the time zone
-				long offset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Ticks;
-				TimeSpan offspan = TimeSpan.FromTicks(offset);
+				var offset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Ticks;
+				var offspan = TimeSpan.FromTicks(offset);
 				return time + offspan;
 			}
 		}
@@ -394,10 +394,10 @@ namespace Unified.Network.SNTP
 		{
 			get
 			{
-				DateTime time = ComputeDate(GetMilliSeconds(offTransmitTimestamp));
+				var time = ComputeDate(GetMilliSeconds(offTransmitTimestamp));
 				// Take care of the time zone
-				long offset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Ticks;
-				TimeSpan offspan = TimeSpan.FromTicks(offset);
+				var offset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Ticks;
+				var offspan = TimeSpan.FromTicks(offset);
 				return time + offspan;
 			}
 
@@ -415,7 +415,7 @@ namespace Unified.Network.SNTP
 		{
 			get
 			{
-				TimeSpan span = (ReceiveTimestamp - OriginateTimestamp) + (ReceptionTimestamp - TransmitTimestamp);
+				var span = (ReceiveTimestamp - OriginateTimestamp) + (ReceptionTimestamp - TransmitTimestamp);
 				return (int)span.TotalMilliseconds;
 			}
 		}
@@ -425,7 +425,7 @@ namespace Unified.Network.SNTP
 		{
 			get
 			{
-				TimeSpan span = (ReceiveTimestamp - OriginateTimestamp) - (ReceptionTimestamp - TransmitTimestamp);
+				var span = (ReceiveTimestamp - OriginateTimestamp) - (ReceptionTimestamp - TransmitTimestamp);
 				return (int)(span.TotalMilliseconds / 2);
 			}
 		}
@@ -433,8 +433,8 @@ namespace Unified.Network.SNTP
 		// Compute date, given the number of milliseconds since January 1, 1900
 		private DateTime ComputeDate(ulong milliseconds)
 		{
-			TimeSpan span = TimeSpan.FromMilliseconds((double)milliseconds);
-			DateTime time = new DateTime(1900, 1, 1);
+			var span = TimeSpan.FromMilliseconds((double)milliseconds);
+			var time = new DateTime(1900, 1, 1);
 			time += span;
 			return time;
 		}
@@ -444,17 +444,17 @@ namespace Unified.Network.SNTP
 		{
 			ulong intpart = 0, fractpart = 0;
 
-			for(int i = 0; i <= 3; i++)
+			for(var i = 0; i <= 3; i++)
 			{
 				intpart = 256 * intpart + NTPData[offset + i];	
 			}
 
-			for(int i = 4; i<=7; i++)
+			for(var i = 4; i<=7; i++)
 			{
 				fractpart = 256 * fractpart + NTPData[offset + i];
 			}
 
-			ulong milliseconds = intpart * 1000 + (fractpart * 1000) / 0x100000000L;
+			var milliseconds = intpart * 1000 + (fractpart * 1000) / 0x100000000L;
 			return milliseconds;
 		}
 
@@ -462,21 +462,21 @@ namespace Unified.Network.SNTP
 		private void SetDate(byte offset, DateTime date)
 		{
 			ulong intpart = 0, fractpart = 0;
-			DateTime StartOfCentury = new DateTime(1900, 1, 1, 0, 0, 0);	// January 1, 1900 12:00 AM
+			var StartOfCentury = new DateTime(1900, 1, 1, 0, 0, 0);	// January 1, 1900 12:00 AM
 
-			ulong milliseconds = (ulong)(date - StartOfCentury).TotalMilliseconds;
+			var milliseconds = (ulong)(date - StartOfCentury).TotalMilliseconds;
 			intpart = milliseconds / 1000;
 			fractpart=((milliseconds % 1000) * 0x100000000L) / 1000;
 
-			ulong temp = intpart;
-			for(int i = 3; i >= 0; i--)
+			var temp = intpart;
+			for(var i = 3; i >= 0; i--)
 			{
 				NTPData[offset + i] = (byte) (temp % 256);
 				temp = temp / 256;
 			}
 
 			temp = fractpart;
-			for(int i = 7; i >=4; i--)
+			for(var i = 7; i >=4; i--)
 			{
 				NTPData[offset + i] = (byte) (temp % 256);
 				temp = temp / 256;
@@ -489,7 +489,7 @@ namespace Unified.Network.SNTP
 			// Set version number to 4 and Mode to 3 (client)
 			NTPData[0] = 0x1B;
 			// Initialize all other fields with 0
-			for(int i = 1; i < 48; i++)
+			for(var i = 1; i < 48; i++)
 			{
 				NTPData[i] = 0;
 			}
@@ -509,9 +509,9 @@ namespace Unified.Network.SNTP
 			try
 			{
 				//IPHostEntry hostadd = System.Net.Dns.Resolve(TimeServer);
-				IPHostEntry hostadd = System.Net.Dns.GetHostEntry(TimeServer);
-				IPEndPoint EPhost = new IPEndPoint(hostadd.AddressList[0], 123);
-				UdpClient TimeSocket = new UdpClient();
+				var hostadd = System.Net.Dns.GetHostEntry(TimeServer);
+				var EPhost = new IPEndPoint(hostadd.AddressList[0], 123);
+				var TimeSocket = new UdpClient();
 				TimeSocket.Client.ReceiveTimeout = 1000;
 				TimeSocket.Connect(EPhost);
 				System.Threading.Thread.Sleep(1000);
@@ -623,7 +623,7 @@ namespace Unified.Network.SNTP
 
 		public static Unified.Network.SNTP.NTPClient GetTime(string TimeServer)
 		{
-			Unified.Network.SNTP.NTPClient client = new Unified.Network.SNTP.NTPClient(TimeServer);
+			var client = new Unified.Network.SNTP.NTPClient(TimeServer);
 			client.Connect();
 			return client;
 		}
@@ -641,10 +641,10 @@ namespace Unified.Network.SNTP
 
 		public static Unified.Network.SNTP.NTPClient GetAndSetTime(string TimeServer)
 		{
-			Unified.Network.SNTP.NTPClient client = GetTime(TimeServer);	
-			System.DateTime setTime =TimeZone.CurrentTimeZone.ToUniversalTime(System.DateTime.Now.AddMilliseconds(client.LocalClockOffset));
+			var client = GetTime(TimeServer);	
+			var setTime =TimeZone.CurrentTimeZone.ToUniversalTime(System.DateTime.Now.AddMilliseconds(client.LocalClockOffset));
 
-			SYSTEMTIME st = new SYSTEMTIME();
+			var st = new SYSTEMTIME();
 			st.wYear = (short)setTime.Year; // must be short 
 			st.wMonth = (short)setTime.Month;
 			st.wDay = (short)setTime.Day;

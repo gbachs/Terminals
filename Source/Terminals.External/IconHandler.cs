@@ -83,8 +83,8 @@ namespace IconHandler
 		{
             try
             {
-                int IconCount = ExtractIconEx(Filename, -1, null, null, 0); //checks how many icons.
-                IntPtr[] IconPtr = new IntPtr[IconCount];
+                var IconCount = ExtractIconEx(Filename, -1, null, null, 0); //checks how many icons.
+                var IconPtr = new IntPtr[IconCount];
                 Icon TempIcon;
 
                 //extracts the icons by the size that was selected.
@@ -93,10 +93,10 @@ namespace IconHandler
                 else
                     ExtractIconEx(Filename, 0, IconPtr, null, IconCount);
 
-                Icon[] IconList = new Icon[IconCount];
+                var IconList = new Icon[IconCount];
 
                 //gets the icons in a list.
-                for (int i = 0; i < IconCount; i++)
+                for (var i = 0; i < IconCount; i++)
                 {
                     TempIcon = (Icon)Icon.FromHandle(IconPtr[i]);
                     IconList[i] = GetManagedIcon(ref TempIcon);
@@ -113,11 +113,11 @@ namespace IconHandler
 		//extract one selected by index icon from a file.
 		public static Icon IconFromFile(string Filename,IconSize Size,int Index)
 		{
-			int IconCount = ExtractIconEx(Filename,-1,null,null,0); //checks how many icons.
+			var IconCount = ExtractIconEx(Filename,-1,null,null,0); //checks how many icons.
 			if (IconCount <= 0 || Index >= IconCount) return null; // no icons were found.
 
             Icon TempIcon;
-			IntPtr[] IconPtr = new IntPtr[1];
+			var IconPtr = new IntPtr[1];
 
 			//extracts the icon that we want in the selected size.
 			if (Size == IconSize.Small)
@@ -139,7 +139,7 @@ namespace IconHandler
 				if (Extension[0] != '.') Extension = '.' + Extension;
 
 				//temp struct for getting file shell info
-				SHFILEINFO TempFileInfo = new SHFILEINFO();
+				var TempFileInfo = new SHFILEINFO();
 				
 				SHGetFileInfo(
 					Extension,
@@ -169,18 +169,18 @@ namespace IconHandler
 
 		public static Icon IconFromResource(string ResourceName)
 		{
-			Assembly TempAssembly = Assembly.GetCallingAssembly();
+			var TempAssembly = Assembly.GetCallingAssembly();
 
 			return new Icon(TempAssembly.GetManifestResourceStream(ResourceName));
 		}
 
 		public static void SaveIconFromImage(Image SourceImage,string IconFilename,IconSize DestenationIconSize)
 		{
-			Size NewIconSize = DestenationIconSize == IconSize.Large ? new Size(32,32) : new Size(16,16);
+			var NewIconSize = DestenationIconSize == IconSize.Large ? new Size(32,32) : new Size(16,16);
 
-			Bitmap RawImage = new Bitmap(SourceImage,NewIconSize);
-			Icon TempIcon = Icon.FromHandle(RawImage.GetHicon());
-			FileStream NewIconStream = new FileStream(IconFilename,FileMode.Create);
+			var RawImage = new Bitmap(SourceImage,NewIconSize);
+			var TempIcon = Icon.FromHandle(RawImage.GetHicon());
+			var NewIconStream = new FileStream(IconFilename,FileMode.Create);
 
 			TempIcon.Save(NewIconStream);
 
@@ -189,7 +189,7 @@ namespace IconHandler
 
 		public static void SaveIcon(Icon SourceIcon,string IconFilename)
 		{
-			FileStream NewIconStream = new FileStream(IconFilename,FileMode.Create);
+			var NewIconStream = new FileStream(IconFilename,FileMode.Create);
 
 			SourceIcon.Save(NewIconStream);
 
@@ -198,7 +198,7 @@ namespace IconHandler
 
         public static Icon GetManagedIcon(ref Icon UnmanagedIcon)
         {
-            Icon ManagedIcon = (Icon) UnmanagedIcon.Clone();
+            var ManagedIcon = (Icon) UnmanagedIcon.Clone();
 
             DestroyIcon(UnmanagedIcon.Handle);
 

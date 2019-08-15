@@ -25,14 +25,8 @@ namespace Terminals
 
             internal bool FullScreen
             {
-                get
-                {
-                    return this.fullScreen;
-                }
-                set
-                {
-                   SwitchFullScreen(value); 
-                }
+                get => this.fullScreen;
+                set => SwitchFullScreen(value);
             }
 
             internal FormWindowState LastWindowState { get; set; }
@@ -156,7 +150,6 @@ namespace Terminals
                         this.mainForm.Size = new Size(width, height);
                     }
                 }
-
                 
                 this.mainForm.menuStrip.Visible = true;
             }
@@ -164,7 +157,6 @@ namespace Terminals
             private void BackUpToolBarsVisibility()
             {
                 this.stdToolbarState = this.mainForm.toolbarStd.Visible;
-                this.specialToolbarState = this.mainForm.SpecialCommandsToolStrip.Visible;
                 this.favToolbarState = this.mainForm.favoriteToolBar.Visible;
                 mainForm.toolStripContainer.SaveLayout();
             }
@@ -174,13 +166,11 @@ namespace Terminals
                 if (!goFullScreen)
                 {
                     mainForm.toolbarStd.Visible = this.stdToolbarState;
-                    mainForm.SpecialCommandsToolStrip.Visible = this.specialToolbarState;
                     mainForm.favoriteToolBar.Visible = this.favToolbarState;
                 }
                 else
                 {
                     mainForm.toolbarStd.Visible = false;
-                    mainForm.SpecialCommandsToolStrip.Visible = false;
                     mainForm.favoriteToolBar.Visible = false;
                 }
             }

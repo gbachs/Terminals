@@ -48,7 +48,7 @@ namespace Terminals.Updates
 
         private static void ReplaceObsoleteOptions(IEnumerable<XElement> favorites)
         {
-            foreach (XElement favorite in favorites)
+            foreach (var favorite in favorites)
             {
                 favorite.ReplaceByNewElement("SshOptions", SERIALIZED_SSH_OPTIONS);
                 favorite.ReplaceByNewElement("ConsoleOptions", SERIALIZED_TELENT_OPTIONS); //telnet

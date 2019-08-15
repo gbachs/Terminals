@@ -73,8 +73,8 @@ namespace Terminals.Updates
 
         private static void TryToMoveThumbsDirectory()
         {
-            string oldPath = GetOldDataFullPath(FileLocations.THUMBS_DIRECTORY);
-            string newPath = FileLocations.ThumbsDirectoryFullPath;
+            var oldPath = GetOldDataFullPath(FileLocations.THUMBS_DIRECTORY);
+            var newPath = FileLocations.ThumbsDirectoryFullPath;
 
             if (Directory.Exists(oldPath))
             {
@@ -99,8 +99,8 @@ namespace Terminals.Updates
 
         private static void TryToMoveDataFile(string relativePath)
         {
-            string oldPath = GetOldDataFullPath(relativePath);
-            string newPath = FileLocations.GetFullPath(relativePath);
+            var oldPath = GetOldDataFullPath(relativePath);
+            var newPath = FileLocations.GetFullPath(relativePath);
             if (File.Exists(oldPath))
             {
                 if (!File.Exists(newPath))
@@ -117,7 +117,7 @@ namespace Terminals.Updates
 
         private static bool IsConfigFileOnV2Location()
         {
-            string oldConfigFile = GetOldDataFullPath(FileLocations.CONFIG_FILENAME);
+            var oldConfigFile = GetOldDataFullPath(FileLocations.CONFIG_FILENAME);
             return File.Exists(oldConfigFile);
         }
 
@@ -131,7 +131,7 @@ namespace Terminals.Updates
         /// </summary>
         private void UpdateDefaultFavoriteUrl()
         {
-            IFavorite newsFavorite = this.persistence.Favorites[FavoritesFactory.TerminalsReleasesFavoriteName];
+            var newsFavorite = this.persistence.Favorites[FavoritesFactory.TerminalsReleasesFavoriteName];
             if (newsFavorite != null)
             {
                 newsFavorite.ServerName = ExternalLinks.TerminalsReleasesUrl;

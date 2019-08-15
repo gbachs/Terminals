@@ -16,7 +16,6 @@ namespace Terminals.Forms.Controls
         internal ToolStripMenuItem StandardToolbarToolStripMenuItem { get; set; }
         internal ToolStrip FavoriteToolBar { get; set; }
         internal ToolStripMenuItem ToolStripMenuItemShowHideFavoriteToolbar { get; set; }
-        internal ToolStrip SpecialCommandsToolStrip { get; set; }
         internal ToolStripMenuItem ShortcutsToolStripMenuItem { get; set; }
         internal MenuStrip MenuStrip { get; set; }
         internal ToolStrip TsRemoteToolbar { get; set; }
@@ -62,9 +61,9 @@ namespace Terminals.Forms.Controls
 
         private static void SaveToolStripPanel(ToolStripPanel panel, String position, ToolStripSettings newSettings)
         {
-            for (Int32 rowIndex = 0; rowIndex < panel.Rows.Length; rowIndex++)
+            for (var rowIndex = 0; rowIndex < panel.Rows.Length; rowIndex++)
             {
-                ToolStripPanelRow row = panel.Rows[rowIndex];
+                var row = panel.Rows[rowIndex];
                 SaveToolStripRow(row, newSettings, position, rowIndex);
             }
         }
@@ -73,7 +72,7 @@ namespace Terminals.Forms.Controls
         {
             foreach (ToolStrip strip in row.Controls)
             {
-                ToolStripSetting setting = new ToolStripSetting();
+                var setting = new ToolStripSetting();
                 setting.Dock = position;
                 setting.Row = rowIndex;
                 setting.Left = strip.Left;
@@ -86,7 +85,7 @@ namespace Terminals.Forms.Controls
 
         internal void LoadToolStripsState()
         {
-            ToolStripSettings newSettings = ToolStripSettings.Load();
+            var newSettings = ToolStripSettings.Load();
             if (newSettings != null && newSettings.Count > 0)
             {
                 this.SuspendLayout();
@@ -113,9 +112,9 @@ namespace Terminals.Forms.Controls
 
         private void AplyAllPanelPositions(ToolStripSettings newSettings)
         {
-            foreach (ToolStripSetting setting in newSettings.Values)
+            foreach (var setting in newSettings.Values)
             {
-                ToolStrip strip = this.FindToolStripForSetting(setting);
+                var strip = this.FindToolStripForSetting(setting);
                 strip.GripStyle = ToolStripGripStyle.Visible;
                 //ChangeToolStripLock(strip);
                 ApplyLastPosition(setting, strip);
@@ -124,10 +123,10 @@ namespace Terminals.Forms.Controls
 
         private void ReJoinAllPanels(ToolStripSettings newSettings)
         {
-            foreach (ToolStripSetting setting in newSettings.Values)
+            foreach (var setting in newSettings.Values)
             {
-                ToolStrip strip = this.FindToolStripForSetting(setting);
-                ToolStripMenuItem menuItem = this.FindMenuForSetting(setting);
+                var strip = this.FindToolStripForSetting(setting);
+                var menuItem = this.FindMenuForSetting(setting);
 
                 if (menuItem != null)
                 {
@@ -155,9 +154,6 @@ namespace Terminals.Forms.Controls
             if (setting.Name == this.FavoriteToolBar.Name)
                 return this.ToolStripMenuItemShowHideFavoriteToolbar;
 
-            if (setting.Name == this.SpecialCommandsToolStrip.Name)
-                return this.ShortcutsToolStripMenuItem;
-
             return null;
         }
 
@@ -168,9 +164,6 @@ namespace Terminals.Forms.Controls
 
             if (setting.Name == this.FavoriteToolBar.Name)
                 return this.FavoriteToolBar;
-
-            if (setting.Name == this.SpecialCommandsToolStrip.Name)
-                return this.SpecialCommandsToolStrip;
 
             if (setting.Name == this.MenuStrip.Name)
                 return this.MenuStrip;
@@ -183,10 +176,10 @@ namespace Terminals.Forms.Controls
 
         private void JoinPanelOnLastPosition(ToolStrip strip, ToolStripSetting setting)
         {
-            ToolStripPanel toolStripPanel = GetToolStripPanelToJoin(setting);
+            var toolStripPanel = GetToolStripPanelToJoin(setting);
             if (!toolStripPanel.Controls.Contains(strip))
             {
-                Point lastPosition = new Point(setting.Left, setting.Top);
+                var lastPosition = new Point(setting.Left, setting.Top);
                 toolStripPanel.Join(strip, lastPosition);
             }
             else // set position only when comming from fullscreen
@@ -237,7 +230,7 @@ namespace Terminals.Forms.Controls
 
         private void ChangeToolStripPanelLockState(ToolStripPanel toolStripPanel)
         {
-            foreach (ToolStripPanelRow row in toolStripPanel.Rows)
+            foreach (var row in toolStripPanel.Rows)
             {
                 foreach (ToolStrip toolStrip in row.Controls)
                 {

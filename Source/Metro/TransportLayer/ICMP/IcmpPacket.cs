@@ -247,14 +247,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public IcmpMessageType MessageType
 		{
-			get
-			{
-				return m_type;
-			}
-			set
-			{
-				m_type = value;
-			}
+			get => m_type;
+			set => m_type = value;
 		}
 		
 		
@@ -264,14 +258,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public byte Code
 		{
-			get
-			{
-				return m_code;
-			}
-			set
-			{
-				m_code = value;
-			}
+			get => m_code;
+			set => m_code = value;
 		}
 		
 		
@@ -282,14 +270,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public ushort Checksum
 		{
-			get
-			{
-				return m_checksum;
-			}
-			set
-			{
-				m_checksum = value;
-			}
+			get => m_checksum;
+			set => m_checksum = value;
 		}
 		
 		
@@ -299,14 +281,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public byte[] Data
 		{
-			get
-			{
-				return m_data;
-			}
-			set
-			{
-				m_data = value;
-			}
+			get => m_data;
+			set => m_data = value;
 		}
 		
 		

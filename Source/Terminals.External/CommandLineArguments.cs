@@ -29,7 +29,7 @@
 //    4. That no contributor to the Software will be liable for any of those types
 //    of damages known as indirect, special, consequential, or incidental
 //    related to the Software or this license, to the maximum extent the law
-//    permits, no matter what legal theory itís based on. Also, you must pass
+//    permits, no matter what legal theory it‚Äôs based on. Also, you must pass
 //    this limitation of liability on whenever you distribute the Software or
 //    derivative works.
 //    5. That if you sue anyone over patents that you think may apply to the
@@ -46,7 +46,7 @@
 //    pursuant to a solicitation issued on or after December 1, 1995, is
 //    provided with the commercial license rights set forth in this license,
 //    and (ii) Software provided pursuant to a solicitation issued prior to
-//    December 1, 1995, is provided with ìRestricted Rightsî as set forth in
+//    December 1, 1995, is provided with ‚ÄúRestricted Rights‚Äù as set forth in
 //    FAR, 48 C.F.R. 52.227-14 (June 1987) or DFAR, 48 C.F.R. 252.227-7013
 //    (Oct 1988), as applicable.
 //    9. That your rights under this License end automatically if you breach it in
@@ -452,7 +452,7 @@ namespace Terminals.CommandLine
         /// <returns> true if no errors were detected. </returns>
         public static bool ParseArguments(string[] arguments, object destination, ErrorReporter reporter)
         {
-            Parser parser = new Parser(destination.GetType(), reporter);
+            var parser = new Parser(destination.GetType(), reporter);
             return parser.Parse(arguments, destination);
         }
 
@@ -473,8 +473,8 @@ namespace Terminals.CommandLine
         /// <returns> Returns true if args contains /? or /help. </returns>
         public static bool ParseHelp(string[] args)
         {
-            Parser helpParser = new Parser(typeof(HelpArgument), new ErrorReporter(NullErrorReporter));
-            HelpArgument helpArgument = new HelpArgument();
+            var helpParser = new Parser(typeof(HelpArgument), new ErrorReporter(NullErrorReporter));
+            var helpArgument = new HelpArgument();
             helpParser.Parse(args, helpArgument);
             return helpArgument.help;
         }
@@ -489,7 +489,7 @@ namespace Terminals.CommandLine
         /// <returns> Printable string containing a user friendly description of command line arguments. </returns>
         public static string ArgumentsUsage(Type argumentType)
         {
-            int screenWidth = Parser.GetConsoleWindowWidth();
+            var screenWidth = Parser.GetConsoleWindowWidth();
             if (screenWidth == 0)
                 screenWidth = 80;
             return ArgumentsUsage(argumentType, screenWidth);
@@ -545,7 +545,7 @@ namespace Terminals.CommandLine
         public static int GetConsoleWindowWidth()
         {
             int screenWidth;
-            CONSOLE_SCREEN_BUFFER_INFO csbi = new CONSOLE_SCREEN_BUFFER_INFO();
+            var csbi = new CONSOLE_SCREEN_BUFFER_INFO();
 
             int rc;
             rc = GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), ref csbi);
@@ -562,7 +562,7 @@ namespace Terminals.CommandLine
         /// <returns> The index of the first occurence of value or -1 if it is not found. </returns>
         public static int IndexOf(StringBuilder text, char value, int startIndex)
         {
-            for (int index = startIndex; index < text.Length; index++)
+            for (var index = startIndex; index < text.Length; index++)
             {
                 if (text[index] == value)
                     return index;
@@ -580,7 +580,7 @@ namespace Terminals.CommandLine
         /// <returns>The index of the last occurence of value in text or -1 if it is not found. </returns>
         public static int LastIndexOf(StringBuilder text, char value, int startIndex)
         {
-            for (int index = Math.Min(startIndex, text.Length - 1); index >= 0; index --)
+            for (var index = Math.Min(startIndex, text.Length - 1); index >= 0; index --)
             {
                 if (text[index] == value)
                     return index;
@@ -602,11 +602,11 @@ namespace Terminals.CommandLine
             this.arguments = new ArrayList();
             this.argumentMap = new Hashtable();
             
-            foreach (FieldInfo field in argumentSpecification.GetFields())
+            foreach (var field in argumentSpecification.GetFields())
             {
                 if (!field.IsStatic && !field.IsInitOnly && !field.IsLiteral)
                 {
-                    ArgumentAttribute attribute = GetAttribute(field);
+                    var attribute = GetAttribute(field);
                     if (attribute is DefaultArgumentAttribute)
                     {
                         Debug.Assert(this.defaultArgument == null);
@@ -653,7 +653,7 @@ namespace Terminals.CommandLine
         
         private static ArgumentAttribute GetAttribute(FieldInfo field)
         {
-            object[] attributes = field.GetCustomAttributes(typeof(ArgumentAttribute), false);
+            var attributes = field.GetCustomAttributes(typeof(ArgumentAttribute), false);
             if (attributes.Length == 1)
                 return (ArgumentAttribute) attributes[0];
 
@@ -674,10 +674,10 @@ namespace Terminals.CommandLine
         /// <returns> true if an error occurred </returns>
         private bool ParseArgumentList(string[] args, object destination)
         {
-            bool hadError = false;
+            var hadError = false;
             if (args != null)
             {
-                foreach (string argument in args)
+                foreach (var argument in args)
                 {
                     if (argument.Length > 0)
                     {
@@ -685,8 +685,8 @@ namespace Terminals.CommandLine
                         {
                             case '-':
                             case '/':
-                                int endIndex = argument.IndexOfAny(new char[] {':', '+', '-'}, 1);
-                                string option = argument.Substring(1, endIndex == -1 ? argument.Length - 1 : endIndex - 1);
+                                var endIndex = argument.IndexOfAny(new char[] {':', '+', '-'}, 1);
+                                var option = argument.Substring(1, endIndex == -1 ? argument.Length - 1 : endIndex - 1);
                                 string optionArgument;
                                 if (option.Length + 1 == argument.Length)
                                 {
@@ -701,7 +701,7 @@ namespace Terminals.CommandLine
                                     optionArgument = argument.Substring(option.Length + 1);
                                 }
                                 
-                                Argument arg = (Argument) this.argumentMap[option];
+                                var arg = (Argument) this.argumentMap[option];
                                 if (arg == null)
                                 {
                                     ReportUnrecognizedArgument(argument);
@@ -744,7 +744,7 @@ namespace Terminals.CommandLine
         /// <returns> true if no parse errors were encountered. </returns>
         public bool Parse(string[] args, object destination)
         {
-            bool hadError = ParseArgumentList(args, destination);
+            var hadError = ParseArgumentList(args, destination);
 
             // check for missing required arguments
             foreach (Argument arg in this.arguments)
@@ -776,10 +776,10 @@ namespace Terminals.CommandLine
         /// </summary>
         public string GetUsageString(int screenWidth)
         {
-            ArgumentHelpStrings[] strings = GetAllHelpStrings();
+            var strings = GetAllHelpStrings();
 
-            int maxParamLen = 0;
-            foreach (ArgumentHelpStrings helpString in strings)
+            var maxParamLen = 0;
+            foreach (var helpString in strings)
             {
                 maxParamLen = Math.Max(maxParamLen, helpString.syntax.Length);
             }
@@ -789,7 +789,7 @@ namespace Terminals.CommandLine
             const int minimumScreenWidth = minimumHelpTextColumn + minimumNumberOfCharsForHelpText;
 
             int helpTextColumn;
-            int idealMinimumHelpTextColumn = maxParamLen + spaceBeforeParam;
+            var idealMinimumHelpTextColumn = maxParamLen + spaceBeforeParam;
             screenWidth = Math.Max(screenWidth, minimumScreenWidth);
             if (screenWidth < (idealMinimumHelpTextColumn + minimumNumberOfCharsForHelpText))
                 helpTextColumn = minimumHelpTextColumn;
@@ -797,15 +797,15 @@ namespace Terminals.CommandLine
                 helpTextColumn = idealMinimumHelpTextColumn;
 
             const string newLine = "\n";
-            StringBuilder builder = new StringBuilder();
-            foreach (ArgumentHelpStrings helpStrings in strings)
+            var builder = new StringBuilder();
+            foreach (var helpStrings in strings)
             {
                 // add syntax string
-                int syntaxLength = helpStrings.syntax.Length;
+                var syntaxLength = helpStrings.syntax.Length;
                 builder.Append(helpStrings.syntax);
                 
                 // start help text on new line if syntax string is too long
-                int currentColumn = syntaxLength;
+                var currentColumn = syntaxLength;
                 if (syntaxLength >= helpTextColumn)
                 {
                     builder.Append(newLine);
@@ -813,8 +813,8 @@ namespace Terminals.CommandLine
                 }
                 
                 // add help text broken on spaces
-                int charsPerLine = screenWidth - helpTextColumn;
-                int index = 0;
+                var charsPerLine = screenWidth - helpTextColumn;
+                var index = 0;
                 while (index < helpStrings.help.Length)
                 {
                     // tab to start column
@@ -822,7 +822,7 @@ namespace Terminals.CommandLine
                     currentColumn = helpTextColumn;
                     
                     // find number of chars to display on this line
-                    int endIndex = index + charsPerLine;
+                    var endIndex = index + charsPerLine;
                     if (endIndex >= helpStrings.help.Length)
                     {
                         // rest of text fits on this line
@@ -866,9 +866,9 @@ namespace Terminals.CommandLine
         }
         private ArgumentHelpStrings[] GetAllHelpStrings()
         {
-            ArgumentHelpStrings[] strings = new ArgumentHelpStrings[NumberOfParametersToDisplay()];
+            var strings = new ArgumentHelpStrings[NumberOfParametersToDisplay()];
 
-            int index = 0;
+            var index = 0;
             foreach (Argument arg in this.arguments)
             {
                 strings[index] = GetHelpStrings(arg);
@@ -888,7 +888,7 @@ namespace Terminals.CommandLine
         
         private int NumberOfParametersToDisplay()
         {
-            int numberOfParameters = this.arguments.Count + 1;
+            var numberOfParameters = this.arguments.Count + 1;
             if (HasDefaultArgument)
                 numberOfParameters += 1;
             return numberOfParameters;
@@ -909,24 +909,24 @@ namespace Terminals.CommandLine
                     
             try
             {
-                using (FileStream file = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+                using (var file = new FileStream(fileName, FileMode.Open, FileAccess.Read))
                 {
                     args = (new StreamReader(file)).ReadToEnd();
                 }
             }
             catch (Exception e)
             {
-                string msg = string.Format("Error: Can't open command line argument file '{0}' : '{1}'", fileName, e.Message);
+                var msg = string.Format("Error: Can't open command line argument file '{0}' : '{1}'", fileName, e.Message);
                 this.reporter(msg);
                 arguments = null;
                 return false;
             }
 
-            bool hadError = false;                    
-            ArrayList argArray = new ArrayList();
-            StringBuilder currentArg = new StringBuilder();
-            bool inQuotes = false;
-            int index = 0;
+            var hadError = false;                    
+            var argArray = new ArrayList();
+            var currentArg = new StringBuilder();
+            var inQuotes = false;
+            var index = 0;
             
             // while (index < args.Length)
             try
@@ -955,7 +955,7 @@ namespace Terminals.CommandLine
                     {
                         if (args[index] == '\\')
                         {
-                            int cSlashes = 1;
+                            var cSlashes = 1;
                             index += 1;
                             while (index == args.Length && args[index] == '\\')
                             {
@@ -999,7 +999,7 @@ namespace Terminals.CommandLine
                 // got EOF 
                 if (inQuotes)
                 {
-                    string msg = string.Format("Error: Unbalanced '\"' in command line argument file '{0}'", fileName);
+                    var msg = string.Format("Error: Unbalanced '\"' in command line argument file '{0}'", fileName);
                     this.reporter(msg);
                     hadError = true;
                 }
@@ -1030,10 +1030,7 @@ namespace Terminals.CommandLine
         
         private static string HelpText(ArgumentAttribute attribute, FieldInfo field)
         {
-            if (attribute == null)
-                return null;
-            else
-                return attribute.HelpText;
+            return attribute?.HelpText;
         }
         
         private static bool HasHelpText(ArgumentAttribute attribute)
@@ -1257,8 +1254,8 @@ namespace Terminals.CommandLine
                 }
                 else
                 {
-                    bool first = true;
-                    foreach (object o in (System.Array) value)
+                    var first = true;
+                    foreach (var o in (System.Array) value)
                     {
                         if (!first)
                         {
@@ -1318,7 +1315,7 @@ namespace Terminals.CommandLine
             public string FullHelpText
             {
                 get {
-                    StringBuilder builder = new StringBuilder();
+                    var builder = new StringBuilder();
                     if (this.HasHelpText)
                     {
                         builder.Append(this.HelpText);
@@ -1347,7 +1344,7 @@ namespace Terminals.CommandLine
             {
                 get
                 {
-                    StringBuilder builder = new StringBuilder();
+                    var builder = new StringBuilder();
 
                     if (this.IsDefault)
                     {
@@ -1359,7 +1356,7 @@ namespace Terminals.CommandLine
                     {
                         builder.Append("/");
                         builder.Append(this.LongName);
-                        Type valueType = this.ValueType;
+                        var valueType = this.ValueType;
                         if (valueType == typeof(int))
                         {
                             builder.Append(":<int>");
@@ -1381,8 +1378,8 @@ namespace Terminals.CommandLine
                             Debug.Assert(valueType.IsEnum);
 
                             builder.Append(":{");
-                            bool first = true;
-                            foreach (FieldInfo field in valueType.GetFields())
+                            var first = true;
+                            foreach (var field in valueType.GetFields())
                             {
                                 if (field.IsStatic)
                                 {

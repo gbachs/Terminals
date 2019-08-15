@@ -11,20 +11,14 @@ namespace Terminals
     {
         private readonly Settings settings = Settings.Instance;
 
-        private ListViewItem SelectedItem
-        {
-            get
-            {
-                return this.lvFavoriteButtons.SelectedItems[0];
-            }
-        }
+        private ListViewItem SelectedItem => this.lvFavoriteButtons.SelectedItems[0];
 
         public OrganizeFavoritesToolbarForm(IPersistence persistence)
         {
             InitializeComponent();
 
-            IFavorites persistedFavorites = persistence.Favorites;
-            ListViewItem[] listViewItems = settings.FavoritesToolbarButtons
+            var persistedFavorites = persistence.Favorites;
+            var listViewItems = settings.FavoritesToolbarButtons
                 .Select(id => persistedFavorites[id])
                 .Where(candidate => candidate != null)
                 .Select(favorite => new ListViewItem(favorite.Name) { Tag = favorite.Id })
@@ -40,7 +34,7 @@ namespace Terminals
             {
                 selectedItem = lvFavoriteButtons.SelectedItems[0];
             }
-            bool isSelected = (selectedItem != null);
+            var isSelected = (selectedItem != null);
             tsbMoveToFirst.Enabled = (isSelected && selectedItem.Index > 0);
             tsbMoveUp.Enabled = (isSelected && selectedItem.Index > 0);
             tsbMoveDown.Enabled = (isSelected && selectedItem.Index < lvFavoriteButtons.Items.Count - 1);
@@ -76,7 +70,7 @@ namespace Terminals
 
         private void MoveToIndex(Action<ListViewItem, int> insertAction, int newIndex = 0)
         {
-            ListViewItem selectedItem = this.SelectedItem;
+            var selectedItem = this.SelectedItem;
             this.lvFavoriteButtons.Items.Remove(selectedItem);
             insertAction(selectedItem, newIndex);
             selectedItem.Selected = true;
@@ -84,7 +78,7 @@ namespace Terminals
 
         private void BtnOk_Click(object sender, EventArgs e)
         {
-            List<Guid> favoriteIds = lvFavoriteButtons.Items.Cast<ListViewItem>()
+            var favoriteIds = lvFavoriteButtons.Items.Cast<ListViewItem>()
                 .Select(item => item.Tag)
                 .OfType<Guid>()
                 .ToList();

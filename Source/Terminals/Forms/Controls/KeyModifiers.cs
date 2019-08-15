@@ -7,14 +7,8 @@ namespace Terminals.Forms.Controls
     /// </summary>
     internal class KeyModifiers : IKeyModifiers
     {
-        public bool WithShift
-        {
-            get { return Control.ModifierKeys.HasFlag(Keys.Shift); }
-        }
+        public bool WithShift => Control.ModifierKeys.HasFlag(Keys.Shift);
 
-        public bool WithControl
-        {
-            get { return Control.ModifierKeys.HasFlag(Keys.Control); }
-        }
+        public bool WithControl => Control.ModifierKeys.HasFlag(Keys.Control);
     }
 }

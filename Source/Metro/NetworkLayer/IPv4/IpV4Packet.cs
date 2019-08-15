@@ -305,14 +305,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IpV4PrecedenceType Precedence
 		{
-			get
-			{
-				return m_precedence;
-			}
-			set
-			{
-				m_precedence = value;
-			}
+			get => m_precedence;
+			set => m_precedence = value;
 		}
 		
 		
@@ -326,14 +320,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IpV4DelayType Delay
 		{
-			get
-			{
-				return m_delay;
-			}
-			set
-			{
-				m_delay = value;
-			}
+			get => m_delay;
+			set => m_delay = value;
 		}
 		
 		
@@ -347,14 +335,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IpV4ThroughputType Throughput
 		{
-			get
-			{
-				return m_throughput;
-			}
-			set
-			{
-				m_throughput = value;
-			}
+			get => m_throughput;
+			set => m_throughput = value;
 		}
 		
 		
@@ -369,14 +351,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IpV4ReliabilityType Reliability
 		{
-			get
-			{
-				return m_reliability;
-			}
-			set
-			{
-				m_reliability = value;
-			}
+			get => m_reliability;
+			set => m_reliability = value;
 		}
 		
 		
@@ -420,14 +396,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public bool DontFragment
 		{
-			get
-			{
-				return m_doNotFragment;
-			}
-			set
-			{
-				m_doNotFragment = value;
-			}
+			get => m_doNotFragment;
+			set => m_doNotFragment = value;
 		}
 		
 		
@@ -437,14 +407,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public bool MoreFragments
 		{
-			get
-			{
-				return m_moreFragments;
-			}
-			set
-			{
-				m_moreFragments = value;
-			}
+			get => m_moreFragments;
+			set => m_moreFragments = value;
 		}
 		
 		
@@ -453,14 +417,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public ushort Offset
 		{
-			get
-			{
-				return m_fragmentationOffset;
-			}
-			set
-			{
-				m_fragmentationOffset= value;
-			}
+			get => m_fragmentationOffset;
+			set => m_fragmentationOffset= value;
 		}
 		
 		
@@ -513,14 +471,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public bool IsCopied
 		{
-			get
-			{
-				return m_copied;
-			}
-			set
-			{
-				m_copied = value;
-			}
+			get => m_copied;
+			set => m_copied = value;
 		}
 		
 		
@@ -529,14 +481,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IpV4OptionClass Class
 		{
-			get
-			{
-				return m_class;
-			}
-			set
-			{
-				m_class = value;
-			}
+			get => m_class;
+			set => m_class = value;
 		}
 		
 		
@@ -545,14 +491,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IpV4OptionNumber OptionType
 		{
-			get
-			{
-				return m_number;
-			}
-			set
-			{
-				m_number = value;
-			}
+			get => m_number;
+			set => m_number = value;
 		}
 		
 		
@@ -562,14 +502,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public int Length
 		{
-			get
-			{
-				return m_length;
-			}
-			set
-			{
-				m_length = value;
-			}
+			get => m_length;
+			set => m_length = value;
 		}
 		
 		
@@ -579,14 +513,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public byte[] Data
 		{
-			get
-			{
-				return m_data;
-			}
-			set
-			{
-				m_data = value;
-			}
+			get => m_data;
+			set => m_data = value;
 		}
 		
 		
@@ -759,10 +687,7 @@ namespace Metro.NetworkLayer.IpV4
 		///	</exception>
 		public byte Version
 		{
-			get
-			{
-				return m_version;
-			}
+			get => m_version;
 			set
 			{
 				if (value != 0x04)
@@ -786,10 +711,7 @@ namespace Metro.NetworkLayer.IpV4
 		///	</exception>
 		public ushort HeaderLength
 		{
-			get
-			{
-				return m_headerLength;
-			}
+			get => m_headerLength;
 			set
 			{
 				if (value < 0x14)
@@ -815,14 +737,8 @@ namespace Metro.NetworkLayer.IpV4
 		///	</summary>
 		public IpV4TypeOfServiceType TypeOfService
 		{
-			get
-			{
-				return m_tos;
-			}
-			set
-			{
-				m_tos = value;
-			}
+			get => m_tos;
+			set => m_tos = value;
 		}
 		
 		
@@ -838,14 +754,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public ushort TotalLength
 		{
-			get
-			{
-				return m_totalLength;
-			}
-			set
-			{
-				m_totalLength = value;
-			}
+			get => m_totalLength;
+			set => m_totalLength = value;
 		}
 		
 		
@@ -855,14 +765,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public ushort Identification
 		{
-			get
-			{
-				return m_id;
-			}
-			set
-			{
-				m_id = value;
-			}
+			get => m_id;
+			set => m_id = value;
 		}
 		
 		
@@ -871,14 +775,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IpV4ControlFlags ControlFlags
 		{
-			get
-			{
-				return m_icf;
-			}
-			set
-			{
-				m_icf = value;
-			}
+			get => m_icf;
+			set => m_icf = value;
 		}
 		
 		
@@ -896,14 +794,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public byte TimeToLive
 		{
-			get
-			{
-				return m_ttl;
-			}
-			set
-			{
-				m_ttl = value;
-			}
+			get => m_ttl;
+			set => m_ttl = value;
 		}
 			
 			
@@ -913,14 +805,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public ProtocolType TransportProtocol
 		{
-			get
-			{
-				return m_protocol;
-			}
-			set
-			{
-				m_protocol = value;
-			}
+			get => m_protocol;
+			set => m_protocol = value;
 		}
 
 
@@ -935,14 +821,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public ushort Checksum
 		{
-			get
-			{
-				return m_checksum;
-			}
-			set
-			{
-				m_checksum = value;
-			}
+			get => m_checksum;
+			set => m_checksum = value;
 		}
 		
 		
@@ -951,14 +831,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IPAddress SourceAddress
 		{
-			get
-			{
-				return m_sourceAddress;
-			}
-			set
-			{
-				m_sourceAddress = value;
-			}
+			get => m_sourceAddress;
+			set => m_sourceAddress = value;
 		}
 		
 		
@@ -967,14 +841,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IPAddress DestinationAddress
 		{
-			get
-			{
-				return m_destAddress;
-			}
-			set
-			{
-				m_destAddress = value;
-			}
+			get => m_destAddress;
+			set => m_destAddress = value;
 		}
 		
 		
@@ -983,14 +851,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public IpV4Option[] Options
 		{
-			get
-			{
-				return m_options;
-			}
-			set
-			{
-				m_options = value;
-			}
+			get => m_options;
+			set => m_options = value;
 		}
 		
 		
@@ -1000,14 +862,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public byte[] Padding
 		{
-			get
-			{
-				return m_padding;
-			}
-			set
-			{
-				m_padding = value;
-			}
+			get => m_padding;
+			set => m_padding = value;
 		}
 		
 		
@@ -1016,14 +872,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public byte[] Data
 		{
-			get
-			{
-				return m_data;
-			}
-			set
-			{
-				m_data = value;
-			}
+			get => m_data;
+			set => m_data = value;
 		}
 		
 		/// <summary>
@@ -1032,14 +882,8 @@ namespace Metro.NetworkLayer.IpV4
 		/// </summary>
 		public byte Fragments
 		{
-			get
-			{
-				return m_fragments;
-			}
-			set
-			{
-				m_fragments = value;
-			}
+			get => m_fragments;
+			set => m_fragments = value;
 		}
 		
 		

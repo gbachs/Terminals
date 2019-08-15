@@ -35,14 +35,8 @@ namespace Terminals.Forms.Controls
         /// <summary>
         /// Gets group nodes on this level. They always precede favorite nodes.
         /// </summary>
-        protected IEnumerable<GroupTreeNode> GroupNodes
-        {
-            get
-            {
-                return this.Nodes.GroupNodes;
-            }
-        }
-        
+        protected IEnumerable<GroupTreeNode> GroupNodes => this.Nodes.GroupNodes;
+
         /// <summary>
         /// Create new not root level container if parent is defined, otherwise
         /// create root level container. Than this is an entry point of the update.
@@ -61,7 +55,7 @@ namespace Terminals.Forms.Controls
         protected void ProcessNodes()
         {
             // because making changes in the collection during procesing each node, call ToList to evaluate the collection
-            foreach (TNode toProcess in this.nodes.OfType<TNode>().ToList())
+            foreach (var toProcess in this.nodes.OfType<TNode>().ToList())
             {
                 this.CurrentNode = toProcess;
                 this.ProcessCurrentNode();

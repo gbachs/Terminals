@@ -20,7 +20,7 @@ namespace Terminals.Data.DB
         internal const string DEFAULT_CONNECTION_STRING =
             @"Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\Data\Terminals.mdf;Integrated Security=True;User Instance=False";
 
-        private static readonly Settings settings = Settings.Instance;
+        private static readonly Settings settings =  Settings.Instance;
 
         internal static Database CreateInstance()
         {

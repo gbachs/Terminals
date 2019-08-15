@@ -89,10 +89,7 @@ namespace TabControl
         /// Gets DrawTab value indicating if events are currently suspended.
         /// </summary>
         [Browsable(false)]
-        public bool IsSuspended
-        {
-            get { return (_suspendCount > 0); }
-        }
+        public bool IsSuspended => (_suspendCount > 0);
 
         /// <summary>
         /// Raises the Clearing event when not suspended.

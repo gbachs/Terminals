@@ -133,14 +133,8 @@ namespace Metro.LinkLayer.Ethernet802_3
 		/// </summary>
 		public MACAddress SourceMACAddress
 		{
-			get
-			{
-				return m_sourceMACAddress;
-			}
-			set
-			{
-				m_sourceMACAddress = value;
-			}
+			get => m_sourceMACAddress;
+			set => m_sourceMACAddress = value;
 		}
 		
 		
@@ -151,14 +145,8 @@ namespace Metro.LinkLayer.Ethernet802_3
 		/// </summary>
 		public MACAddress DestinationMACAddress
 		{
-			get
-			{
-				return m_destinationMACAddress;
-			}
-			set
-			{
-				m_destinationMACAddress = value;
-			}
+			get => m_destinationMACAddress;
+			set => m_destinationMACAddress = value;
 		}
 		
 		
@@ -167,14 +155,8 @@ namespace Metro.LinkLayer.Ethernet802_3
 		/// </summary>
 		public NetworkLayerProtocol NetworkProtocol
 		{
-			get
-			{
-				return m_networkProtocol;
-			}
-			set
-			{
-				m_networkProtocol = value;
-			}
+			get => m_networkProtocol;
+			set => m_networkProtocol = value;
 		}
 		
 		
@@ -183,14 +165,8 @@ namespace Metro.LinkLayer.Ethernet802_3
 		/// </summary>
 		public byte[] Data
 		{
-			get
-			{
-				return m_data;
-			}
-			set
-			{
-				m_data = value;
-			}
+			get => m_data;
+			set => m_data = value;
 		}
 		
 		

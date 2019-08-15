@@ -40,7 +40,7 @@ namespace Terminals
 
         private string FormatDetails()
         {
-            DateTime dt = Program.Info.BuildDate;
+            var dt = Program.Info.BuildDate;
             const string DETAILS = "{0}\r\n" +
                                    "Config File:\r\n{1}\r\n\r\n" +
                                    "This version of terminals was build for you on {2} at {3}\r\n\r\n" +

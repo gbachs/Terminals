@@ -22,13 +22,13 @@ namespace Terminals.Forms.Controls
         /// </summary>
         internal string ExpandedNodes
         {
-            get { return this.GetExpandedFavoriteNodes(); }
-            set { this.ExpandTreeView(value); }
+            get => this.GetExpandedFavoriteNodes();
+            set => this.ExpandTreeView(value);
         }
 
         private string GetExpandedFavoriteNodes()
         {
-            List<string> expandedNodes = new List<string>();
+            var expandedNodes = new List<string>();
             foreach (TreeNode treeNode in this.Nodes)
             {
                 if (treeNode.IsExpanded)

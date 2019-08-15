@@ -21,14 +21,8 @@ namespace Terminals.Forms
         /// </summary>
         private String BucketName
         {
-            get
-            {
-                return this.BucketNameTextBox.Text;
-            }
-            set
-            {
-                this.BucketNameTextBox.Text = value;
-            }
+            get => this.BucketNameTextBox.Text;
+            set => this.BucketNameTextBox.Text = value;
         }
 
         public AmazonOptionPanel()
@@ -73,7 +67,7 @@ namespace Terminals.Forms
         {
             this.Cursor = Cursors.WaitCursor;
             Exception testError = null;
-            using (AmazonS3 client = CreateClient())
+            using (var client = CreateClient())
             {
                 testError = EnsureBucketExists(client);
             }
@@ -110,7 +104,7 @@ namespace Terminals.Forms
             if (MessageBox.Show("Are you sure you want to upload your current configuration?",
                 AMAZON_MESSAGETITLE, MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                using (AmazonS3 client = CreateClient())
+                using (var client = CreateClient())
                 {
                     EnsureBucketExists(client);
                     BackUpToAmazon(client);
@@ -123,7 +117,7 @@ namespace Terminals.Forms
             if (MessageBox.Show("Are you sure you want to restore your current configuration?",
                 AMAZON_MESSAGETITLE, MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                using (AmazonS3 client = CreateClient())
+                using (var client = CreateClient())
                 {
                     RestoreFromAmazon(client);
                 }
@@ -134,7 +128,7 @@ namespace Terminals.Forms
         {
             try
             {
-                S3Bucket bucket = GetBucket(client);
+                var bucket = GetBucket(client);
                 if (bucket == null)
                 {
                     CreateBucket(client);
@@ -151,8 +145,8 @@ namespace Terminals.Forms
 
         private S3Bucket GetBucket(AmazonS3 client)
         {
-            ListBucketsRequest listRequest = new ListBucketsRequest();
-            ListBucketsResponse response = client.ListBuckets(listRequest);
+            var listRequest = new ListBucketsRequest();
+            var response = client.ListBuckets(listRequest);
             return response.Buckets
                 .Where(candidate => candidate.BucketName == this.BucketName)
                 .FirstOrDefault();
@@ -160,7 +154,7 @@ namespace Terminals.Forms
 
         private void CreateBucket(AmazonS3 client)
         {
-            PutBucketRequest request = new PutBucketRequest();
+            var request = new PutBucketRequest();
             request.BucketName = this.BucketName;
             client.PutBucket(request);
         }
@@ -169,7 +163,7 @@ namespace Terminals.Forms
         {
             try
             {
-                PutObjectRequest request = new PutObjectRequest();
+                var request = new PutObjectRequest();
                 request.WithBucketName(this.BucketName).WithKey(FileLocations.CONFIG_FILENAME)
                     .WithFilePath(settings.FileLocations.Configuration);
 
@@ -189,11 +183,11 @@ namespace Terminals.Forms
         {
             try
             {
-                GetObjectRequest request = new GetObjectRequest()
+                var request = new GetObjectRequest()
                     .WithBucketName(this.BucketName)
                     .WithKey(FileLocations.CONFIG_FILENAME);
 
-                using (GetObjectResponse response = client.GetObject(request))
+                using (var response = client.GetObject(request))
                 {
                     response.WriteResponseStreamToFile(settings.FileLocations.Configuration);
                     settings.ForceReload();

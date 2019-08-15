@@ -37,13 +37,7 @@ namespace Terminals.Forms.Controls
         /// <summary>
         /// Gets value of the text to search entered by the user in the text box.
         /// </summary>
-        internal string SearchText
-        {
-            get
-            {
-                return this.valueTextBox.Text;
-            }
-        }
+        internal string SearchText => this.valueTextBox.Text;
 
         /// <summary>
         /// Informs, that user requests new search by changing the text to search or press enter key,
@@ -155,8 +149,7 @@ namespace Terminals.Forms.Controls
 
         private void FireCancel()
         {
-            if (this.Cancel != null)
-                this.Cancel(this, EventArgs.Empty);
+            this.Cancel?.Invoke(this, EventArgs.Empty);
         }
 
         private void ValueTextBox_Leave(object sender, EventArgs e)

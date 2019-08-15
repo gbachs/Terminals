@@ -36,10 +36,7 @@ namespace Terminals
 
         private IConnectionCommands connectionCommands;
 
-        private IFavorites PersistedFavorites
-        {
-            get { return this.persistence.Favorites; }
-        }
+        private IFavorites PersistedFavorites => this.persistence.Favorites;
 
         public FavsList()
         {
@@ -122,20 +119,20 @@ namespace Terminals
 
         private void OpenNetworkingTool(NettworkingTools toolName)
         {
-            IFavorite fav = this.GetSelectedFavorite();
+            var fav = this.GetSelectedFavorite();
             if (fav != null)
                 this.ConnectionsUiFactory.OpenNetworkingTools(toolName, fav.ServerName);
         }
 
         private void CreateFavoriteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GroupTreeNode groupNode = this.favsTree.SelectedGroupNode;
+            var groupNode = this.favsTree.SelectedGroupNode;
             this.ConnectionsUiFactory.CreateFavorite(string.Empty, groupNode);
         }
 
         private void PropertiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IFavorite fav = this.GetSelectedFavorite();
+            var fav = this.GetSelectedFavorite();
             if (fav != null)
                 this.ConnectionsUiFactory.EditFavorite(fav, dr => { });
         }
@@ -157,14 +154,14 @@ namespace Terminals
 
         private void ProcessRemoteShutdownOpearation(string operationName, ShutdownCommands shutdownStyle)
         {
-            IFavorite fav = this.GetSelectedFavorite();
+            var fav = this.GetSelectedFavorite();
             if (fav == null)
                 return;
 
             const string QUESTION_TEMPLATE = "Are you sure you want to {0} this machine: {1}\r\n" +
                                              "Operation requires administrator priviledges and can take a while.";
             var question = String.Format(QUESTION_TEMPLATE, operationName, fav.ServerName);
-            string title = Program.Resources.GetString("Confirmation");
+            var title = "Confirmation";
             var confirmResult = MessageBox.Show(question, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (confirmResult != DialogResult.Yes)
                 return;
@@ -203,14 +200,14 @@ namespace Terminals
 
         private void EnableRDPToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IFavorite fav = this.GetSelectedFavorite();
-            Task<bool?> enableRdpTask = Task.Factory.StartNew(new Func<object, bool?>(TryEnableRdp), fav);
+            var fav = this.GetSelectedFavorite();
+            var enableRdpTask = Task.Factory.StartNew(new Func<object, bool?>(TryEnableRdp), fav);
             enableRdpTask.ContinueWith(this.ShowEnableRdpResult, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private void ShowEnableRdpResult(Task<bool?> enableRdpTask)
         {
-            bool? operationResult = enableRdpTask.Result;
+            var operationResult = enableRdpTask.Result;
             if (operationResult.HasValue)
                 this.ShowEnableRdpResult(operationResult.Value);
             else
@@ -257,7 +254,7 @@ namespace Terminals
         private void ExtraConnectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.CloseMenuStrips();
-            IFavorite favorite = this.GetSelectedFavorite();
+            var favorite = this.GetSelectedFavorite();
             if (favorite == null)
                 return;
 
@@ -268,7 +265,7 @@ namespace Terminals
         private void ConnectToAllExtraToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.CloseMenuStrips();
-            List<IFavorite> selectedFavorites = this.favsTree.SelectedGroupFavorites;
+            var selectedFavorites = this.favsTree.SelectedGroupFavorites;
             this.ConnectToFavoritesExtra(selectedFavorites);
         }
 
@@ -286,30 +283,30 @@ namespace Terminals
 
         private void ComputerManagementMmcToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IFavorite favorite = this.GetSelectedFavorite();
+            var favorite = this.GetSelectedFavorite();
             ExternalLinks.StartMsManagementConsole(favorite);
         }
 
         private void SystemInformationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IFavorite favorite = this.GetSelectedFavorite();
+            var favorite = this.GetSelectedFavorite();
             ExternalLinks.StartMsInfo32(favorite);
         }
 
         private void SetCredentialByTagToolStripMenuItem_Click(object sender, EventArgs e)
         {
             const string VARIABLE = "Credential";
-            InputBoxResult result = this.PromptForVariableChange(VARIABLE);
+            var result = this.PromptForVariableChange(VARIABLE);
             if (result.ReturnCode == DialogResult.OK)
             {
-                ICredentialSet credential = this.persistence.Credentials[result.Text];
+                var credential = this.persistence.Credentials[result.Text];
                 if (credential == null)
                 {
                     MessageBox.Show("The credential you specified does not exist.");
                     return;
                 }
 
-                List<IFavorite> selectedFavorites = this.StartBatchUpdate();
+                var selectedFavorites = this.StartBatchUpdate();
                 PersistedFavorites.ApplyCredentialsToAllFavorites(selectedFavorites, credential);
                 this.FinishBatchUpdate(VARIABLE);
             }
@@ -318,10 +315,10 @@ namespace Terminals
         private void SetPasswordByTagToolStripMenuItem_Click(object sender, EventArgs e)
         {
             const string VARIABLE = "Password";
-            InputBoxResult result = this.PromptForVariableChange(VARIABLE, '*');
+            var result = this.PromptForVariableChange(VARIABLE, '*');
             if (result.ReturnCode == DialogResult.OK)
             {
-                List<IFavorite> selectedFavorites = this.StartBatchUpdate();
+                var selectedFavorites = this.StartBatchUpdate();
                 PersistedFavorites.SetPasswordToAllFavorites(selectedFavorites, result.Text);
                 this.FinishBatchUpdate(VARIABLE);
             }
@@ -330,10 +327,10 @@ namespace Terminals
         private void SetDomainByTagToolStripMenuItem_Click(object sender, EventArgs e)
         {
             const string VARIABLE = "Domain name";
-            InputBoxResult result = this.PromptForVariableChange(VARIABLE);
+            var result = this.PromptForVariableChange(VARIABLE);
             if (result.ReturnCode == DialogResult.OK)
             {
-                List<IFavorite> selectedFavorites = this.StartBatchUpdate();
+                var selectedFavorites = this.StartBatchUpdate();
                 PersistedFavorites.ApplyDomainNameToAllFavorites(selectedFavorites, result.Text);
                 this.FinishBatchUpdate(VARIABLE);
             }
@@ -342,10 +339,10 @@ namespace Terminals
         private void SetUsernameByTagToolStripMenuItem_Click(object sender, EventArgs e)
         {
             const string VARIABLE = "User name";
-            InputBoxResult result = this.PromptForVariableChange(VARIABLE);
+            var result = this.PromptForVariableChange(VARIABLE);
             if (result.ReturnCode == DialogResult.OK)
             {
-                List<IFavorite> selectedFavorites = this.StartBatchUpdate();
+                var selectedFavorites = this.StartBatchUpdate();
                 PersistedFavorites.ApplyUserNameToAllFavorites(selectedFavorites, result.Text);
                 this.FinishBatchUpdate(VARIABLE);
             }
@@ -362,16 +359,16 @@ namespace Terminals
         {
             if (this.ParentForm != null)
                 this.ParentForm.Cursor = Cursors.Default;
-            string message = string.Format("Set {0} by group Complete.", variable);
+            var message = string.Format("Set {0} by group Complete.", variable);
             MessageBox.Show(message);
         }
 
         private InputBoxResult PromptForVariableChange(string variable, char passwordChar = '\0')
         {
-            String groupName = this.favsTree.SelectedNode.Text;
-            string prompt = String.Format("This will replace the {0} for all Favorites within this group.\r\nUse at your own risk!\r\n\r\nEnter new {0}:",
+            var groupName = this.favsTree.SelectedNode.Text;
+            var prompt = String.Format("This will replace the {0} for all Favorites within this group.\r\nUse at your own risk!\r\n\r\nEnter new {0}:",
                                             variable);
-            string title = string.Format("Change {0} - {1}", variable, groupName);
+            var title = string.Format("Change {0} - {1}", variable, groupName);
             if (passwordChar != '\0')
                 return InputBox.Show(prompt, title, passwordChar);
 
@@ -380,13 +377,13 @@ namespace Terminals
 
         private void DeleteAllFavoritesByTagToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            String groupName = this.favsTree.SelectedNode.Text;
-            string title = "Delete all Favorites by group - " + groupName;
+            var groupName = this.favsTree.SelectedNode.Text;
+            var title = "Delete all Favorites by group - " + groupName;
             const string PROMPT = "This will DELETE all Favorites within this group.\r\nDo you realy want to delete them?";
-            DialogResult result = MessageBox.Show(PROMPT, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var result = MessageBox.Show(PROMPT, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
-                List<IFavorite> selectedFavorites = this.StartBatchUpdate();
+                var selectedFavorites = this.StartBatchUpdate();
                 this.persistence.Favorites.Delete(selectedFavorites);
                 if (this.ParentForm != null)
                     this.ParentForm.Cursor = Cursors.Default;
@@ -396,7 +393,7 @@ namespace Terminals
 
         private void RemoveSelectedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IFavorite favorite = this.GetSelectedFavorite();
+            var favorite = this.GetSelectedFavorite();
             if (favorite != null && OrganizeFavoritesForm.AskIfRealyDelete("favorite"))
                 PersistedFavorites.Delete(favorite);
         }
@@ -407,7 +404,7 @@ namespace Terminals
                 return;
 
             var clickedPoint = new Point(e.X, e.Y);
-            TreeNode clickedNode = this.favsTree.GetNodeAt(clickedPoint);
+            var clickedNode = this.favsTree.GetNodeAt(clickedPoint);
             this.favsTree.SelectedNode = clickedNode;
 
             if (clickedNode != null)
@@ -426,8 +423,8 @@ namespace Terminals
 
         private void ShowFavoritesContextMenu(Point clickedPoint)
         {
-            IFavorite selected = this.GetSelectedFavorite();
-            bool canExecute = this.connectionCommands.CanExecute(selected);
+            var selected = this.GetSelectedFavorite();
+            var canExecute = this.connectionCommands.CanExecute(selected);
             this.reconnectToolStripMenuItem.Visible = canExecute;
             this.disconnectToolStripMenuItem.Visible = canExecute;
             this.favoritesContextMenu.Show(this.favsTree, clickedPoint);
@@ -440,8 +437,8 @@ namespace Terminals
 
         private void StartConnectionByDoubleClick(TreeView treeView, EventArgs e)
         {
-            Point doubleClickLocation = ((MouseEventArgs)e).Location;
-            TreeNode doubleClickedNode = treeView.GetNodeAt(doubleClickLocation);
+            var doubleClickLocation = ((MouseEventArgs)e).Location;
+            var doubleClickedNode = treeView.GetNodeAt(doubleClickLocation);
             if (doubleClickedNode == treeView.SelectedNode)
                 this.StartConnection(treeView);
         }
@@ -473,7 +470,7 @@ namespace Terminals
 
         private void DuplicateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IFavorite selected = this.GetSelectedFavorite();
+            var selected = this.GetSelectedFavorite();
             if (selected == null)
                 return;
 
@@ -549,8 +546,8 @@ namespace Terminals
 
         private void BeginRenameInFavsTree()
         {
-            if (this.tabControl1.SelectedTab == this.FavoritesTabPage && this.favsTree.SelectedNode != null)
-                this.favsTree.SelectedNode.BeginEdit();
+            if (this.tabControl1.SelectedTab == this.FavoritesTabPage)
+                favsTree.SelectedNode?.BeginEdit();
         }
 
         private void FavsTree_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
@@ -569,7 +566,7 @@ namespace Terminals
 
         private void TryRenameFavoriteNode(NodeLabelEditEventArgs e)
         {
-            IFavorite favorite = this.favsTree.SelectedFavorite;
+            var favorite = this.favsTree.SelectedFavorite;
             e.CancelEdit = this.ValidateAndRename(favorite, e.Label);
         }
 
@@ -585,7 +582,7 @@ namespace Terminals
         private void SheduleRename(IGroup group, NodeLabelEditEventArgs e)
         {
             var groupValidator = new GroupNameValidator(this.persistence);
-            string errorMessage = groupValidator.ValidateCurrent(group, e.Label);
+            var errorMessage = groupValidator.ValidateCurrent(group, e.Label);
             if (string.IsNullOrEmpty(errorMessage))
             {
                 var groupArguments = new object[] { group, e.Label };
@@ -606,7 +603,7 @@ namespace Terminals
 
         private void SearchPanel1_ResultListAfterLabelEdit(object sender, LabelEditEventArgs e)
         {
-            IFavorite favorite = this.GetSelectedFavorite();
+            var favorite = this.GetSelectedFavorite();
             // user canceled the rename
             if (string.IsNullOrEmpty(e.Label))
                 e.CancelEdit = true;
@@ -624,7 +621,7 @@ namespace Terminals
             if (favorite == null)
                 return true;
 
-            bool isValid = this.renameCommand.ValidateNewName(favorite, newName);
+            var isValid = this.renameCommand.ValidateNewName(favorite, newName);
             if (isValid)
             {
                 this.isRenaming = true;
@@ -662,7 +659,7 @@ namespace Terminals
 
         private void ConnectToSelectedFavorites()
         {
-            List<IFavorite> favorites = this.GetSelectedFavorites();
+            var favorites = this.GetSelectedFavorites();
             this.ConnectFromContextMenu(favorites);
         }
 
@@ -687,12 +684,12 @@ namespace Terminals
         private void NewGroupToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // backup the selected tree node, because it will be replaced later by focus of NewGroupForm
-            GroupTreeNode parentGroupNode = this.favsTree.SelectedGroupNode;
-            string newGroupName = NewGroupForm.AskFroGroupName(this.persistence);
+            var parentGroupNode = this.favsTree.SelectedGroupNode;
+            var newGroupName = NewGroupForm.AskFroGroupName(this.persistence);
             if (string.IsNullOrEmpty(newGroupName))
                 return;
 
-            IGroup newGroup = this.persistence.Factory.CreateGroup(newGroupName);
+            var newGroup = this.persistence.Factory.CreateGroup(newGroupName);
             if (parentGroupNode != null)
                 newGroup.Parent = parentGroupNode.Group;
 

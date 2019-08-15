@@ -70,14 +70,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public IpV4Packet BadPacket
 		{
-			get
-			{
-				return m_badPacket;
-			}
-			set
-			{
-				m_badPacket = value;
-			}
+			get => m_badPacket;
+			set => m_badPacket = value;
 		}
 		
 		
@@ -217,14 +211,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public CodeType Code
 		{
-			get
-			{
-				return m_code;
-			}
-			set
-			{
-				m_code = value;
-			}
+			get => m_code;
+			set => m_code = value;
 		}
 		
 
@@ -338,14 +326,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public CodeType Code
 		{
-			get
-			{
-				return m_code;
-			}
-			set
-			{
-				m_code = value;
-			}
+			get => m_code;
+			set => m_code = value;
 		}
 		
 
@@ -435,14 +417,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public byte ErrorPointer
 		{
-			get
-			{
-				return m_pointer;
-			}
-			set
-			{
-				m_pointer = value;
-			}
+			get => m_pointer;
+			set => m_pointer = value;
 		}
 		
 		
@@ -658,14 +634,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public CodeType Code
 		{
-			get
-			{
-				return m_code;
-			}
-			set
-			{
-				m_code = value;
-			}
+			get => m_code;
+			set => m_code = value;
 		}
 		
 
@@ -676,14 +646,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public IPAddress GatewayAddress
 		{
-			get
-			{
-				return m_gatewayAddress;
-			}
-			set
-			{
-				m_gatewayAddress = value;
-			}
+			get => m_gatewayAddress;
+			set => m_gatewayAddress = value;
 		}
 
 
@@ -790,14 +754,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public ushort Identifier
 		{
-			get
-			{
-				return m_identifier;
-			}
-			set
-			{
-				m_identifier = value;
-			}
+			get => m_identifier;
+			set => m_identifier = value;
 		}
 		
 		
@@ -806,14 +764,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public ushort SequenceNumber
 		{
-			get
-			{
-				return m_sequenceNumber;
-			}
-			set
-			{
-				m_sequenceNumber = value;
-			}
+			get => m_sequenceNumber;
+			set => m_sequenceNumber = value;
 		}
 		
 		
@@ -823,14 +775,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public byte[] Data
 		{
-			get
-			{
-				return m_data;
-			}
-			set
-			{
-				m_data = value;
-			}
+			get => m_data;
+			set => m_data = value;
 		}
 		
 		

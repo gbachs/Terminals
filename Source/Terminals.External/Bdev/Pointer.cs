@@ -121,8 +121,8 @@ namespace Bdev.Net.Dns
 		/// <returns>the byte at the pointer</returns>
 		public string ReadDomain()
 		{
-			StringBuilder domain = new StringBuilder();
-			int length = 0;
+			var domain = new StringBuilder();
+			var length = 0;
 		
 			// get  the length of the first label
 			while ((length = ReadByte()) != 0)
@@ -131,7 +131,7 @@ namespace Bdev.Net.Dns
 				if ((length & 0xc0) == 0xc0)
 				{
 					// work out the existing domain name, copy this pointer
-					Pointer newPointer = Copy();
+					var newPointer = Copy();
 						
 					// and move it to where specified here
 					newPointer.SetPosition((length & 0x3f)<<8 | ReadByte());

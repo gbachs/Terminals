@@ -118,14 +118,8 @@ namespace Metro.TransportLayer.Udp
 		/// </summary>
 		public ushort SourcePort
 		{
-			get
-			{
-				return m_sourcePort;
-			}
-			set
-			{
-				m_sourcePort = value;
-			}
+			get => m_sourcePort;
+			set => m_sourcePort = value;
 		}
 		
 		
@@ -135,14 +129,8 @@ namespace Metro.TransportLayer.Udp
 		/// </summary>
 		public ushort DestinationPort
 		{
-			get
-			{
-				return m_destPort;	
-			}
-			set
-			{
-				m_destPort = value;
-			}
+			get => m_destPort;
+			set => m_destPort = value;
 		}
 		
 		
@@ -156,10 +144,7 @@ namespace Metro.TransportLayer.Udp
 		///	</exception>
 		public ushort Length
 		{
-			get
-			{
-				return m_length;
-			}
+			get => m_length;
 			set
 			{
 				if (value < 8)
@@ -182,14 +167,8 @@ namespace Metro.TransportLayer.Udp
 		/// </summary>
 		public ushort Checksum
 		{
-			get
-			{
-				return m_checksum;
-			}
-			set
-			{
-				m_checksum = value;
-			}
+			get => m_checksum;
+			set => m_checksum = value;
 		}
 		
 		
@@ -198,14 +177,8 @@ namespace Metro.TransportLayer.Udp
 		/// </summary>
 		public byte[] Data
 		{
-			get
-			{
-				return m_data;
-			}
-			set
-			{
-				m_data = value;
-			}
+			get => m_data;
+			set => m_data = value;
 		}
 		
 		

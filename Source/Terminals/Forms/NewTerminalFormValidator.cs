@@ -45,7 +45,7 @@ namespace Terminals.Forms
         {
             // once the save button is clicked, force the validation of all controls, 
             // even, if they were already validated, to be able to cancel the save
-            bool isValid = this.form.ValidateChildren();
+            var isValid = this.form.ValidateChildren();
             if (!isValid)
                 return false;
 
@@ -59,18 +59,18 @@ namespace Terminals.Forms
         /// </summary>
         private bool ValidatePersistenceConstraints()
         {
-            IFavorite favorite = this.persistence.Factory.CreateFavorite();
+            var favorite = this.persistence.Factory.CreateFavorite();
             this.form.FillFavoriteFromControls(favorite);
-            ValidationStates results = this.validator.Validate(favorite);
+            var results = this.validator.Validate(favorite);
             this.UpdateControlsErrorByResults(results);
-            bool nameValid = this.ValidateName(favorite);
+            var nameValid = this.ValidateName(favorite);
             // check the results, not the bindings to be able to identify unbound property errors
             return results.Empty && nameValid;
         }
 
         private bool ValidateName(IFavorite favorite)
         {
-            string nameResultMessage = this.GetNameValidationMessage(favorite);
+            var nameResultMessage = this.GetNameValidationMessage(favorite);
             this.form.SetErrorInfo(this.validationBindings[Validations.NAME_PROPERTY], nameResultMessage);
             return string.IsNullOrEmpty(nameResultMessage);
         }
@@ -82,16 +82,16 @@ namespace Terminals.Forms
             
             // we have to validate the original one, but with the new name, 
             // because the paramerter is newly created Favorite
-            IFavorite edited = this.persistence.Favorites[this.form.EditedId];
+            var edited = this.persistence.Favorites[this.form.EditedId];
             return this.nameValidator.ValidateCurrent(edited, favorite.Name);
         }
 
         private void UpdateControlsErrorByResults(ValidationStates results)
         {
             // loop through bindings to be able to reset the validaiton state for valid controls
-            foreach (KeyValuePair<string, Control> binding in this.validationBindings)
+            foreach (var binding in this.validationBindings)
             {
-                string message = results[binding.Key];
+                var message = results[binding.Key];
                 this.form.SetErrorInfo(binding.Value, message);
             }
         }
@@ -115,14 +115,14 @@ namespace Terminals.Forms
         private void IsValid(object sender, CancelEventArgs eventArgs, Func<bool> isValid, string message)
         {
             eventArgs.Cancel = !isValid();
-            string errorMessage = eventArgs.Cancel ? message : string.Empty;
+            var errorMessage = eventArgs.Cancel ? message : string.Empty;
             var control = sender as Control;
             this.form.SetErrorInfo(control, errorMessage);
         }
 
         private bool IsServerNameValid()
         {
-            string protocol = this.form.ProtocolText;
+            var protocol = this.form.ProtocolText;
             if (this.connectionManager.IsProtocolWebBased(protocol))
                 return true;
 
@@ -131,7 +131,7 @@ namespace Terminals.Forms
 
         private bool ServerNameInvalid()
         {
-            string serverName = this.form.ServerNameText;
+            var serverName = this.form.ServerNameText;
             return !IsServerNameEmpty() || CustomValidationRules.IsValidServerName(serverName) == ValidationResult.Success;
         }
 
@@ -143,13 +143,13 @@ namespace Terminals.Forms
         private bool IsPortValid()
         {
             Int32 result;
-            bool parsed = Int32.TryParse(this.form.PortText, out result);
+            var parsed = Int32.TryParse(this.form.PortText, out result);
             return parsed && result >= 0 && result <= 65535;
         }
 
         internal bool IsUrlValid()
         {
-            Uri url = this.form.GetFullUrlFromHttpTextBox();
+            var url = this.form.GetFullUrlFromHttpTextBox();
             return url != null;
         }
 
@@ -160,16 +160,16 @@ namespace Terminals.Forms
                 return;
 
             int parsedValue;
-            bool isPared = int.TryParse(textBox.Text, out parsedValue);
-            string errorMessage = isPared ? string.Empty : "Is not a valid integer.";
+            var isPared = int.TryParse(textBox.Text, out parsedValue);
+            var errorMessage = isPared ? string.Empty : "Is not a valid integer.";
             eventArgs.Cancel = !isPared;
             this.form.SetErrorInfo(textBox, errorMessage);
         }
 
         internal bool ValidateGroupName(TextBox txtGroupName)
         {
-            string groupName = txtGroupName.Text;
-            string message = new GroupNameValidator(this.persistence).ValidateNew(groupName);
+            var groupName = txtGroupName.Text;
+            var message = new GroupNameValidator(this.persistence).ValidateNew(groupName);
             this.form.SetErrorInfo(txtGroupName, message);
             return string.IsNullOrEmpty(message);
         }

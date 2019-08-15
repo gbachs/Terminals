@@ -68,33 +68,21 @@ namespace Terminals.Forms.Controls
 
         #region Public Properties
 
-        public bool Blank
-        {
-            get
-            {
-                return (TextLength == 0);
-            }
-        }
+        public bool Blank => (TextLength == 0);
 
         public int FieldIndex
         {
-            get
-            {
-                return _fieldIndex;
-            }
-            set
-            {
-                _fieldIndex = value;
-            }
+            get => _fieldIndex;
+            set => _fieldIndex = value;
         }
 
         public override Size MinimumSize
         {
             get
             {
-                Graphics g = Graphics.FromHwnd(Handle);
+                var g = Graphics.FromHwnd(Handle);
 
-                Size minimumSize = TextRenderer.MeasureText(g,
+                var minimumSize = TextRenderer.MeasureText(g,
                                                             IPAddressControl.FieldMeasureText, Font, Size,
                                                             _textFormatFlags);
 
@@ -106,10 +94,7 @@ namespace Terminals.Forms.Controls
 
         public byte RangeLower
         {
-            get
-            {
-                return _rangeLower;
-            }
+            get => _rangeLower;
             set
             {
                 if (value < MinimumValue)
@@ -126,10 +111,7 @@ namespace Terminals.Forms.Controls
 
         public byte RangeUpper
         {
-            get
-            {
-                return _rangeUpper;
-            }
+            get => _rangeUpper;
             set
             {
                 if (value < _rangeLower)
@@ -171,7 +153,7 @@ namespace Terminals.Forms.Controls
 
                     if (TextLength > 0)
                     {
-                        int newLength = TextLength - 1;
+                        var newLength = TextLength - 1;
                         base.Text = Text.Substring(0, newLength);
                     }
 
@@ -312,8 +294,8 @@ namespace Terminals.Forms.Controls
                     }
                     else
                     {
-                        int originalLength = TextLength;
-                        int newSelectionStart = SelectionStart;
+                        var originalLength = TextLength;
+                        var newSelectionStart = SelectionStart;
 
                         base.Text = value.ToString(CultureInfo.InvariantCulture);
 
@@ -328,7 +310,7 @@ namespace Terminals.Forms.Controls
 
             if (null != TextChangedEvent)
             {
-                TextChangedEventArgs args = new TextChangedEventArgs();
+                var args = new TextChangedEventArgs();
                 args.FieldIndex = FieldIndex;
                 args.Text = Text;
                 TextChangedEvent(this, args);
@@ -450,7 +432,7 @@ namespace Terminals.Forms.Controls
         {
             if (null != CedeFocusEvent)
             {
-                CedeFocusEventArgs args = new CedeFocusEventArgs();
+                var args = new CedeFocusEventArgs();
                 args.FieldIndex = FieldIndex;
                 args.IPAddressControlAction = ipAddressControlAction;
                 CedeFocusEvent(this, args);
@@ -461,7 +443,7 @@ namespace Terminals.Forms.Controls
         {
             if (null != CedeFocusEvent)
             {
-                CedeFocusEventArgs args = new CedeFocusEventArgs();
+                var args = new CedeFocusEventArgs();
                 args.FieldIndex = FieldIndex;
                 args.IPAddressControlAction = IPAddressControlAction.None;
                 args.IPAddressControlDirection = ipAddressControlDirection;

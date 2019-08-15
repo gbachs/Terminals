@@ -125,9 +125,7 @@ namespace VncSharp
 		/// The port number used by the VNC Host (typically 5900).
 		/// </summary>
 		public int VncPort {
-			get { 
-				return port; 
-			}
+			get => port;
 			set { 
 				// Ignore attempts to use invalid port numbers
 				if (value < 1 | value > 65535) value = 5900;
@@ -138,12 +136,8 @@ namespace VncSharp
 		/// <summary>
 		/// True if the RemoteDesktop is connected and authenticated (if necessary) with a remote VNC Host; otherwise False.
 		/// </summary>
-		public bool IsConnected {
-			get {
-				return state == RuntimeState.Connected;
-			}
-		}
-		
+		public bool IsConnected => state == RuntimeState.Connected;
+
 		// This is a hack to get around the issue of DesignMode returning
 		// false when the control is being removed from a form at design time.
 		// First check to see if the control is in DesignMode, then work up 
@@ -154,7 +148,7 @@ namespace VncSharp
 				if (base.DesignMode) {
 					return true;
 				} else {
-					Control parent = Parent;
+					var parent = Parent;
 					
 					while (parent != null) {
 						if (parent.Site != null && parent.Site.DesignMode) {
@@ -170,32 +164,20 @@ namespace VncSharp
 		/// <summary>
 		/// Returns a more appropriate default size for initial drawing of the control at design time
 		/// </summary>
-		protected override Size DefaultSize {
-			get { 
-				return new Size(400, 200);
-			}
-		}
+		protected override Size DefaultSize => new Size(400, 200);
 
-        [Description("The name of the remote desktop.")]
+		[Description("The name of the remote desktop.")]
         /// <summary>
         /// The name of the remote desktop, or "Disconnected" if not connected.
         /// </summary>
-        public string Hostname {
-            get {
-                return vnc == null ? "Disconnected" : vnc.HostName;
-            }
-        }
+        public string Hostname => vnc == null ? "Disconnected" : vnc.HostName;
 
         /// <summary>
         /// The image of the remote desktop.
         /// </summary>
-        public Image Desktop {
-            get {
-                return desktop;
-            }
-        }
+        public Image Desktop => desktop;
 
-		/// <summary>
+        /// <summary>
 		/// Get a complete update of the entire screen from the remote host.
 		/// </summary>
 		/// <remarks>You should allow users to call FullScreenUpdate in order to correct
@@ -218,7 +200,7 @@ namespace VncSharp
 		private void InsureConnection(bool connected)
 		{
 			// Grab the name of the calling routine:
-			string methodName = new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name;
+			var methodName = new System.Diagnostics.StackTrace().GetFrame(1).GetMethod().Name;
 			
 			if (connected) {
 				System.Diagnostics.Debug.Assert(state == RuntimeState.Connected || 
@@ -352,7 +334,7 @@ namespace VncSharp
 
             if (passwordPending) {
                 // Server needs a password, so call which ever method is refered to by the GetPassword delegate.
-                string password = GetPassword();
+                var password = GetPassword();
 
                 if (password == null) {
                     // No password could be obtained (e.g., user clicked Cancel), so stop connecting
@@ -485,10 +467,10 @@ namespace VncSharp
 		{
 			System.Diagnostics.Debug.Assert(desktop != null, "Can't draw on desktop when null.");
 			// Draw the given message on the local desktop
-			using (Graphics g = Graphics.FromImage(desktop)) {
+			using (var g = Graphics.FromImage(desktop)) {
 				g.FillRectangle(Brushes.Black, vnc.Framebuffer.Rectangle);
 
-				StringFormat format = new StringFormat();
+				var format = new StringFormat();
 				format.Alignment = StringAlignment.Center;
 				format.LineAlignment = StringAlignment.Center;
 
@@ -541,8 +523,8 @@ namespace VncSharp
 				}
 
 				// See if either of the bitmaps used need clean-up.  
-				if (desktop != null) desktop.Dispose();
-				if (designModeDesktop != null) designModeDesktop.Dispose();
+				this.desktop?.Dispose();
+				this.designModeDesktop?.Dispose();
 			}
 			base.Dispose(disposing);
 		}
@@ -574,10 +556,10 @@ namespace VncSharp
         protected override void OnResize(EventArgs eventargs)
         {
             // Fix a bug with a ghost scrollbar in clipped mode on maximize
-            Control parent = Parent;
+            var parent = Parent;
             while (parent != null) {
                 if (parent is Form) {
-                    Form form = parent as Form;
+                    var form = parent as Form;
                     if (form.WindowState == FormWindowState.Maximized)
                         form.Invalidate();
                     parent = null;
@@ -625,8 +607,7 @@ namespace VncSharp
 
         protected void OnClipboardChanged()
         {
-            if (ClipboardChanged != null)
-                ClipboardChanged(this, EventArgs.Empty);
+	        this.ClipboardChanged?.Invoke(this, EventArgs.Empty);
         }
 
 		/// <summary>
@@ -649,9 +630,7 @@ namespace VncSharp
 		/// <exception cref="System.InvalidOperationException">Thrown if the RemoteDesktop control is not in the Connected state.</exception>
 		protected void OnConnectComplete(ConnectEventArgs e)
 		{
-			if (ConnectComplete != null) {
-				ConnectComplete(this, e);
-			}
+			this.ConnectComplete?.Invoke(this, e);
 		}
 
 		// Handle Mouse Events:		 -------------------------------------------
@@ -663,7 +642,7 @@ namespace VncSharp
 			// Only bother if the control is connected.
 			if (IsConnected) {
 				// See if the mouse pointer is inside the area occupied by the desktop on screen.
-                Rectangle adjusted = desktopPolicy.GetMouseMoveRectangle();
+                var adjusted = desktopPolicy.GetMouseMoveRectangle();
 				if (adjusted.Contains(PointToClient(MousePosition)))
 					UpdateRemotePointer();
 			}
@@ -695,7 +674,7 @@ namespace VncSharp
 			// HACK: this check insures that while in DesignMode, no messages are sent to a VNC Host
 			// (i.e., there won't be one--NullReferenceException)			
             if (!DesignMode && IsConnected) {
-				Point current = PointToClient(MousePosition);
+				var current = PointToClient(MousePosition);
 				byte mask = 0;
 
 				// mouse was scrolled forward
@@ -715,7 +694,7 @@ namespace VncSharp
 			// HACK: this check insures that while in DesignMode, no messages are sent to a VNC Host
 			// (i.e., there won't be one--NullReferenceException)			
 			if (!DesignMode && IsConnected) {
-				Point current = PointToClient(MousePosition);
+				var current = PointToClient(MousePosition);
 				byte mask = 0;
 
 				if (Control.MouseButtons == MouseButtons.Left)   mask += 1;
@@ -723,7 +702,7 @@ namespace VncSharp
 				if (Control.MouseButtons == MouseButtons.Right)  mask += 4;
 
                 // If click not client area -black screen area-, it should ignore current
-                Rectangle adjusted = desktopPolicy.GetMouseMoveRectangle();
+                var adjusted = desktopPolicy.GetMouseMoveRectangle();
                 if (adjusted.Contains(current))
                     vnc.WritePointerEvent(mask, desktopPolicy.UpdateRemotePointer(current));
             }
@@ -754,7 +733,7 @@ namespace VncSharp
 		private void ManageKeyDownAndKeyUp(KeyEventArgs e, bool isDown)
 		{
 		    UInt32 keyChar;
-		    bool isProcessed = true;
+		    var isProcessed = true;
 		    switch(e.KeyCode)
 		    {
 			    case Keys.Tab:				keyChar = 0x0000FF09;		break;
@@ -831,7 +810,7 @@ namespace VncSharp
 		    }
 		    else if(e.KeyChar == '\b')
 		    {
-			    UInt32 keyChar = ((UInt32)'\b') | 0x0000FF00;
+			    var keyChar = ((UInt32)'\b') | 0x0000FF00;
 			    vnc.WriteKeyboardEvent(keyChar, true);
 			    vnc.WriteKeyboardEvent(keyChar, false);
 		    }
@@ -915,13 +894,13 @@ namespace VncSharp
 		{
 			System.Diagnostics.Debug.Assert(keys != null, "keys[] cannot be null.");
 			
-			for(int i = 0; i < keys.Length; ++i) {
+			for(var i = 0; i < keys.Length; ++i) {
 				vnc.WriteKeyboardEvent(keys[i], true);
 			}
 			
 			if (release) {
 				// Walk the keys array backwards in order to release keys in correct order
-				for(int i = keys.Length - 1; i >= 0; --i) {
+				for(var i = keys.Length - 1; i >= 0; --i) {
 					vnc.WriteKeyboardEvent(keys[i], false);
 				}
 			}

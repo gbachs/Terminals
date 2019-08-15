@@ -135,14 +135,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public TcpOptionNumber OptionType
 		{
-			get
-			{
-				return m_number;
-			}
-			set
-			{
-				m_number = value;
-			}
+			get => m_number;
+			set => m_number = value;
 		}
 		
 		
@@ -152,14 +146,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public int Length
 		{
-			get
-			{
-				return m_length;
-			}
-			set
-			{
-				m_length = value;
-			}
+			get => m_length;
+			set => m_length = value;
 		}
 		
 		
@@ -169,14 +157,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public byte[] Data
 		{
-			get
-			{
-				return m_data;
-			}
-			set
-			{
-				m_data = value;
-			}
+			get => m_data;
+			set => m_data = value;
 		}
 		
 		
@@ -319,14 +301,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public ushort SourcePort
 		{
-			get
-			{
-				return m_sourcePort;
-			}
-			set
-			{
-				m_sourcePort = value;
-			}
+			get => m_sourcePort;
+			set => m_sourcePort = value;
 		}
 		
 		
@@ -335,14 +311,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public ushort DestinationPort
 		{
-			get
-			{
-				return m_destPort;
-			}
-			set
-			{
-				m_destPort = value;
-			}
+			get => m_destPort;
+			set => m_destPort = value;
 		}
 		
 		
@@ -353,14 +323,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public uint SequenceNumber
 		{
-			get
-			{
-				return m_sequenceNumber;
-			}
-			set
-			{
-				m_sequenceNumber = value;
-			}
+			get => m_sequenceNumber;
+			set => m_sequenceNumber = value;
 		}
 		
 		
@@ -371,14 +335,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public uint AcknowledgmentNumber
 		{
-			get
-			{
-				return m_acknowledgmentNumber;
-			}
-			set
-			{
-				m_acknowledgmentNumber = value;
-			}
+			get => m_acknowledgmentNumber;
+			set => m_acknowledgmentNumber = value;
 		}
 		
 		
@@ -387,14 +345,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public ushort Offset
 		{
-			get
-			{
-				return m_offset;
-			}
-			set
-			{
-				m_offset = value;
-			}
+			get => m_offset;
+			set => m_offset = value;
 		}
 		
 		
@@ -403,14 +355,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public byte Flags
 		{
-			get
-			{
-				return m_flags;
-			}
-			set
-			{
-				m_flags = value;
-			}
+			get => m_flags;
+			set => m_flags = value;
 		}
 		
 		
@@ -421,14 +367,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public ushort Window
 		{
-			get
-			{
-				return m_window;
-			}
-			set
-			{
-				m_window = value;
-			}
+			get => m_window;
+			set => m_window = value;
 		}
 		
 		
@@ -443,14 +383,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public ushort Checksum
 		{
-			get
-			{
-				return m_checksum;
-			}
-			set
-			{
-				m_checksum = value;
-			}
+			get => m_checksum;
+			set => m_checksum = value;
 		}
 		
 		
@@ -463,14 +397,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public ushort UrgentPointer
 		{
-			get
-			{
-				return m_urgentPointer;
-			}
-			set
-			{
-				m_urgentPointer = value;
-			}
+			get => m_urgentPointer;
+			set => m_urgentPointer = value;
 		}
 		
 		
@@ -481,14 +409,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public TcpOption[] Options
 		{
-			get
-			{
-				return m_options;
-			}
-			set
-			{
-				m_options = value;
-			}
+			get => m_options;
+			set => m_options = value;
 		}
 		
 		
@@ -499,14 +421,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public byte[] Padding
 		{
-			get
-			{
-				return m_padding;
-			}
-			set
-			{
-				m_padding = value;
-			}
+			get => m_padding;
+			set => m_padding = value;
 		}
 		
 		
@@ -515,14 +431,8 @@ namespace Metro.TransportLayer.Tcp
 		/// </summary>
 		public byte[] Data
 		{
-			get
-			{
-				return m_data;
-			}
-			set
-			{
-				m_data = value;
-			}
+			get => m_data;
+			set => m_data = value;
 		}
 		
 		

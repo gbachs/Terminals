@@ -142,28 +142,15 @@ namespace Metro.Scanning
 		/// <summary>
 		///		Whether or not a scan is currently running.
 		/// </summary>
-		public bool Running
-		{
-			get
-			{
-				return m_working;
-			}
-		}
-		
-		
+		public bool Running => m_working;
+
 		/// <summary>
 		///		The time out time.
 		/// </summary>
 		public int TimeOutInterval
 		{
-			get
-			{
-				return (int)m_timeoutTimer.Interval;
-			}
-			set
-			{
-				m_timeoutTimer.Interval = (double)value;
-			}
+			get => (int)m_timeoutTimer.Interval;
+			set => m_timeoutTimer.Interval = (double)value;
 		}
 		
 		
@@ -175,14 +162,8 @@ namespace Metro.Scanning
 		/// </summary>
 		public int SendInterval
 		{
-			get
-			{
-				return m_sendInterval;
-			}
-			set
-			{
-				m_sendInterval = value;
-			}
+			get => m_sendInterval;
+			set => m_sendInterval = value;
 		}
 		
 		
@@ -191,14 +172,8 @@ namespace Metro.Scanning
 		/// </summary>
 		public bool IncrementLocalPorts
 		{
-			get
-			{
-				return m_incPorts;
-			}
-			set
-			{
-				m_incPorts = value;
-			}
+			get => m_incPorts;
+			set => m_incPorts = value;
 		}
 		
 		
@@ -207,29 +182,16 @@ namespace Metro.Scanning
 		/// </summary>
 		public bool FragmentPackets
 		{
-			get
-			{
-				return m_fragment;
-			}
-			set
-			{
-				m_fragment = value;
-			}
+			get => m_fragment;
+			set => m_fragment = value;
 		}
 		
 		
 		/// <summary>
 		///		Whether or not the class has been disposed.
 		/// </summary>
-		public bool Disposed
-		{
-			get
-			{
-				return m_disposed;
-			}
-		}
-		
-		
+		public bool Disposed => m_disposed;
+
 		#endregion
 
 		#region private Methods

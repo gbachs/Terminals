@@ -1,5 +1,5 @@
 /*
-	Copyright © 2002, The KPD-Team
+	Copyright ï¿½ 2002, The KPD-Team
 	All rights reserved.
 	http://www.mentalis.org/
 
@@ -40,12 +40,12 @@ namespace Terminals.Network.WhoIs
 	/// </summary>
 	public static class WhoisResolver
 	{
-		public static String Whois(String domain, String host)
+		public static string Whois(string domain, string host)
 		{
 			if (domain == null)
 				return "No Domain Specified";
 
-			String ret = String.Empty;
+			var ret = string.Empty;
 			Socket s = null;
 			try
 			{
@@ -54,8 +54,8 @@ namespace Terminals.Network.WhoIs
 				s.Connect(new IPEndPoint(Dns.GetHostEntry(host).AddressList[0], 43));
 				s.Send(Encoding.ASCII.GetBytes(domain + Environment.NewLine));
 
-				Byte[] buffer = new Byte[1024];
-				Int32 recv = s.Receive(buffer);
+				var buffer = new byte[1024];
+				var recv = s.Receive(buffer);
 				while (recv > 0)
 				{
 					ret += Encoding.ASCII.GetString(buffer, 0, recv);
@@ -71,8 +71,7 @@ namespace Terminals.Network.WhoIs
 			}
 			finally
 			{
-				if (s != null)
-					s.Close();
+				s?.Close();
 			}
 
 			return ret;
@@ -86,14 +85,14 @@ namespace Terminals.Network.WhoIs
 		/// <exception cref="ArgumentNullException"><c>domain</c> is null.</exception>
 		/// <exception cref="ArgumentException"><c>domain</c> is invalid.</exception>
 		/// <exception cref="SocketException">A network error occured.</exception>
-		public static String Whois(String domain)
+		public static string Whois(string domain)
 		{
-			Int32 ccStart = domain.LastIndexOf(".");
+			var ccStart = domain.LastIndexOf(".");
 			if (ccStart < 0 || ccStart == domain.Length)
 				throw new ArgumentException();
 
-			String cc = domain.Substring(ccStart + 1);
-			String host = (cc + ".whois-servers.net");
+			var cc = domain.Substring(ccStart + 1);
+			var host = (cc + ".whois-servers.net");
 			return Whois(domain, host);
 		}
 	}

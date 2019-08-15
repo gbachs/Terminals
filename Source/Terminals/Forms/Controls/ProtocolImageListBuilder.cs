@@ -23,7 +23,7 @@ namespace Terminals.Forms.Controls
             // dont clear the image list, it may be is already populated with extra icons
             var icons = imageList.Images;
 
-            foreach (KeyValuePair<string, Image> definition in provideIcons())
+            foreach (var definition in provideIcons())
             {
                 ReplaceIcon(icons, definition);
             }

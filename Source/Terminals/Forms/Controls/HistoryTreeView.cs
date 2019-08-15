@@ -67,7 +67,7 @@ namespace Terminals.Forms.Controls
 
         private void AddNewHistoryGroupNode(string name, string imageKey)
         {
-            IGroup virtualGroup = this.persistence.Factory.CreateGroup(name);
+            var virtualGroup = this.persistence.Factory.CreateGroup(name);
             var groupNode = new GroupTreeNode(virtualGroup, imageKey);
             this.Nodes.Add(groupNode);
         }
@@ -92,7 +92,7 @@ namespace Terminals.Forms.Controls
         private void RefreshAllExpanded()
         {
             var expandedNodes = this.Nodes.Cast<GroupTreeNode>().Where(groupNode => !groupNode.NotLoadedYet);
-            foreach (GroupTreeNode groupNode in expandedNodes)
+            foreach (var groupNode in expandedNodes)
             {
                 RefreshGroupNodes(groupNode);
             }
@@ -102,7 +102,7 @@ namespace Terminals.Forms.Controls
 
         private void InsertRecordedNode(HistoryRecordedEventArgs args)
         {
-            GroupTreeNode todayGroup = this.Nodes[HistoryIntervals.TODAY] as GroupTreeNode;
+            var todayGroup = this.Nodes[HistoryIntervals.TODAY] as GroupTreeNode;
             if (todayGroup.NotLoadedYet)
                 return;
 
@@ -112,7 +112,7 @@ namespace Terminals.Forms.Controls
 
         private void InsertRecordedNode(GroupTreeNode todayGroup, HistoryRecordedEventArgs args)
         {
-            IFavorite favorite = args.Favorite;
+            var favorite = args.Favorite;
             if (favorite != null) // shouldnt happen, because the favorite was actualy processed
             {
                 var nodes = new TreeListNodes(todayGroup.Nodes, this.toolTipBuilder, this.favoriteIcons);
@@ -122,7 +122,7 @@ namespace Terminals.Forms.Controls
 
         private void OnTreeViewExpand(object sender, TreeViewEventArgs e)
         {
-            GroupTreeNode groupNode = e.Node as GroupTreeNode;
+            var groupNode = e.Node as GroupTreeNode;
             ExpandDateGroupNode(groupNode);
         }
 
@@ -146,9 +146,9 @@ namespace Terminals.Forms.Controls
         private void CreateGroupNodes(GroupTreeNode groupNode,
             SortableList<IFavorite> groupFavorites)
         {
-            foreach (IFavorite favorite in groupFavorites)
+            foreach (var favorite in groupFavorites)
             {
-                string toolTip = this.toolTipBuilder.BuildTooTip(favorite);
+                var toolTip = this.toolTipBuilder.BuildTooTip(favorite);
                 var favoriteNode = new FavoriteTreeNode(this.favoriteIcons, favorite, toolTip);
                 groupNode.Nodes.Add(favoriteNode);
             }

@@ -16,21 +16,9 @@ namespace Terminals.Forms.Controls
 
         private readonly FavoriteIcons favoriteIcons;
 
-        internal IEnumerable<FavoriteTreeNode> FavoriteNodes
-        {
-            get
-            {
-                return FilterFavoriteNodes(this.nodes);
-            }
-        }
+        internal IEnumerable<FavoriteTreeNode> FavoriteNodes => FilterFavoriteNodes(this.nodes);
 
-        internal IEnumerable<GroupTreeNode> GroupNodes
-        {
-            get
-            {
-                return FilterGroupNodes(this.nodes);
-            }
-        }
+        internal IEnumerable<GroupTreeNode> GroupNodes => FilterGroupNodes(this.nodes);
 
         public TreeListNodes(TreeNodeCollection nodes, ToolTipBuilder toolTipBuilder, FavoriteIcons favoriteIcons)
         {
@@ -66,7 +54,7 @@ namespace Terminals.Forms.Controls
             var candidates = FindCheckedFavorites(nodes);
             favorites.AddRange(candidates);
 
-            foreach (GroupTreeNode groupNode in FilterGroupNodes(nodes))
+            foreach (var groupNode in FilterGroupNodes(nodes))
             {
                 // dont expect only Favorite nodes, because of group nodes on the same level
                 groupNode.ExpandCheckedGroupNode();
@@ -101,7 +89,7 @@ namespace Terminals.Forms.Controls
 
         internal void InsertGroupNodes(IEnumerable<IGroup> groups)
         {
-            foreach (IGroup group in groups)
+            foreach (var group in groups)
             {
                 this.InsertGroupNode(group);
             }
@@ -122,7 +110,7 @@ namespace Terminals.Forms.Controls
 
         internal void InsertFavorites(IEnumerable<IFavorite> favorites)
         {
-            foreach (IFavorite favorite in favorites)
+            foreach (var favorite in favorites)
             {
                 this.InsertFavorite(favorite);
             }
@@ -130,13 +118,13 @@ namespace Terminals.Forms.Controls
 
         internal void InsertFavorite(IFavorite favorite)
         {
-            int insertIndex = this.FindFavoriteNodeInsertIndex(favorite);
+            var insertIndex = this.FindFavoriteNodeInsertIndex(favorite);
             this.AddFavoriteNode(favorite, insertIndex);
         }
 
         internal void AddFavoriteNodes(IEnumerable<IFavorite> favorites)
         {
-            foreach (IFavorite favorite in favorites)
+            foreach (var favorite in favorites)
             {
                 this.AddFavoriteNode(favorite);
             }
@@ -144,7 +132,7 @@ namespace Terminals.Forms.Controls
 
         private void AddFavoriteNode(IFavorite favorite, int index = -1)
         {
-            string toolTip = this.toolTipBuilder.BuildTooTip(favorite);
+            var toolTip = this.toolTipBuilder.BuildTooTip(favorite);
             var favoriteTreeNode = new FavoriteTreeNode(this.favoriteIcons, favorite, toolTip);
             this.InsertNodePreservingOrder(index, favoriteTreeNode);
         }
@@ -193,7 +181,7 @@ namespace Terminals.Forms.Controls
         /// </returns>
         internal int FindFavoriteNodeInsertIndex(IFavorite favorite)
         {
-            for (int index = 0; index < nodes.Count; index++)
+            for (var index = 0; index < nodes.Count; index++)
             {
                 var comparedNode = nodes[index] as FavoriteTreeNode;
                 if (comparedNode != null && comparedNode.CompareByDefaultFavoriteSorting(favorite) > 0)

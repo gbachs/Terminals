@@ -30,7 +30,7 @@
     </UpgradeBackupLocation>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <TargetZone>LocalIntranet</TargetZone>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <PublishUrl>publish\</PublishUrl>
@@ -634,9 +634,6 @@
     <Compile Include="Forms\OptionPanels\FavoritesOptionPanel.Designer.cs">
       <DependentUpon>FavoritesOptionPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\OptionPanels\FlickrOptionPanel.Designer.cs">
-      <DependentUpon>FlickrOptionPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\OptionPanels\InterfaceOptionPanel.Designer.cs">
       <DependentUpon>InterfaceOptionPanel.cs</DependentUpon>
     </Compile>
@@ -738,9 +735,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Forms\OptionPanels\FavoritesOptionPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\OptionPanels\FlickrOptionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Forms\OptionPanels\InterfaceOptionPanel.cs">
@@ -973,12 +967,6 @@
     <Compile Include="Forms\OrganizeGroupsForm.Designer.cs">
       <DependentUpon>OrganizeGroupsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\OrganizeShortcuts.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\OrganizeShortcuts.Designer.cs">
-      <DependentUpon>OrganizeShortcuts.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\AboutForm.resx">
@@ -1125,10 +1113,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>OrganizeGroupsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\OrganizeShortcuts.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>OrganizeShortcuts.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
@@ -1191,7 +1175,6 @@
     </Compile>
     <Compile Include="Wizard\MMC\MMCFile.cs" />
     <Compile Include="Wizard\PasswordStrength.cs" />
-    <Compile Include="Wizard\SpecialCommandsWizard.cs" />
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>

@@ -88,8 +88,7 @@ namespace Terminals.Configuration
 
         private void FireConfigurationChanged(ConfigurationChangedEventArgs args)
         {
-            if (this.ConfigurationChanged != null)
-                this.ConfigurationChanged(args);
+            this.ConfigurationChanged?.Invoke(args);
         }
 
         /// <summary>

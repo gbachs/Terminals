@@ -75,14 +75,8 @@ namespace Metro
 		/// </summary>
 		public int Index
 		{
-			get
-			{
-				return m_index;
-			}
-			set
-			{
-				m_index = value;
-			}
+			get => m_index;
+			set => m_index = value;
 		}
 		
 		
@@ -91,14 +85,8 @@ namespace Metro
 		/// </summary>
 		public string AdapterID
 		{
-			get
-			{
-				return m_adapterID;
-			}
-			set
-			{
-				m_adapterID = value;
-			}
+			get => m_adapterID;
+			set => m_adapterID = value;
 		}
 		
 		
@@ -107,14 +95,8 @@ namespace Metro
 		/// </summary>
 		public string AdapterName
 		{
-			get
-			{
-				return m_adapterName;
-			}
-			set
-			{
-				m_adapterName = value;
-			}
+			get => m_adapterName;
+			set => m_adapterName = value;
 		}
 		
 		
@@ -123,14 +105,8 @@ namespace Metro
 		/// </summary>
 		public MACAddress MediaAccessControlAddress
 		{
-			get
-			{
-				return m_macAddress;
-			}
-			set
-			{
-				m_macAddress = value;
-			}
+			get => m_macAddress;
+			set => m_macAddress = value;
 		}
 		
 		
@@ -139,14 +115,8 @@ namespace Metro
 		/// </summary>
 		public NetworkInterface[] Interfaces
 		{
-			get
-			{
-				return m_interfaces;
-			}
-			set
-			{
-				m_interfaces = value;
-			}
+			get => m_interfaces;
+			set => m_interfaces = value;
 		}
 		
 		
@@ -509,74 +479,32 @@ namespace Metro
 		/// <summary>
 		///		Returns the device handle.
 		/// </summary>
-		public IntPtr DeviceHandle
-		{
-			get
-			{
-				return m_hDevice;
-			}
-		}
-		
-		
+		public IntPtr DeviceHandle => m_hDevice;
+
 		/// <summary>
 		///		Network adapter list.
 		/// </summary>
-		public NetworkAdapter[] Adapters
-		{
-			get
-			{	
-				return m_adapters;
-			}
-		}
-		
+		public NetworkAdapter[] Adapters => m_adapters;
 
 		/// <summary>
 		///		Whether or not the driver has been successfuly started.
 		/// </summary>
-		public bool DriverStarted
-		{
-			get
-			{
-				return m_hDevice.ToInt32() > 0;
-			}
-		}
-
+		public bool DriverStarted => m_hDevice.ToInt32() > 0;
 
 		/// <summary>
 		///		Whether or not the driver has been successfuly bound to an adapter.
 		/// </summary>
-		public bool DriverBound
-		{
-			get
-			{
-				return m_boundAdapter != null;
-			}
-		}
-
+		public bool DriverBound => m_boundAdapter != null;
 
 		/// <summary>
 		///		The adapter which has been bound to, if any.
 		/// </summary>
-		public NetworkAdapter BoundAdapter
-		{
-			get
-			{
-				return m_boundAdapter;
-			}
-		}
-		
-		
+		public NetworkAdapter BoundAdapter => m_boundAdapter;
+
 		/// <summary>
 		///		Whether or not the class has been disposed.
 		/// </summary>
-		public bool Disposed
-		{
-			get
-			{
-				return m_disposed;
-			}
-		}
-
+		public bool Disposed => m_disposed;
 
 		#endregion
 		

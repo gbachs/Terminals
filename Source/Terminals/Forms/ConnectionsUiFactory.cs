@@ -59,7 +59,7 @@ namespace Terminals.Forms
             string openErrorMessage, Action<TControl> executeExtra)
             where TControl : UserControl
         {
-            string title = Program.Resources.GetString(titleResourceKey);
+            var title = Program.Resources.GetString(titleResourceKey);
             var terminalTabPage = new TerminalTabControlItem(title);
             try
             {
@@ -117,7 +117,7 @@ namespace Terminals.Forms
 
         private void ConnectToAll(ConnectionDefinition connectionDefinition)
         {
-            foreach (IFavorite favorite in connectionDefinition.Favorites)
+            foreach (var favorite in connectionDefinition.Favorites)
             {
                 this.Connect(favorite, connectionDefinition);
             }
@@ -125,7 +125,7 @@ namespace Terminals.Forms
 
         private void Connect(IFavorite favorite, ConnectionDefinition definition)
         {
-            IFavorite configured = GetFavoriteUpdatedCopy(favorite, definition);
+            var configured = GetFavoriteUpdatedCopy(favorite, definition);
             this.persistence.ConnectionHistory.RecordHistoryItem(favorite);
             this.mainForm.SendNativeMessageToFocus();
             this.CreateTerminalTab(favorite, configured);
@@ -133,7 +133,7 @@ namespace Terminals.Forms
 
         private IFavorite GetFavoriteUpdatedCopy(IFavorite favorite, ConnectionDefinition definition)
         {
-            IFavorite favoriteCopy = favorite.Copy();
+            var favoriteCopy = favorite.Copy();
             UpdateForceConsole(favoriteCopy, definition);
             
             if (definition.ForceNewWindow.HasValue)
@@ -158,17 +158,17 @@ namespace Terminals.Forms
         {
             ExternalLinks.CallExecuteBeforeConnected(this.settings);
             ExternalLinks.CallExecuteBeforeConnected(configured.ExecuteBeforeConnect);
-            TerminalTabControlItem terminalTabPage = CreateTerminalTabPageByFavoriteName(configured);
+            var terminalTabPage = CreateTerminalTabPageByFavoriteName(configured);
             this.TryConnectTabPage(origin, configured, terminalTabPage);
         }
 
         private TerminalTabControlItem CreateTerminalTabPageByFavoriteName(IFavorite favorite)
         {
-            String terminalTabTitle = favorite.Name;
+            var terminalTabTitle = favorite.Name;
             if (settings.ShowUserNameInTitle)
             {
                 var security = this.guardedCredentialFactory.CreateCredential(favorite.Security);
-                string title = HelperFunctions.UserDisplayName(security.Domain, security.UserName);
+                var title = HelperFunctions.UserDisplayName(security.Domain, security.UserName);
                 terminalTabTitle += String.Format(" ({0})", title);
             }
 
@@ -181,10 +181,10 @@ namespace Terminals.Forms
             {
                 this.mainForm.AssignEventsToConnectionTab(terminalTabPage);
                 var toolTipBuilder = new ToolTipBuilder(this.persistence.Security);
-                string toolTipText = toolTipBuilder.BuildTooTip(configured);
+                var toolTipText = toolTipBuilder.BuildTooTip(configured);
                 this.ConfigureTabPage(terminalTabPage, toolTipText, true);
 
-                Connection conn = CreateConnection(origin, configured, terminalTabPage);
+                var conn = CreateConnection(origin, configured, terminalTabPage);
                 this.UpdateConnectionTabPageByConnectionState(configured, terminalTabPage, conn);
 
                 if (conn.Connected && configured.NewWindow)
@@ -201,7 +201,7 @@ namespace Terminals.Forms
 
         private Connection CreateConnection(IFavorite origin, IFavorite configured, TerminalTabControlItem terminalTabPage)
         {
-            Connection conn = this.connectionManager.CreateConnection(configured);
+            var conn = this.connectionManager.CreateConnection(configured);
             conn.Favorite = configured;
             conn.OriginFavorite = origin;
 
@@ -242,7 +242,7 @@ namespace Terminals.Forms
             }
             else
             {
-                String msg = Program.Resources.GetString("SorryTerminalswasunabletoconnecttotheremotemachineTryagainorcheckthelogformoreinformation");
+                var msg = Program.Resources.GetString("SorryTerminalswasunabletoconnecttotheremotemachineTryagainorcheckthelogformoreinformation");
                 if (!string.IsNullOrEmpty(conn.LastError))
                     msg = msg + "\r\n\r\nDetails:\r\n" + conn.LastError;
                 MessageBox.Show(msg);
@@ -265,7 +265,7 @@ namespace Terminals.Forms
         internal void CreateFavorite(Action<TerminalFormDialogResult> callback,
             string favoriteName = null, GroupTreeNode groupNode = null)
         {
-            using (NewTerminalForm createForm = this.CreateFavoriteForm(favoriteName))
+            using (var createForm = this.CreateFavoriteForm(favoriteName))
             {
                 if (groupNode != null)
                     createForm.AssingSelectedGroup(groupNode.Group);
@@ -280,7 +280,7 @@ namespace Terminals.Forms
         {
             if (dialogResult != TerminalFormDialogResult.Cancel)
             {
-                string newFavoriteName = createForm.Favorite.Name;
+                var newFavoriteName = createForm.Favorite.Name;
                 this.mainForm.FocusFavoriteInQuickConnectCombobox(newFavoriteName);
             }
 
@@ -289,7 +289,7 @@ namespace Terminals.Forms
 
         internal void EditFavorite(IFavorite favorite, Action<TerminalFormDialogResult> callback)
         {
-            using (NewTerminalForm editForm = this.CreateFavoriteForm(favorite))
+            using (var editForm = this.CreateFavoriteForm(favorite))
             {
                 this.ShowFavoriteForm(editForm, callback);
             }
@@ -297,7 +297,7 @@ namespace Terminals.Forms
 
         private void ShowFavoriteForm(NewTerminalForm editForm, Action<TerminalFormDialogResult> callback)
         {
-            TerminalFormDialogResult dialogResult = editForm.ShowDialog();
+            var dialogResult = editForm.ShowDialog();
 
             if (dialogResult == TerminalFormDialogResult.SaveAndConnect)
                 this.Connect(editForm.Favorite);

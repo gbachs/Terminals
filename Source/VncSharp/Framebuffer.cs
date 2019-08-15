@@ -64,159 +64,103 @@ namespace VncSharp
 		/// An indexer to allow access to the internal pixel buffer.
 		/// </summary>
 		public int this[int index] {
-			get {
-				return pixels[index];
-			}
-			set {
-				pixels[index] = value;				
-			}
+			get => pixels[index];
+			set => pixels[index] = value;
 		}
 
 		/// <summary>
 		/// The Width of the Framebuffer, measured in Pixels.
 		/// </summary>
-		public int Width {
-			get {
-				return width;
-			}
-		}
+		public int Width => width;
 
 		/// <summary>
 		/// The Height of the Framebuffer, measured in Pixels.
 		/// </summary>
-		public int Height {
-			get {
-				return height;
-			}
-		}
+		public int Height => height;
 
 		/// <summary>
 		/// Gets a Rectangle object constructed out of the Width and Height for the Framebuffer.  Used as a convenience in other classes.
 		/// </summary>
-		public Rectangle Rectangle {
-			get {
-				return new Rectangle(0, 0, width, height);
-			}
-		}
+		public Rectangle Rectangle => new Rectangle(0, 0, width, height);
 
 		/// <summary>
 		/// The number of Bits Per Pixel for the Framebuffer--one of 8, 24, or 32.
 		/// </summary>
 		public int BitsPerPixel {
-			get {
-				return bpp;
-			}
-			set {
-				bpp = value;
-			}
+			get => bpp;
+			set => bpp = value;
 		}
 
 		/// <summary>
 		/// The Colour Depth of the Framebuffer.
 		/// </summary>
 		public int Depth {
-			get {
-				return depth;
-			}
-			set {
-				depth = value;
-			}
+			get => depth;
+			set => depth = value;
 		}
 
 		/// <summary>
 		/// Indicates whether the remote host uses Big- or Little-Endian order when sending multi-byte values.
 		/// </summary>
 		public bool BigEndian {
-			get {
-				return bigEndian;
-			}
-			set {
-				bigEndian = value;
-			}
+			get => bigEndian;
+			set => bigEndian = value;
 		}
 
 		/// <summary>
 		/// Indicates whether the remote host supports True Colour.
 		/// </summary>
 		public bool TrueColour {
-			get {
-				return trueColour;
-			}
-			set {
-				trueColour = value;
-			}
+			get => trueColour;
+			set => trueColour = value;
 		}
 
 		/// <summary>
 		/// The maximum value for Red in a pixel's colour value.
 		/// </summary>
 		public int RedMax {
-			get {
-				return redMax;
-			}
-			set {
-				redMax = value;
-			}
+			get => redMax;
+			set => redMax = value;
 		}
 
 		/// <summary>
 		/// The maximum value for Green in a pixel's colour value.
 		/// </summary>
 		public int GreenMax {
-			get {
-				return greenMax;
-			}
-			set {
-				greenMax = value;
-			}
+			get => greenMax;
+			set => greenMax = value;
 		}
 
 		/// <summary>
 		/// The maximum value for Blue in a pixel's colour value.
 		/// </summary>
 		public int BlueMax {
-			get {
-				return blueMax;
-			}
-			set {
-				blueMax = value;
-			}
+			get => blueMax;
+			set => blueMax = value;
 		}
 
 		/// <summary>
 		/// The number of bits to shift pixel values in order to obtain Red values.
 		/// </summary>
 		public int RedShift {
-			get {
-				return redShift;
-			}
-			set {
-				redShift = value;
-			}
+			get => redShift;
+			set => redShift = value;
 		}
 
 		/// <summary>
 		/// The number of bits to shift pixel values in order to obtain Green values.
 		/// </summary>
 		public int GreenShift {
-			get {
-				return greenShift;
-			}
-			set {
-				greenShift = value;
-			}
+			get => greenShift;
+			set => greenShift = value;
 		}
 
 		/// <summary>
 		/// The number of bits to shift pixel values in order to obtain Blue values.
 		/// </summary>
 		public int BlueShift {
-			get {
-				return blueShift;
-			}
-			set {
-				blueShift = value;
-			}
+			get => blueShift;
+			set => blueShift = value;
 		}
 
 		/// <summary>
@@ -224,9 +168,7 @@ namespace VncSharp
 		/// </summary>
 		/// <exception cref="ArgumentNullException">Thrown if a null string is used when setting DesktopName.</exception>
 		public string DesktopName {
-			get {
-				return name;
-			}
+			get => name;
 			set {
 				if (value == null)
 					throw new ArgumentNullException("DesktopName");
@@ -240,7 +182,7 @@ namespace VncSharp
 		/// <returns>A byte array of 16 bytes containing the properties of the framebuffer in a format ready for transmission to the VNC server.</returns>
 		public byte[] ToPixelFormat()
 		{
-			byte[] b = new byte[16];
+			var b = new byte[16];
 			
 			b[0]  = (byte) bpp;
 			b[1]  = (byte) depth;
@@ -272,7 +214,7 @@ namespace VncSharp
 			if (b.Length != 16)
 				throw new ArgumentException("Length of b must be 16 bytes.");
 			
-			Framebuffer buffer = new Framebuffer(width, height);
+			var buffer = new Framebuffer(width, height);
 			
 			buffer.BitsPerPixel	= (int) b[0];
 			buffer.Depth		= (int) b[1];

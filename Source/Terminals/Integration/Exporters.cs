@@ -61,8 +61,7 @@ namespace Terminals.Integration
             if (options.ProviderFilter.Contains(ExportExtraLogicAndroidRd.PROVIDER_NAME))
                 exporter = this.providers[GetExtraAndroidProviderKey()];
 
-            if (exporter != null)
-                exporter.Export(options);
+            exporter?.Export(options);
         }
     }
 }

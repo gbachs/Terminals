@@ -30,7 +30,7 @@ namespace Terminals.Forms.Controls
 
         private string[] ParseSearchText(string searchText)
         {
-            string[] words = searchText.Split(' ');
+            var words = searchText.Split(' ');
             return words.Where(word => !String.IsNullOrEmpty(word)).ToArray();
         }
 
@@ -42,7 +42,7 @@ namespace Terminals.Forms.Controls
         private List<IFavorite> Find()
         {
             // already sorted, we dont have to sort the results once again
-            SortableList<IFavorite> all = this.favoritesSource.ToListOrderedByDefaultSorting();
+            var all = this.favoritesSource.ToListOrderedByDefaultSorting();
             return all.AsParallel()
                 .WithCancellation(this.Token)
                 .Where(Meet)

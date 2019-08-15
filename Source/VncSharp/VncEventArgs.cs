@@ -31,10 +31,6 @@ namespace VncSharp
 		/// <summary>
 		/// Gets the IDesktopUpdater object that will handling re-drawing the desktop.
 		/// </summary>
-		public IDesktopUpdater DesktopUpdater {
-			get { 
-				return updater; 
-			}
-		}
+		public IDesktopUpdater DesktopUpdater => updater;
 	}
 }

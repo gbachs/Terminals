@@ -21,32 +21,20 @@ namespace Terminals.Forms.Controls
             get
             {
                 var selectedFavoriteNode = this.SelectedNode as FavoriteTreeNode;
-                if (selectedFavoriteNode != null)
-                    return selectedFavoriteNode.Favorite;
-
-                return null;
+                return selectedFavoriteNode?.Favorite;
             }
         }
 
         /// <summary>
         /// Gets currently selected tree node in case it is a group node, otherwise null.
         /// </summary>
-        internal GroupTreeNode SelectedGroupNode
-        {
-            get
-            {
-                return this.SelectedNode as GroupTreeNode;
-            }
-        }
+        internal GroupTreeNode SelectedGroupNode => this.SelectedNode as GroupTreeNode;
 
         private IGroup SelectedGroup
         {
             get
             {
-                if (this.SelectedGroupNode != null)
-                    return this.SelectedGroupNode.Group;
-
-                return null;
+                return this.SelectedGroupNode?.Group;
             }
         }
 
@@ -97,7 +85,7 @@ namespace Terminals.Forms.Controls
             if (favorite == null)
                 return;
 
-            TreeNode nodeToRestore = this.FindNodeToRestore(groupNode, favorite);
+            var nodeToRestore = this.FindNodeToRestore(groupNode, favorite);
             if (nodeToRestore != null)
                 this.SelectedNode = nodeToRestore;
         }
@@ -128,13 +116,13 @@ namespace Terminals.Forms.Controls
             if (groupNode == null)
                 return null;
 
-            List<FavoriteTreeNode> favoriteNodes = TreeListNodes.FilterFavoriteNodes(groupNode.Nodes);
+            var favoriteNodes = TreeListNodes.FilterFavoriteNodes(groupNode.Nodes);
             return favoriteNodes.FirstOrDefault(favoriteNode => favoriteNode.Favorite.StoreIdEquals(favorite));
         }
 
         private void FavsTree_DragEnter(object sender, DragEventArgs e)
         {
-            TreeViewDragDrop dragDrop = this.CreateTreeViewDragDrop(e);
+            var dragDrop = this.CreateTreeViewDragDrop(e);
             e.Effect = dragDrop.Effect;
         }
 
@@ -149,13 +137,13 @@ namespace Terminals.Forms.Controls
             var targetPoint = this.PointToClient(new Point(e.X, e.Y));
             this.SelectedNode = this.GetNodeAt(targetPoint);
             // the selected node will now play the role of drop target 
-            TreeViewDragDrop dragDrop = this.CreateTreeViewDragDrop(e);
+            var dragDrop = this.CreateTreeViewDragDrop(e);
             e.Effect = dragDrop.Effect;
         }
 
         private void FavsTree_DragDrop(object sender, DragEventArgs e)
         {
-            TreeViewDragDrop dragDrop = this.CreateTreeViewDragDrop(e);
+            var dragDrop = this.CreateTreeViewDragDrop(e);
             dragDrop.Drop(this.FindForm());
         }
 

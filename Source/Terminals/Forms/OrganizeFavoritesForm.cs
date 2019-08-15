@@ -27,10 +27,7 @@ namespace Terminals
 
         private readonly FavoriteIcons favoriteIcons;
 
-        private IFavorites PersistedFavorites
-        {
-            get { return this.persistence.Favorites; }
-        }
+        private IFavorites PersistedFavorites => this.persistence.Favorites;
 
         internal OrganizeFavoritesForm(IPersistence persistence, ConnectionManager connectionManager, FavoriteIcons favoriteIcons)
         {
@@ -60,21 +57,21 @@ namespace Terminals
         {
             this.dataGridFavorites.AutoGenerateColumns = false; // because of designer
             this.bsFavorites.DataSource = ConvertFavoritesToViewModel(PersistedFavorites.ToListOrderedByDefaultSorting());
-            string sortingProperty = new FavoriteSorting().GetDefaultSortPropertyName();
-            DataGridViewColumn sortedColumn = this.dataGridFavorites.FindColumnByPropertyName(sortingProperty);
+            var sortingProperty = new FavoriteSorting().GetDefaultSortPropertyName();
+            var sortedColumn = this.dataGridFavorites.FindColumnByPropertyName(sortingProperty);
             sortedColumn.HeaderCell.SortGlyphDirection = SortOrder.Ascending;
             this.dataGridFavorites.DataSource = this.bsFavorites;
         }
 
         private SortableList<FavoriteViewModel> ConvertFavoritesToViewModel(SortableList<IFavorite> source)
         {
-            IEnumerable<FavoriteViewModel> sortedFavorites = source.Select(favorite => new FavoriteViewModel(favorite, this.persistence));
+            var sortedFavorites = source.Select(favorite => new FavoriteViewModel(favorite, this.persistence));
             return new SortableList<FavoriteViewModel>(sortedFavorites);
         }
 
         private void UpdateCountLabels()
         {
-            Int32 selectedItems = this.dataGridFavorites.SelectedRows.Count;
+            var selectedItems = this.dataGridFavorites.SelectedRows.Count;
             this.lblSelectedCount.Text = String.Format("({0} selected)", selectedItems);
             this.lblConnectionCount.Text = this.bsFavorites.Count.ToString(CultureInfo.InvariantCulture);
         }
@@ -125,10 +122,10 @@ namespace Terminals
         private void DataGridFavorites_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             // cancel or nothing changed
-            bool canApply = !String.IsNullOrEmpty(this.editedFavorite.Name) && 
+            var canApply = !String.IsNullOrEmpty(this.editedFavorite.Name) && 
                             !this.editedFavorite.Name.Equals(this.editedFavoriteName, StringComparison.CurrentCultureIgnoreCase);
 
-            string newName = editedFavorite.Name;
+            var newName = editedFavorite.Name;
             // to prevent find it self as oldFavorite or to reset changes
             this.editedFavorite.Name = this.editedFavoriteName;
             if (canApply)
@@ -139,7 +136,7 @@ namespace Terminals
         {
             var renameService = new RenameService(this.PersistedFavorites);
             var updateCommand = new FavoriteRenameCommand(this.persistence, renameService);
-            bool newNameValid = updateCommand.ValidateNewName(this.editedFavorite, newName);
+            var newNameValid = updateCommand.ValidateNewName(this.editedFavorite, newName);
             if (!newNameValid)
                 return;
             updateCommand.ApplyRename(this.editedFavorite, newName);
@@ -153,12 +150,12 @@ namespace Terminals
         {
             if (ImportOpenFileDialog.ShowDialog() == DialogResult.OK)
             {
-                String[] filenames = this.ImportOpenFileDialog.FileNames;
+                var filenames = this.ImportOpenFileDialog.FileNames;
                 this.Focus();
                 this.Refresh();
                 this.Cursor = Cursors.WaitCursor;
 
-                List<FavoriteConfigurationElement> favoritesToImport = this.importers.ImportFavorites(filenames);
+                var favoritesToImport = this.importers.ImportFavorites(filenames);
                 ImportFavoritesWithManagerImport(favoritesToImport);
             }
         }
@@ -166,7 +163,7 @@ namespace Terminals
         private void ImportFavoritesWithManagerImport(List<FavoriteConfigurationElement> favoritesToImport)
         {
             var managedImport = new ImportWithDialogs(this, this.persistence, this.connectionManager);
-            bool imported = managedImport.Import(favoritesToImport);
+            var imported = managedImport.Import(favoritesToImport);
             if (imported)
                 this.UpdateFavoritesBindingSource();
         }
@@ -184,12 +181,12 @@ namespace Terminals
         /// </summary>
         private void UpdateFavoritesBindingSource(SortableList<IFavorite> newData)
         {
-            SortableList<FavoriteViewModel> data = ConvertFavoritesToViewModel(newData);
+            var data = ConvertFavoritesToViewModel(newData);
 
-            DataGridViewColumn lastSortedColumn = this.dataGridFavorites.FindLastSortedColumn();
+            var lastSortedColumn = this.dataGridFavorites.FindLastSortedColumn();
             if (lastSortedColumn != null) // keep last ordered column
             {
-                SortOrder backupGliph = lastSortedColumn.HeaderCell.SortGlyphDirection;
+                var backupGliph = lastSortedColumn.HeaderCell.SortGlyphDirection;
                 this.bsFavorites.DataSource = data.SortByProperty(lastSortedColumn.DataPropertyName, backupGliph);
                 lastSortedColumn.HeaderCell.SortGlyphDirection = backupGliph;
             }
@@ -206,10 +203,10 @@ namespace Terminals
         /// </summary>
         private void DataGridFavorites_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            DataGridViewColumn lastSortedColumn = this.dataGridFavorites.FindLastSortedColumn();
-            DataGridViewColumn column = this.dataGridFavorites.Columns[e.ColumnIndex];
+            var lastSortedColumn = this.dataGridFavorites.FindLastSortedColumn();
+            var column = this.dataGridFavorites.Columns[e.ColumnIndex];
 
-            SortOrder newSortDirection = SortableUnboundGrid.GetNewSortDirection(lastSortedColumn, column);
+            var newSortDirection = SortableUnboundGrid.GetNewSortDirection(lastSortedColumn, column);
             var data = (SortableList<FavoriteViewModel>)this.bsFavorites.DataSource;
             this.bsFavorites.DataSource = data.SortByProperty(column.DataPropertyName, newSortDirection);
             column.HeaderCell.SortGlyphDirection = newSortDirection;
@@ -232,7 +229,7 @@ namespace Terminals
 
         private void EditFavorite()
         {
-            IFavorite favorite = this.GetSelectedFavorite();
+            var favorite = this.GetSelectedFavorite();
             if (favorite != null)
                 this.connectionsUiFactory.EditFavorite(favorite, this.AfterShowTerminalForm);
         }
@@ -260,7 +257,7 @@ namespace Terminals
 
         internal static bool AskIfRealyDelete(string target)
         {
-            string messsage = string.Format("Do your realy want to delete selected {0}?", target);
+            var messsage = string.Format("Do your realy want to delete selected {0}?", target);
             return MessageBox.Show(messsage, "Terminals - Delete",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
         }
@@ -268,7 +265,7 @@ namespace Terminals
         private void PerformDelete()
         {
             this.Cursor = Cursors.WaitCursor;
-            List<IFavorite> selectedFavorites = this.GetSelectedFavorites();
+            var selectedFavorites = this.GetSelectedFavorites();
             PersistedFavorites.Delete(selectedFavorites);
             this.UpdateFavoritesBindingSource();
             this.Cursor = Cursors.Default;
@@ -290,7 +287,7 @@ namespace Terminals
 
         private void CopySelectedFavorite()
         {
-            IFavorite favorite = this.GetSelectedFavorite();
+            var favorite = this.GetSelectedFavorite();
             var copyCommand = new CopyFavoriteCommand(this.persistence);
             var copy = copyCommand.Copy(favorite);
             if (copy != null)
@@ -326,7 +323,7 @@ namespace Terminals
 
         private void ScanRegistryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<FavoriteConfigurationElement> favoritesToImport = ImportRdpRegistry.Import(this.connectionManager);
+            var favoritesToImport = ImportRdpRegistry.Import(this.connectionManager);
             ImportFavoritesWithManagerImport(favoritesToImport);
         }
 
@@ -348,7 +345,7 @@ namespace Terminals
 
         private void ConnectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IFavorite favorite = this.GetSelectedFavorite();
+            var favorite = this.GetSelectedFavorite();
             var definition = new ConnectionDefinition(new List<IFavorite>() { favorite });
             this.connectionsUiFactory.Connect(definition);
         }

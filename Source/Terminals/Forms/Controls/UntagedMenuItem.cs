@@ -20,7 +20,7 @@ namespace Terminals.Forms.Controls
         {
             get
             {
-                IFavorites favorites = this.persistence.Favorites;
+                var favorites = this.persistence.Favorites;
                 return FavoriteTreeListLoader.GetUntaggedFavorites(favorites);
             }
         }

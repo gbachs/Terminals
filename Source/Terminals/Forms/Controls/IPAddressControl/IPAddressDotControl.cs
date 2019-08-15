@@ -68,7 +68,7 @@ namespace Terminals.Forms.Controls
         {
             get
             {
-                using (Graphics g = Graphics.FromHwnd(Handle))
+                using (var g = Graphics.FromHwnd(Handle))
                 {
                     _sizeText = g.MeasureString(Text, Font, -1, _stringFormat);
                 }
@@ -85,10 +85,7 @@ namespace Terminals.Forms.Controls
 
         public bool ReadOnly
         {
-            get
-            {
-                return _readOnly;
-            }
+            get => _readOnly;
             set
             {
                 _readOnly = value;
@@ -119,7 +116,7 @@ namespace Terminals.Forms.Controls
         {
             base.OnPaint(e);
 
-            Color backColor = BackColor;
+            var backColor = BackColor;
 
             if (!_backColorChanged)
             {
@@ -127,7 +124,7 @@ namespace Terminals.Forms.Controls
                     backColor = SystemColors.Control;
             }
 
-            Color textColor = ForeColor;
+            var textColor = ForeColor;
 
             if (!Enabled)
                 textColor = SystemColors.GrayText;
@@ -137,14 +134,14 @@ namespace Terminals.Forms.Controls
                     textColor = SystemColors.WindowText;
             }
 
-            using (SolidBrush backgroundBrush = new SolidBrush(backColor))
+            using (var backgroundBrush = new SolidBrush(backColor))
             {
                 e.Graphics.FillRectangle(backgroundBrush, ClientRectangle);
             }
 
-            using (SolidBrush foreBrush = new SolidBrush(textColor))
+            using (var foreBrush = new SolidBrush(textColor))
             {
-                float x = (float) ClientRectangle.Width/2F - _sizeText.Width/2F;
+                var x = (float) ClientRectangle.Width/2F - _sizeText.Width/2F;
                 e.Graphics.DrawString(Text, Font, foreBrush,
                                       new RectangleF(x, 0F, _sizeText.Width, _sizeText.Height), _stringFormat);
             }

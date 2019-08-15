@@ -158,21 +158,9 @@ namespace TabControl
         //    return (itm != null);
         //}
 
-        public override System.Collections.ICollection AssociatedComponents
-        {
-            get
-            {
-                return Control.Items;
-            }
-        }
+        public override System.Collections.ICollection AssociatedComponents => Control.Items;
 
-        public new virtual TabControl Control
-        {
-            get
-            {
-                return base.Control as TabControl;
-            }
-        }
+        public new virtual TabControl Control => base.Control as TabControl;
 
         #endregion
 

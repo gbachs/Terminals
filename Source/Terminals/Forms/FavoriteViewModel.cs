@@ -18,24 +18,15 @@ namespace Terminals.Forms
         
         public string Name
         {
-            get { return this.Favorite.Name; }
-            set { this.Favorite.Name = value; }
+            get => this.Favorite.Name;
+            set => this.Favorite.Name = value;
         }
 
-        public string ServerName
-        {
-            get { return this.Favorite.ServerName; }
-        }
+        public string ServerName => this.Favorite.ServerName;
 
-        public string Protocol
-        {
-            get { return this.Favorite.Protocol; }
-        }
+        public string Protocol => this.Favorite.Protocol;
 
-        public string UserName
-        {
-            get { return this.guarded.UserName; }
-        }
+        public string UserName => this.guarded.UserName;
 
         public string Credential
         {
@@ -49,15 +40,9 @@ namespace Terminals.Forms
             }
         }
 
-        public string GroupNames
-        {
-            get { return this.Favorite.GroupNames; }
-        }
+        public string GroupNames => this.Favorite.GroupNames;
 
-        public string Notes
-        {
-            get { return this.Favorite.Notes; }
-        }
+        public string Notes => this.Favorite.Notes;
 
         internal FavoriteViewModel(IFavorite favorite, IPersistence persistence)
         {

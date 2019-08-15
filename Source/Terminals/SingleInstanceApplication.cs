@@ -67,8 +67,7 @@ namespace Terminals
             try
             {
                 this.startupLock.WaitOne();
-                if (this.server != null)
-                    this.server.Close();
+                this.server?.Close();
             }
             finally
             {

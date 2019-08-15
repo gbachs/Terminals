@@ -283,14 +283,8 @@ namespace Metro.NetworkLayer.ARP
 		/// </summary>
 		public MACAddress SourceMACAddress
 		{
-			get
-			{
-				return m_sourceMac;
-			}
-			set
-			{
-				m_sourceMac = value;
-			}
+			get => m_sourceMac;
+			set => m_sourceMac = value;
 		}
 		
 		
@@ -299,14 +293,8 @@ namespace Metro.NetworkLayer.ARP
 		/// </summary>
 		public MACAddress DestinationMACAddress
 				{
-			get
-			{
-				return m_destMac;
-			}
-			set
-			{
-				m_destMac = value;
-			}
+			get => m_destMac;
+			set => m_destMac = value;
 		}
 		
 		
@@ -315,14 +303,8 @@ namespace Metro.NetworkLayer.ARP
 		/// </summary>
 		public IPAddress SourceIPAddress
 		{
-			get
-			{
-				return m_sourceIP;
-			}
-			set
-			{
-				m_sourceIP = value;
-			}
+			get => m_sourceIP;
+			set => m_sourceIP = value;
 		}
 			
 		
@@ -331,14 +313,8 @@ namespace Metro.NetworkLayer.ARP
 		/// </summary>
 		public IPAddress DestinationIPAddress
 		{
-			get
-			{
-				return m_destIP;
-			}
-			set
-			{
-				m_destIP = value;
-			}
+			get => m_destIP;
+			set => m_destIP = value;
 		}
 		
 		
@@ -347,14 +323,8 @@ namespace Metro.NetworkLayer.ARP
 		/// </summary>
 		public MediaType MediaType
 		{
-			get
-			{
-				return m_hardware;
-			}
-			set
-			{
-				m_hardware = value;
-			}
+			get => m_hardware;
+			set => m_hardware = value;
 		}
 		
 		
@@ -363,14 +333,8 @@ namespace Metro.NetworkLayer.ARP
 		/// </summary>
 		public NetworkLayerProtocol Protocol
 		{
-			get
-			{
-				return m_protocol;
-			}
-			set
-			{
-				m_protocol = value;
-			}
+			get => m_protocol;
+			set => m_protocol = value;
 		}
 		
 		
@@ -379,14 +343,8 @@ namespace Metro.NetworkLayer.ARP
 		/// </summary>
 		public ArpOpcode Type
 		{
-			get
-			{
-				return m_type;
-			}
-			set
-			{
-				m_type = value;
-			}
+			get => m_type;
+			set => m_type = value;
 		}
 
 

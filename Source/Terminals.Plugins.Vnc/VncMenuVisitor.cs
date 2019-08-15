@@ -122,7 +122,7 @@ namespace Terminals.Connections
             var menuItem = sender as ToolStripMenuItem;
             if (menuItem != null)
             {
-                String key = menuItem.Text;
+                string key = menuItem.Text;
                 var vnc = this.connectionProvider.CurrentConnection as VNCConnection;
                 if (vnc != null)
                 {

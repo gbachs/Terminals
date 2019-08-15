@@ -11,7 +11,7 @@ namespace Terminals.Data
         public string EncryptedUserName { get; set; }
 
         public string EncryptedDomain { get; set; }
-                
+
         public string EncryptedPassword { get; set; }
 
         protected void UpdateFrom(CredentialBase source)

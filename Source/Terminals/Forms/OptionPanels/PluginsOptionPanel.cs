@@ -23,7 +23,7 @@ namespace Terminals.Forms.OptionPanels
 
         public void LoadSettings()
         {
-            foreach (SelectedPlugin plugin in this.pluginsSelection.LoadPlugins())
+            foreach (var plugin in this.pluginsSelection.LoadPlugins())
             {
                 this.pluginsListbox.Items.Add(plugin, plugin.Enabled);
             }
@@ -31,13 +31,13 @@ namespace Terminals.Forms.OptionPanels
 
         public void SaveSettings()
         {
-            List<SelectedPlugin> plugins = this.GetPluginsFromUI();
+            var plugins = this.GetPluginsFromUI();
             this.pluginsSelection.SaveSelected(plugins);
         }
 
         private void UpdatePluginsFromUi()
         {
-            for (int index = 0; index < this.pluginsListbox.Items.Count; index++)
+            for (var index = 0; index < this.pluginsListbox.Items.Count; index++)
             {
                 var plugin = this.pluginsListbox.Items[index] as SelectedPlugin;
                 plugin.Enabled = this.pluginsListbox.GetItemChecked(index);
@@ -51,7 +51,7 @@ namespace Terminals.Forms.OptionPanels
             e.Cancel = !this.GetPluginsFromUI()
                 .Any(p => p.Enabled);
 
-            string errorMessage = string.Empty;
+            var errorMessage = string.Empty;
             if (e.Cancel)
                 errorMessage = Resources.PluginSelectionErrorMessage;
 

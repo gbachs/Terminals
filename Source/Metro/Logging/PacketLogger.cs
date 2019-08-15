@@ -65,27 +65,13 @@ namespace Metro.Logging
 		/// <summary>
 		///		The xml text writer to use to write to the log file.
 		/// </summary>
-		public XmlTextWriter XmlWriter
-		{
-			get
-			{
-				return m_writer;
-			}
-		}
-		
-		
+		public XmlTextWriter XmlWriter => m_writer;
+
 		/// <summary>
 		///		Whether or not the class has been disposed or not.
 		/// </summary>
-		public bool Disposed
-		{
-			get
-			{
-				return m_disposed;
-			}
-		}
-		
-		
+		public bool Disposed => m_disposed;
+
 		#endregion
 		
 		#region Public Methods

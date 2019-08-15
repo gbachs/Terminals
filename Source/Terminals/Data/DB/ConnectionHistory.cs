@@ -62,8 +62,7 @@ namespace Terminals.Data.DB
             try
             {
                 TryClearHistory();
-                if (this.HistoryClear != null)
-                    this.HistoryClear();
+                this.HistoryClear?.Invoke();
             }
             catch (EntityException exception)
             {

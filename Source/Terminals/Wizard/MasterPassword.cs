@@ -5,21 +5,9 @@ namespace Terminals.Wizard
 {
     internal partial class MasterPassword : UserControl
     {
-        public bool StorePassword
-        {
-            get
-            {
-                return this.enterPassword1.StorePassword;
-            }
-        }
+        public bool StorePassword => this.enterPassword1.StorePassword;
 
-        public string Password
-        {
-            get
-            {
-                return this.enterPassword1.Password;
-            }
-        }
+        public string Password => this.enterPassword1.Password;
 
         public MasterPassword()
         {

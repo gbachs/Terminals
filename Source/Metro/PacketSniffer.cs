@@ -116,14 +116,8 @@ namespace Metro
 			/// </summary>
 			public Socket SocketObject
 			{
-				get
-				{
-					return m_socketObject;
-				}
-				set
-				{
-					m_socketObject = value;
-				}
+				get => m_socketObject;
+				set => m_socketObject = value;
 			}
 			
 			
@@ -132,14 +126,8 @@ namespace Metro
 			/// </summary>
 			public byte[] RecieveBuffer
 			{
-				get
-				{
-					return m_recieveBuffer;
-				}
-				set
-				{
-					m_recieveBuffer = value;
-				}
+				get => m_recieveBuffer;
+				set => m_recieveBuffer = value;
 			}
 			
 			
@@ -148,14 +136,8 @@ namespace Metro
 			/// </summary>
 			public AutoResetEvent WaitObject
 			{
-				get
-				{
-					return m_waitObject;
-				}
-				set
-				{
-					m_waitObject = value;
-				}
+				get => m_waitObject;
+				set => m_waitObject = value;
 			}
 			
 			
@@ -299,14 +281,8 @@ namespace Metro
 		/// </summary>
 		public bool IsRunning
 		{
-			get
-			{
-				return m_isRunning;
-			}
-			set
-			{
-				m_isRunning = value;
-			}
+			get => m_isRunning;
+			set => m_isRunning = value;
 		}
 		
 		
@@ -315,14 +291,8 @@ namespace Metro
 		/// </summary>
 		public SnifferModeType SnifferMode
 		{
-			get
-			{
-				return m_mode;
-			}
-			set
-			{
-				m_mode = value;
-			}
+			get => m_mode;
+			set => m_mode = value;
 		}
 	
 	
@@ -331,14 +301,8 @@ namespace Metro
 		/// </summary>
 		public int BytesReceived
 		{
-			get
-			{
-				return m_bytesReceived;
-			}
-			set
-			{
-				m_bytesReceived = value;
-			}
+			get => m_bytesReceived;
+			set => m_bytesReceived = value;
 		}
 		
 

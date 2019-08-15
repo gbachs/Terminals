@@ -38,7 +38,7 @@ namespace Terminals.Forms
 
         private int ResolveTimeOut()
         {
-            Int32 timeout = 5;
+            var timeout = 5;
             Int32.TryParse(this.PortscanTimeoutTextBox.Text, out timeout);
             if (timeout <= 0 || timeout >= 60)
                 timeout = 5;

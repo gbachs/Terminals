@@ -25,15 +25,9 @@ namespace Terminals
             }
         }
 
-        internal bool PromptNextTime
-        {
-            get { return !this.chkDontShowDialog.Checked; }
-        }
+        internal bool PromptNextTime => !this.chkDontShowDialog.Checked;
 
-        internal bool OpenConnectionsNextTime
-        {
-            get { return this.chkOpenOnNextTime.Checked; }
-        }
+        internal bool OpenConnectionsNextTime => this.chkOpenOnNextTime.Checked;
 
         private void SaveActiveConnectionsForm_Load(object sender, EventArgs e)
         {

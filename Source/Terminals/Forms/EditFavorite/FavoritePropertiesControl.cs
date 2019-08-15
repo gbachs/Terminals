@@ -22,27 +22,21 @@ namespace Terminals.Forms.EditFavorite
 
         public event EventHandler SetOkButtonRequested
         {
-            add { this.generalPanel1.SetOkButtonRequested += value; }
-            remove { this.generalPanel1.SetOkButtonRequested -= value; }
+            add => this.generalPanel1.SetOkButtonRequested += value;
+            remove => this.generalPanel1.SetOkButtonRequested -= value;
         }
 
-        private TreeNode ProtocolOptionsNode
-        {
-            get
-            {
-                return this.treeView.Nodes["protocolOptionsNode"];
-            }
-        }
+        private TreeNode ProtocolOptionsNode => this.treeView.Nodes["protocolOptionsNode"];
 
-        public string ProtocolText { get { return this.generalPanel1.ProtocolText; } }
+        public string ProtocolText => this.generalPanel1.ProtocolText;
 
-        public string ServerNameText { get { return this.generalPanel1.ServerNameText; } }
+        public string ServerNameText => this.generalPanel1.ServerNameText;
 
-        public string PortText { get { return this.generalPanel1.PortText; } }
+        public string PortText => this.generalPanel1.PortText;
 
-        public bool UrlVisible { get { return this.generalPanel1.UrlVisible; } }
+        public bool UrlVisible => this.generalPanel1.UrlVisible;
 
-        public bool ShowOnToolbar { get { return this.generalPanel1.ShowOnToolbar; } }
+        public bool ShowOnToolbar => this.generalPanel1.ShowOnToolbar;
 
         public FavoritePropertiesControl()
         {
@@ -57,7 +51,7 @@ namespace Terminals.Forms.EditFavorite
             this.HideAllPanels();
 
             this.generalPanel1.ProtocolChanged += this.GenearalPanel1ProtocolChanged;
-            string[] availablePlugins = this.connectionManager.GetAvailableProtocols()
+            var availablePlugins = this.connectionManager.GetAvailableProtocols()
                 .OrderBy(p => p)
                 .ToArray();
             this.generalPanel1.AssingAvailablePlugins(availablePlugins);
@@ -79,7 +73,7 @@ namespace Terminals.Forms.EditFavorite
         private void GenearalPanel1ProtocolChanged(string newProtocol)
         {
             this.ProtocolOptionsNode.Text = string.Format("{0} Options", newProtocol);
-            Control[] newControls = this.connectionManager.CreateControls(newProtocol);
+            var newControls = this.connectionManager.CreateControls(newProtocol);
             this.protocolOptionsPanel1.ReloadControls(newControls);
             this.UpdateProtocolOptionsNodeIcons(newProtocol);
             this.ReloadProtocolTreeNodes();
@@ -87,13 +81,13 @@ namespace Terminals.Forms.EditFavorite
 
         private void UpdateProtocolOptionsNodeIcons(string newProtocol)
         {
-            string imageKey = this.favoriteIcons.GetTreeviewImageListKey(newProtocol);
+            var imageKey = this.favoriteIcons.GetTreeviewImageListKey(newProtocol);
             UpdateNodeIcon(this.ProtocolOptionsNode, imageKey);
         }
 
         private void ReloadProtocolTreeNodes()
         {
-            TreeNodeCollection optionsNodes = this.ProtocolOptionsNode.Nodes;
+            var optionsNodes = this.ProtocolOptionsNode.Nodes;
             optionsNodes.Clear();
 
             if (this.protocolOptionsPanel1.Controls.Count <= 1)
@@ -106,7 +100,7 @@ namespace Terminals.Forms.EditFavorite
         {
             foreach (Control pluginUserControl in this.protocolOptionsPanel1.Controls)
             {
-                TreeNode newNode = this.CreateChildNode(pluginUserControl);
+                var newNode = this.CreateChildNode(pluginUserControl);
                 optionsNodes.Add(newNode);
             }
         }
@@ -137,14 +131,14 @@ namespace Terminals.Forms.EditFavorite
         private void TreeViewAfterSelect(object sender, TreeViewEventArgs e)
         {
             this.HideAllPanels();
-            PanelSwitch protocolSwitch = this.ResolveSwitch(e.Node);
+            var protocolSwitch = this.ResolveSwitch(e.Node);
             this.titleLabel.Text = protocolSwitch.Title;
             protocolSwitch.ShowPanel();
         }
 
         private string ResolveProtocolPanelTitle(TreeNode node)
         {
-            Control childControl = this.protocolOptionsPanel1.ResolveChildByNameOrFirst(node.Text);
+            var childControl = this.protocolOptionsPanel1.ResolveChildByNameOrFirst(node.Text);
             if (childControl == null)
                 return this.ProtocolOptionsNode.Text;
 
@@ -164,7 +158,7 @@ namespace Terminals.Forms.EditFavorite
                case NOTES_NODE:
                     return new PanelSwitch(newNode.Text, this.notesControl1.Show);
                 default:
-                    string title = this.ResolveProtocolPanelTitle(newNode);
+                    var title = this.ResolveProtocolPanelTitle(newNode);
                     Action showAction = () => this.FocusProtocolOptionsChild(newNode);
                     return new PanelSwitch(title, showAction);
             }

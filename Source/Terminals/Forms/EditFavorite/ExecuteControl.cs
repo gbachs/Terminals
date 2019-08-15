@@ -19,7 +19,7 @@ namespace Terminals.Forms.EditFavorite
 
         public void SaveTo(IFavorite favorite)
         {
-            IBeforeConnectExecuteOptions exucutionOptions = favorite.ExecuteBeforeConnect;
+            var exucutionOptions = favorite.ExecuteBeforeConnect;
             exucutionOptions.Execute = this.chkExecuteBeforeConnect.Checked;
             exucutionOptions.Command = this.txtCommand.Text;
             exucutionOptions.CommandArguments = this.txtArguments.Text;

@@ -2,7 +2,7 @@ using Terminals.Data;
 
 namespace Terminals
 {
-    public interface IStartupUi
+    internal interface IStartupUi
     {
         bool UserWantsFallback();
 

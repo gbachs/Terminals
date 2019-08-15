@@ -80,7 +80,6 @@ namespace Terminals.Forms
             this.panelExecuteBeforeConnect = new Terminals.Forms.ConnectCommandOptionPanel();
             this.panelProxy = new Terminals.Forms.ProxyOptionPanel();
             this.panelScreenCapture = new Terminals.Forms.CaptureOptionPanel();
-            this.panelFlickr = new Terminals.Forms.FlickrOptionPanel();
             this.panelPersistence = new Terminals.Forms.PersistenceOptionPanel();
             this.panelPlugins = new Terminals.Forms.OptionPanels.PluginsOptionPanel();
             this.tabCtrlOptionPanels.SuspendLayout();
@@ -350,7 +349,6 @@ namespace Terminals.Forms
             // tabPageFlickr
             // 
             this.tabPageFlickr.AutoScroll = true;
-            this.tabPageFlickr.Controls.Add(this.panelFlickr);
             this.tabPageFlickr.Location = new System.Drawing.Point(4, 4);
             this.tabPageFlickr.Name = "tabPageFlickr";
             this.tabPageFlickr.Size = new System.Drawing.Size(582, 357);
@@ -463,13 +461,6 @@ namespace Terminals.Forms
             this.panelScreenCapture.Size = new System.Drawing.Size(513, 330);
             this.panelScreenCapture.TabIndex = 0;
             // 
-            // panelFlickr
-            // 
-            this.panelFlickr.Location = new System.Drawing.Point(5, 27);
-            this.panelFlickr.Name = "panelFlickr";
-            this.panelFlickr.Size = new System.Drawing.Size(514, 328);
-            this.panelFlickr.TabIndex = 0;
-            // 
             // panelPersistence
             // 
             this.panelPersistence.Location = new System.Drawing.Point(8, 26);
@@ -555,7 +546,6 @@ namespace Terminals.Forms
         private ConnectCommandOptionPanel panelExecuteBeforeConnect;
         private ProxyOptionPanel panelProxy;
         private CaptureOptionPanel panelScreenCapture;
-        private FlickrOptionPanel panelFlickr;
         private System.Windows.Forms.TabPage tabPagePersistence;
         private PersistenceOptionPanel panelPersistence;
         private System.Windows.Forms.TabPage tabPagePlugins;

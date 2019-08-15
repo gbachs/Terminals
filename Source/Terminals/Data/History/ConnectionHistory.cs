@@ -64,8 +64,7 @@ namespace Terminals.History
         {
             this.currentHistory.Clear();
             this.SaveHistory();
-            if (this.HistoryClear != null)
-                this.HistoryClear();
+            this.HistoryClear?.Invoke();
         }
 
         private void OnFileChanged(object sender, EventArgs e)

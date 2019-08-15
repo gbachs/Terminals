@@ -40,7 +40,7 @@ namespace VncSharp.Encodings
 			this.rectangle = rectangle;
 
 			//Select appropriate reader
-			BinaryReader reader = (encoding == RfbProtocol.ZRLE_ENCODING) ? rfb.ZrleReader : rfb.Reader;
+			var reader = (encoding == RfbProtocol.ZRLE_ENCODING) ? rfb.ZrleReader : rfb.Reader;
 
 			// Create the appropriate PixelReader depending on screen size and encoding
 			switch (framebuffer.BitsPerPixel)
@@ -69,11 +69,7 @@ namespace VncSharp.Encodings
 		/// <summary>
 		/// Gets the rectangle that needs to be decoded and drawn.
 		/// </summary>
-		public Rectangle UpdateRectangle {
-			get {
-				return rectangle;
-			}
-		}
+		public Rectangle UpdateRectangle => rectangle;
 
 		/// <summary>
 		/// Obtain all necessary information from VNC Host (i.e., read) in order to Draw the rectangle, and store in colours[].
@@ -84,29 +80,29 @@ namespace VncSharp.Encodings
 		/// After calling Decode() an EncodedRectangle can be drawn to a Bitmap, which is the local representation of the remote desktop.
 		/// </summary>
 		/// <param name="desktop">The image the represents the remote desktop. NOTE: this image will be altered.</param>
-		public unsafe virtual void Draw(Bitmap desktop)
+		public virtual unsafe void Draw(Bitmap desktop)
 		{
 			// Lock the bitmap's scan-lines in RAM so we can iterate over them using pointers and update the area
 			// defined in rectangle.
-			BitmapData bmpd = desktop.LockBits(new Rectangle(new Point(0,0), desktop.Size), ImageLockMode.ReadWrite, desktop.PixelFormat);
+			var bmpd = desktop.LockBits(new Rectangle(new Point(0,0), desktop.Size), ImageLockMode.ReadWrite, desktop.PixelFormat);
 
 			try {
 				// For speed I'm using pointers to manipulate the desktop bitmap, which is unsafe.
 				// Get a pointer to the start of the bitmap in memory (IntPtr) and cast to a 
 				// Byte pointer (need void* first) so desktop can be traversed as GDI+ 
 				// colour values form.
-				int* pInt = (int*)(void*)bmpd.Scan0; 
+				var pInt = (int*)(void*)bmpd.Scan0; 
 
 				// Move pointer to position in desktop bitmap where rectangle begins
 				pInt += rectangle.Y * desktop.Width + rectangle.X;
 				
-				int offset = desktop.Width - rectangle.Width;
-				int row = 0;
+				var offset = desktop.Width - rectangle.Width;
+				var row = 0;
 				
-				for (int y = 0; y < rectangle.Height; ++y) {
+				for (var y = 0; y < rectangle.Height; ++y) {
 					row = y * rectangle.Width;
 
-					for (int x = 0; x < rectangle.Width; ++x) {
+					for (var x = 0; x < rectangle.Width; ++x) {
 						*pInt++ = framebuffer[row + x];
 					}
 
@@ -126,8 +122,8 @@ namespace VncSharp.Encodings
 		/// <param name="colour">The colour to use when filling the rectangle.</param>
 		protected void FillRectangle(Rectangle rect, int colour)
 		{
-			int ptr = 0;
-			int offset = 0;
+			var ptr = 0;
+			var offset = 0;
 
 			// If the two rectangles don't match, then rect is contained within rectangle, and
 			// ptr and offset need to be adjusted to position things at the proper starting point.
@@ -136,8 +132,8 @@ namespace VncSharp.Encodings
 				offset = rectangle.Width - rect.Width;		// calculate the offset to get to the start of the next row
 			}
 
-			for (int y = 0; y < rect.Height; ++y) {
-				for (int x = 0; x < rect.Width; ++x) {
+			for (var y = 0; y < rect.Height; ++y) {
+				for (var x = 0; x < rect.Width; ++x) {
 					framebuffer[ptr++] = colour;			// colour every pixel the same
 				}
 				ptr += offset;								// advance to next row within pixels
@@ -146,8 +142,8 @@ namespace VncSharp.Encodings
 
 		protected void FillRectangle(Rectangle rect, int[] tile)
 		{
-			int ptr = 0;
-			int offset = 0;
+			var ptr = 0;
+			var offset = 0;
 
 			// If the two rectangles don't match, then rect is contained within rectangle, and
 			// ptr and offset need to be adjusted to position things at the proper starting point.
@@ -156,9 +152,9 @@ namespace VncSharp.Encodings
 				offset = rectangle.Width - rect.Width;		// calculate the offset to get to the start of the next row
 			}
 
-			int idx = 0;
-			for (int y = 0; y < rect.Height; ++y) {
-				for (int x = 0; x < rect.Width; ++x) {
+			var idx = 0;
+			for (var y = 0; y < rect.Height; ++y) {
+				for (var x = 0; x < rect.Width; ++x) {
 					framebuffer[ptr++] = tile[idx++];
 				}
 				ptr += offset;								// advance to next row within pixels
@@ -171,8 +167,8 @@ namespace VncSharp.Encodings
 		/// <param name="rect">The rectangle to be filled.</param>
 		protected void FillRectangle(Rectangle rect)
 		{
-			int ptr = 0;
-			int offset = 0;
+			var ptr = 0;
+			var offset = 0;
 
 			// If the two rectangles don't match, then rect is contained within rectangle, and
 			// ptr and offset need to be adjusted to position things at the proper starting point.
@@ -181,8 +177,8 @@ namespace VncSharp.Encodings
 				offset = rectangle.Width - rect.Width;		// calculate the offset to get to the start of the next row
 			}
 
-			for (int y = 0; y < rect.Height; ++y) {
-				for (int x = 0; x < rect.Width; ++x) {
+			for (var y = 0; y < rect.Height; ++y) {
+				for (var x = 0; x < rect.Width; ++x) {
 					framebuffer[ptr++] = preader.ReadPixel();	// every pixel needs to be read from server
 				}
 				ptr += offset;								    // advance to next row within pixels

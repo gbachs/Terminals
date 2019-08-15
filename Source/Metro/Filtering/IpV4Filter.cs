@@ -60,26 +60,12 @@ namespace Metro.Filtering
 			/// <summary>
 			///		The indexer itself returns a single filter.
 			/// </summary>
-			public string this [int index]
-			{
-				get 
-				{ 
-					return (string)owner.m_sourceAddressFilter[index]; 
-				}
-			}
-
+			public string this [int index] => (string)owner.m_sourceAddressFilter[index];
 
 			/// <summary>
 			///		The length of the array.
 			/// </summary>
-			public int Length
-			{
-				get 
-				{ 
-					return owner.m_sourceAddressFilter.Count; 
-				}
-			}
-
+			public int Length => owner.m_sourceAddressFilter.Count;
 
 			#endregion
 			
@@ -120,26 +106,12 @@ namespace Metro.Filtering
 			/// <summary>
 			///		The indexer returning individual elements in the array.
 			/// </summary>
-			public string this [int index]
-			{
-				get 
-				{ 
-					return (string)owner.m_destAddressFilter[index]; 
-				}
-			}
-
+			public string this [int index] => (string)owner.m_destAddressFilter[index];
 
 			/// <summary>
 			///		The length of the array.
 			/// </summary>
-			public int Length
-			{
-				get 
-				{ 
-					return owner.m_destAddressFilter.Count; 
-				}
-			}
-
+			public int Length => owner.m_destAddressFilter.Count;
 
 			#endregion
 			
@@ -205,28 +177,14 @@ namespace Metro.Filtering
 		///		The array of source address filters. A packet must pass at least one of these
 		///		to proceed.
 		/// </summary>
-		public SourceAddressFilterIndexer SourceAddressFilter
-		{
-			get
-			{
-				return m_sourceAddressFilterIndexer;
-			}
-		}
-		
-		
+		public SourceAddressFilterIndexer SourceAddressFilter => m_sourceAddressFilterIndexer;
+
 		/// <summary>
 		///		The array of source address filters. A packet must pass at least one of these
 		///		to proceed.
 		/// </summary>
-		public DestinationAddressFilterIndexer DestinationAddressFilter
-		{
-			get
-			{
-				return m_destAddressFilterIndexer;
-			}
-		}
-		
-		
+		public DestinationAddressFilterIndexer DestinationAddressFilter => m_destAddressFilterIndexer;
+
 		#endregion
 		
 		#region Public Methods

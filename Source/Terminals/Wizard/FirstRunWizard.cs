@@ -23,12 +23,12 @@ namespace Terminals
     {
         private readonly IPersistence persistence;
         private readonly Settings settings = Settings.Instance;
-        private WizardForms SelectedForm = WizardForms.Intro;
-        private MethodInvoker miv;
-        private AddExistingRDPConnections rdp = new AddExistingRDPConnections();
-        private MasterPassword mp = new MasterPassword();
-        private CommonOptions co = new CommonOptions();
-        private DefaultCredentials dc = new DefaultCredentials();
+        private WizardForms selectedForm = WizardForms.Intro;
+        private readonly MethodInvoker miv;
+        private readonly AddExistingRDPConnections rdp = new AddExistingRDPConnections();
+        private readonly MasterPassword mp = new MasterPassword();
+        private readonly CommonOptions co = new CommonOptions();
+        private readonly DefaultCredentials dc = new DefaultCredentials();
 
         private readonly ConnectionManager connectionManager;
 
@@ -52,11 +52,11 @@ namespace Terminals
 
         private void NextButton_Click(object sender, EventArgs e)
         {
-            if (SelectedForm == WizardForms.Intro)
+            if (this.selectedForm == WizardForms.Intro)
             {
                 SwitchToMasterPassword();
             }
-            else if (SelectedForm == WizardForms.MasterPassword)
+            else if (this.selectedForm == WizardForms.MasterPassword)
             {
                 if (mp.StorePassword)
                 {
@@ -67,15 +67,15 @@ namespace Terminals
                     SwitchToOptions();
                 }
             }
-            else if (SelectedForm == WizardForms.DefaultCredentials)
+            else if (this.selectedForm == WizardForms.DefaultCredentials)
             {
                 SwitchToOptionsFromCredentials();
             }
-            else if (SelectedForm == WizardForms.Options)
+            else if (this.selectedForm == WizardForms.Options)
             {
                 FinishOptions();
             }
-            else if (SelectedForm == WizardForms.Scanner)
+            else if (this.selectedForm == WizardForms.Scanner)
             {
                 this.Hide();
             }
@@ -104,7 +104,7 @@ namespace Terminals
                 this.rdp.Dock = DockStyle.Fill;
                 this.panel1.Controls.Add(this.rdp);
                 this.rdp.StartImport(this.connectionManager);
-                this.SelectedForm = WizardForms.Scanner;
+                this.selectedForm = WizardForms.Scanner;
             }
             else
             {
@@ -121,9 +121,6 @@ namespace Terminals
             settings.EnableCaptureToClipboard = this.co.EnableCaptureToClipboard;
             settings.EnableCaptureToFolder = this.co.EnableCaptureToFolder;
             settings.AutoSwitchOnCapture = this.co.AutoSwitchOnCapture;
-
-            if (this.co.LoadDefaultShortcuts)
-                settings.SpecialCommands = SpecialCommandsWizard.LoadSpecialCommands();
         }
 
         private void SwitchToOptionsFromCredentials()
@@ -135,7 +132,7 @@ namespace Terminals
             this.nextButton.Enabled = true;
             this.panel1.Controls.Clear();
             this.panel1.Controls.Add(this.co);
-            this.SelectedForm = WizardForms.Options;
+            this.selectedForm = WizardForms.Options;
         }
 
         private void SwitchToOptions()
@@ -143,7 +140,7 @@ namespace Terminals
             this.nextButton.Enabled = true;
             this.panel1.Controls.Clear();
             this.panel1.Controls.Add(this.co);
-            this.SelectedForm = WizardForms.Options;
+            this.selectedForm = WizardForms.Options;
         }
 
         private void SwitchToDefaultCredentials()
@@ -152,7 +149,7 @@ namespace Terminals
             this.nextButton.Enabled = true;
             this.panel1.Controls.Clear();
             this.panel1.Controls.Add(this.dc);
-            this.SelectedForm = WizardForms.DefaultCredentials;
+            this.selectedForm = WizardForms.DefaultCredentials;
         }
 
         private void SwitchToMasterPassword()
@@ -160,7 +157,7 @@ namespace Terminals
             this.nextButton.Enabled = true;
             this.panel1.Controls.Clear();
             this.panel1.Controls.Add(this.mp);
-            this.SelectedForm = WizardForms.MasterPassword;
+            this.selectedForm = WizardForms.MasterPassword;
         }
 
         private void CancelButton_Click(object sender, EventArgs e)

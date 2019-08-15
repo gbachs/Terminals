@@ -10,10 +10,7 @@ namespace Terminals.Forms.Controls
     /// </summary>
     internal partial class SearchPanel : UserControl
     {
-        internal List<IFavorite> SelectedFavorites
-        {
-            get { return this.searchResultsPanel.SelectedFavorites; }
-        }
+        internal List<IFavorite> SelectedFavorites => this.searchResultsPanel.SelectedFavorites;
 
         /// <summary>
         /// Ocures, when selection state of an item in results list changes.
@@ -21,8 +18,8 @@ namespace Terminals.Forms.Controls
         /// </summary>
         public event ListViewItemSelectionChangedEventHandler ResultsSelectionChanged
         {
-            add { this.searchResultsPanel.ResultsSelectionChanged += value; }
-            remove { this.searchResultsPanel.ResultsSelectionChanged -= value; }
+            add => this.searchResultsPanel.ResultsSelectionChanged += value;
+            remove => this.searchResultsPanel.ResultsSelectionChanged -= value;
         }
 
         internal SearchPanel()

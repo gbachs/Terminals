@@ -51,7 +51,7 @@ namespace Bdev.Net.Dns
 		/// <returns>1, 0, -1</returns>
 		public int CompareTo(object obj)
 		{
-			MXRecord mxOther = (MXRecord)obj;
+			var mxOther = (MXRecord)obj;
 
 			// we want to be able to sort them by preference
 			if (mxOther._preference < _preference) return 1;
@@ -96,7 +96,7 @@ namespace Bdev.Net.Dns
 			// must be of same type
 			if (this.GetType() != obj.GetType()) return false;
 
-			MXRecord mxOther = (MXRecord)obj;
+			var mxOther = (MXRecord)obj;
 
 			// preference must match
 			if (mxOther._preference != _preference) return false;

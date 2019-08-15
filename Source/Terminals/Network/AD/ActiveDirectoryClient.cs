@@ -125,14 +125,12 @@ namespace Terminals.Network
 
         private void FireListComputersDone(bool success)
         {
-            if (this.ListComputersDone != null)
-                this.ListComputersDone(success);
+            this.ListComputersDone?.Invoke(success);
         }
 
         private void FireComputerFound(ActiveDirectoryComputer computer)
         {
-            if (this.ComputerFound != null)
-                this.ComputerFound(computer);
+            this.ComputerFound?.Invoke(computer);
         }
     }
 }

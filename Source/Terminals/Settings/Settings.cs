@@ -25,20 +25,6 @@ namespace Terminals.Configuration
             }
         }
 
-        #region Flickr tab settings
-
-        public string FlickrToken
-        {
-            get => this.GetSection().FlickrToken;
-            set
-            {
-                this.GetSection().FlickrToken = value;
-                this.SaveImmediatelyIfRequested();
-            }
-        }
-
-        #endregion
-
         public bool AskToReconnect
         {
             get => this.GetSection().AskToReconnect;
@@ -810,15 +796,6 @@ namespace Terminals.Configuration
             this.SaveImmediatelyIfRequested();
         }
 
-        public SpecialCommandConfigurationElementCollection SpecialCommands
-        {
-            get => this.GetSection().SpecialCommands;
-            set
-            {
-                this.GetSection().SpecialCommands = value;
-                this.SaveImmediatelyIfRequested();
-            }
-        }
 
         public void CreateSavedConnectionsList(string[] names)
         {

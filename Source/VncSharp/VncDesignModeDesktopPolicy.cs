@@ -31,17 +31,9 @@ namespace VncSharp
         {
         }
 
-        public override bool AutoScroll {
-            get {
-                return true;
-            }
-        }
+        public override bool AutoScroll => true;
 
-        public override Size AutoScrollMinSize {
-            get {
-                return new Size(608, 427); // just a default for Design graphic. Will get changed once connected.
-            }
-        }
+        public override Size AutoScrollMinSize => new Size(608, 427);
 
         public override Point UpdateRemotePointer(Point current)
         {

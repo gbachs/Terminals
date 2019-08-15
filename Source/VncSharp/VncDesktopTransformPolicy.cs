@@ -36,13 +36,7 @@ namespace VncSharp
             this.remoteDesktop = remoteDesktop;
         }
 
-        public virtual bool AutoScroll
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public virtual bool AutoScroll => false;
 
         public abstract Size AutoScrollMinSize { get; }
 

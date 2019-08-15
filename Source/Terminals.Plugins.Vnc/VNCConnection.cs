@@ -8,7 +8,7 @@ namespace Terminals.Connections
     {
         private bool connected = false;
 
-        public override bool Connected { get { return this.connected; } }
+        public override bool Connected => this.connected;
 
         private VncSharp.RemoteDesktop rd;
 
@@ -29,9 +29,6 @@ namespace Terminals.Connections
                 string pass = this.ResolveFavoriteCredentials().Password;
                 this.vncPassword = pass;
 
-                if (string.IsNullOrEmpty(vncPassword)) return false;
-
-                //rd.SendSpecialKeys(VncSharp.SpecialKeys);            
                 rd.Parent = this.Parent;
                 rd.Dock = DockStyle.Fill;
 

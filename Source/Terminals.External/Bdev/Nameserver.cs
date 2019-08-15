@@ -10,9 +10,9 @@ namespace Bdev.Net.Dns
         {
             get
             {
-                List<Nameserver> l = new List<Nameserver>();
+                var l = new List<Nameserver>();
                 //DNS.AdapterInfo.GetAdapters();
-                Nameserver ns = new Nameserver("198.41.0.4", "ns.internic.net", "VeriSign", "Dulles, Virginia, U.S.", "BIND");
+                var ns = new Nameserver("198.41.0.4", "ns.internic.net", "VeriSign", "Dulles, Virginia, U.S.", "BIND");
 
                 return l;
             }
@@ -21,21 +21,21 @@ namespace Bdev.Net.Dns
         {
             get
             {
-                List<Nameserver> l = new List<Nameserver>();
+                var l = new List<Nameserver>();
 
-                Nameserver ns = new Nameserver("198.41.0.4", "ns.internic.net", "VeriSign", "Dulles, Virginia, U.S.", "BIND");
-                Nameserver ns1 = new Nameserver("192.228.79.201", "ns1.isi.edu", "USC-ISI", "Marina Del Rey, California, U.S.", "BIND");
-                Nameserver ns2 = new Nameserver("192.33.4.12", "c.psi.net", "Cogent Communications", "distributed using anycast", "BIND");
-                Nameserver ns3 = new Nameserver("128.8.10.90", "terp.umd.edu", "University of Maryland", "College Park, Maryland, U.S.", "BIND");
-                Nameserver ns4 = new Nameserver("192.203.230.10", "ns.nasa.gov", "NASA", "Mountain View, California, U.S.", "BIND");
-                Nameserver ns5 = new Nameserver("192.5.5.241", "ns.isc.org", "ISC", "distributed using anycast", "BIND");
-                Nameserver ns6 = new Nameserver("192.112.36.4", "ns.nic.ddn.mil", "Defense Information Systems Agency", "Columbus, Ohio, U.S.", "BIND");
-                Nameserver ns7 = new Nameserver("128.63.2.53", "aos.arl.army.mil", "U.S. Army Research Lab", "Aberdeen Proving Ground, Maryland, U.S.", "NSD");
-                Nameserver ns8 = new Nameserver("192.36.148.17", "nic.nordu.net", "Autonomica", "distributed using anycast", "BIND");
-                Nameserver ns9 = new Nameserver("192.58.128.30", "", "VeriSign", "distributed using anycast", "BIND");
-                Nameserver ns10 = new Nameserver("193.0.14.129", "", "RIPE NCC", "distributed using anycast", "NSD");
-                Nameserver ns11 = new Nameserver("198.32.64.12", "", "ICANN", "Los Angeles, California, U.S.", "NSD");
-                Nameserver ns12 = new Nameserver("202.12.27.33", "", "WIDE Project", "distributed using anycast", "BIND");
+                var ns = new Nameserver("198.41.0.4", "ns.internic.net", "VeriSign", "Dulles, Virginia, U.S.", "BIND");
+                var ns1 = new Nameserver("192.228.79.201", "ns1.isi.edu", "USC-ISI", "Marina Del Rey, California, U.S.", "BIND");
+                var ns2 = new Nameserver("192.33.4.12", "c.psi.net", "Cogent Communications", "distributed using anycast", "BIND");
+                var ns3 = new Nameserver("128.8.10.90", "terp.umd.edu", "University of Maryland", "College Park, Maryland, U.S.", "BIND");
+                var ns4 = new Nameserver("192.203.230.10", "ns.nasa.gov", "NASA", "Mountain View, California, U.S.", "BIND");
+                var ns5 = new Nameserver("192.5.5.241", "ns.isc.org", "ISC", "distributed using anycast", "BIND");
+                var ns6 = new Nameserver("192.112.36.4", "ns.nic.ddn.mil", "Defense Information Systems Agency", "Columbus, Ohio, U.S.", "BIND");
+                var ns7 = new Nameserver("128.63.2.53", "aos.arl.army.mil", "U.S. Army Research Lab", "Aberdeen Proving Ground, Maryland, U.S.", "NSD");
+                var ns8 = new Nameserver("192.36.148.17", "nic.nordu.net", "Autonomica", "distributed using anycast", "BIND");
+                var ns9 = new Nameserver("192.58.128.30", "", "VeriSign", "distributed using anycast", "BIND");
+                var ns10 = new Nameserver("193.0.14.129", "", "RIPE NCC", "distributed using anycast", "NSD");
+                var ns11 = new Nameserver("198.32.64.12", "", "ICANN", "Los Angeles, California, U.S.", "NSD");
+                var ns12 = new Nameserver("202.12.27.33", "", "WIDE Project", "distributed using anycast", "BIND");
                 l.Add(ns);
                 l.Add(ns1);
                 l.Add(ns2);

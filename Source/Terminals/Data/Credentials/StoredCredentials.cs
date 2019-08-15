@@ -55,8 +55,7 @@ namespace Terminals.Data
         private void CredentialsFileChanged(object sender, EventArgs e)
         {
             this.LoadStoredCredentials(this.FileFullName);
-            if (this.CredentialsChanged != null)
-                this.CredentialsChanged(this, new EventArgs());
+            this.CredentialsChanged?.Invoke(this, new EventArgs());
         }
 
         internal void AssignSynchronizationObject(ISynchronizeInvoke synchronizer)

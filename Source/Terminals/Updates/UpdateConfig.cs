@@ -36,12 +36,12 @@ namespace Terminals.Updates
             if (settings.ConfigVersion == null || settings.ConfigVersion < Program.Info.Version)
             {
                 // keep update sequence ordered!
-                IVersionUpgrade[] upgradades = new IVersionUpgrade[]
+                var upgradades = new IVersionUpgrade[]
                 {
                     new V20Upgrade(this.settings, this.persistence, this.connectionManager)
                 };
 
-                foreach (IVersionUpgrade upgrade in upgradades)
+                foreach (var upgrade in upgradades)
                 {
                     if (upgrade.NeedExecute())
                         upgrade.Upgrade();

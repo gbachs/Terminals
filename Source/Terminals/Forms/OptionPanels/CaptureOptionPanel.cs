@@ -34,11 +34,11 @@ namespace Terminals.Forms
 
         private void ButtonBrowseCaptureFolder_Click(object sender, EventArgs e)
         {
-            using (FolderBrowserDialog dlg = new FolderBrowserDialog())
+            using (var dlg = new FolderBrowserDialog())
             {
                 dlg.Description = "Select the screen capture folder";
                 dlg.RootFolder = Environment.SpecialFolder.MyComputer;
-                String currentFld = this.txtScreenCaptureFolder.Text;
+                var currentFld = this.txtScreenCaptureFolder.Text;
                 if (!currentFld.Equals(String.Empty))
                     currentFld = (currentFld.EndsWith("\\")) ? currentFld : currentFld + "\\";
 
@@ -47,7 +47,7 @@ namespace Terminals.Forms
 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    String selectedFld = dlg.SelectedPath;
+                    var selectedFld = dlg.SelectedPath;
                     if (!selectedFld.Equals(String.Empty))
                         selectedFld = (selectedFld.EndsWith("\\")) ? selectedFld : selectedFld + "\\";
 

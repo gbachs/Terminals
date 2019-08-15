@@ -45,22 +45,22 @@ namespace Bdev.Net.Dns
 			if (dnsServer == null)  throw new ArgumentNullException("dnsServer");
 
 			// create a request for this
-			Request request = new Request();
+			var request = new Request();
 
 			// add one question - the MX IN lookup for the supplied domain
 			request.AddQuestion(new Question(domain, DnsType.MX, DnsClass.IN));
 			
 			// fire it off
-			Response response = Lookup(request, dnsServer);
+			var response = Lookup(request, dnsServer);
 
 			// if we didn't get a response, then return null
 			if (response == null) return null;
 				
 			// create a growable array of MX records
-			ArrayList resourceRecords = new ArrayList();
+			var resourceRecords = new ArrayList();
 
 			// add each of the answers to the array
-			foreach (Answer answer in response.Answers)
+			foreach (var answer in response.Answers)
 			{
 				// if the answer is an MX record
 				if (answer.Record.GetType() == typeof(MXRecord))
@@ -71,7 +71,7 @@ namespace Bdev.Net.Dns
 			}
 
 			// create array of MX records
-			MXRecord[] mxRecords = new MXRecord[resourceRecords.Count];
+			var mxRecords = new MXRecord[resourceRecords.Count];
 
 			// copy from the array list
 			resourceRecords.CopyTo(mxRecords);
@@ -100,13 +100,13 @@ namespace Bdev.Net.Dns
 			// We will not catch exceptions here, rather just refer them to the caller
 
 			// create an end point to communicate with
-			IPEndPoint server = new IPEndPoint(dnsServer, _dnsPort);
+			var server = new IPEndPoint(dnsServer, _dnsPort);
 		
 			// get the message
-			byte[] requestMessage = request.GetMessage();
+			var requestMessage = request.GetMessage();
 
 			// send the request and get the response
-			byte[] responseMessage = UdpTransfer(server, requestMessage);
+			var responseMessage = UdpTransfer(server, requestMessage);
 
 			// and populate a response object from that and return it
 			return new Response(responseMessage);
@@ -115,7 +115,7 @@ namespace Bdev.Net.Dns
 		private static byte[] UdpTransfer(IPEndPoint server, byte[] requestMessage)
 		{
 			// UDP can fail - if it does try again keeping track of how many attempts we've made
-			int attempts = 0;
+			var attempts = 0;
 
 			// try repeatedly in case of failure
 			while (attempts <= _udpRetryAttempts)
@@ -129,7 +129,7 @@ namespace Bdev.Net.Dns
 				}
 
 				// we'll be send and receiving a UDP packet
-				Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+				var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 			
 				// we will wait at most 1 second for a dns reply
 				socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 1000);
@@ -138,7 +138,7 @@ namespace Bdev.Net.Dns
 				socket.SendTo(requestMessage, requestMessage.Length, SocketFlags.None, server);
 		
 				// RFC1035 states that the maximum size of a UDP datagram is 512 octets (bytes)
-				byte[] responseMessage = new byte[512];
+				var responseMessage = new byte[512];
 
 				try
 				{

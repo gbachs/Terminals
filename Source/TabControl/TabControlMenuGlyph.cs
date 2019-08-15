@@ -21,14 +21,14 @@ namespace TabControl
 
         public bool IsMouseOver
         {
-            get { return isMouseOver; }
-            set { isMouseOver = value; }
+            get => isMouseOver;
+            set => isMouseOver = value;
         }
 
         public Rectangle Rect
         {
-            get { return glyphRect; }
-            set { glyphRect = value; }
+            get => glyphRect;
+            set => glyphRect = value;
         }
 
         #endregion

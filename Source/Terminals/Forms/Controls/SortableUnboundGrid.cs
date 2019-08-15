@@ -11,7 +11,7 @@ namespace Terminals
 
         internal static SortOrder GetNewSortDirection(DataGridViewColumn lastSortedColumn, DataGridViewColumn newColumn)
         {
-            SortOrder newSortDirection = SortOrder.Ascending;
+            var newSortDirection = SortOrder.Ascending;
             if (lastSortedColumn != null)
             {
                 if (lastSortedColumn == newColumn)

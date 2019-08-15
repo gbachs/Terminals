@@ -50,28 +50,15 @@ namespace Metro.LinkLayer
 		/// <summary>
 		///		Return a suitable broadcast address.
 		/// </summary>
-		public static MACAddress BroadcastAddress
-		{
-			get
-			{
-				return new MACAddress ("ff:ff:ff:ff:ff:ff");
-			}
-		}
-		
-		
+		public static MACAddress BroadcastAddress => new MACAddress ("ff:ff:ff:ff:ff:ff");
+
 		/// <summary>
 		///		Return the address.
 		/// </summary>
 		public byte[] Address
 		{
-			get
-			{
-				return m_address;
-			}
-			set
-			{
-				m_address = value;
-			}
+			get => m_address;
+			set => m_address = value;
 		}
 		
 		

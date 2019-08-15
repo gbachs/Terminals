@@ -21,17 +21,10 @@ namespace Terminals.Wizard
             if(this.usernameTextbox.Text == "") this.usernameTextbox.Text = Environment.UserName;
         }
 
-        public string DefaultDomain
-        {
-            get { return this.domainTextbox.Text; }
-        }
-        public string DefaultPassword
-        {
-            get { return this.passwordTextbox.Text; }
-        }
-        public string DefaultUsername
-        {
-            get { return this.usernameTextbox.Text; }
-        }
+        public string DefaultDomain => this.domainTextbox.Text;
+
+        public string DefaultPassword => this.passwordTextbox.Text;
+
+        public string DefaultUsername => this.usernameTextbox.Text;
     }
 }

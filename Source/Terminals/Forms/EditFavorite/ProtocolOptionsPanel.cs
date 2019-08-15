@@ -27,7 +27,7 @@ namespace Terminals.Forms.EditFavorite
 
         private void RemoveCurrentControls()
         {
-            foreach (Control protocolControl in this.Controls.OfType<Control>().ToList())
+            foreach (var protocolControl in this.Controls.OfType<Control>().ToList())
             {
                 this.Controls.Remove(protocolControl);
                 UnRegisterIntegerValidation(protocolControl);
@@ -37,7 +37,7 @@ namespace Terminals.Forms.EditFavorite
 
         private void AddControls(Control[] toAssign)
         {
-            foreach (Control protocolControl in toAssign)
+            foreach (var protocolControl in toAssign)
             {
                 this.AddNewControl(protocolControl);
             }
@@ -87,14 +87,13 @@ namespace Terminals.Forms.EditFavorite
         internal void FocusControl(string controlName)
         {
             this.HideAllProtocolControls();
-            Control control = this.ResolveChildByNameOrFirst(controlName);
-            if (control != null)
-                control.Show();
+            var control = this.ResolveChildByNameOrFirst(controlName);
+            control?.Show();
         }
 
         internal Control ResolveChildByNameOrFirst(string controlName)
         {
-            Control control = this.Controls[controlName];
+            var control = this.Controls[controlName];
             if (control != null)
                 return control;
 

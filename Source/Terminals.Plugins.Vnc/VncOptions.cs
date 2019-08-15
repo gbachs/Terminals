@@ -3,11 +3,11 @@
 namespace Terminals.Data
 {
     [Serializable]
-    public class VncOptions : ProtocolOptions
+    internal class VncOptions : ProtocolOptions
     {
-        public Boolean AutoScale { get; set; }
-        public Boolean ViewOnly { get; set; }
-        public Int32 DisplayNumber { get; set; }
+        public bool AutoScale { get; set; }
+        public bool ViewOnly { get; set; }
+        public int DisplayNumber { get; set; }
 
         public override ProtocolOptions Copy()
         {

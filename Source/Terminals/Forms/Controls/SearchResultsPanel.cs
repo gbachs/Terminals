@@ -27,17 +27,14 @@ namespace Terminals.Forms.Controls
         /// </summary>
         public bool LabelEdit
         {
-            get { return this.resultsListView.LabelEdit; }
-            set { this.resultsListView.LabelEdit = value; }
+            get => this.resultsListView.LabelEdit;
+            set => this.resultsListView.LabelEdit = value;
         }
 
         /// <summary>
         /// Gets first selected favorite in results list view. Null if nothing is selected.
         /// </summary>
-        internal IFavorite SelectedFavorite
-        {
-            get { return this.SelectedFavorites.FirstOrDefault(); }
-        }
+        internal IFavorite SelectedFavorite => this.SelectedFavorites.FirstOrDefault();
 
         internal List<IFavorite> SelectedFavorites
         {
@@ -55,8 +52,8 @@ namespace Terminals.Forms.Controls
         /// </summary>
         public event LabelEditEventHandler ResultListAfterLabelEdit
         {
-            add { this.resultsListView.AfterLabelEdit += value; }
-            remove { this.resultsListView.AfterLabelEdit -= value; }
+            add => this.resultsListView.AfterLabelEdit += value;
+            remove => this.resultsListView.AfterLabelEdit -= value;
         }
 
         /// <summary>
@@ -64,8 +61,8 @@ namespace Terminals.Forms.Controls
         /// </summary>
         public event EventHandler ResultListDoubleClick
         {
-            add { this.resultsListView.DoubleClick += value; }
-            remove { this.resultsListView.DoubleClick -= value; }
+            add => this.resultsListView.DoubleClick += value;
+            remove => this.resultsListView.DoubleClick -= value;
         }
 
         /// <summary>
@@ -74,8 +71,8 @@ namespace Terminals.Forms.Controls
         /// </summary>
         public event KeyEventHandler ResultListKeyUp
         {
-            add { this.resultsListView.KeyUp += value; }
-            remove { this.resultsListView.KeyUp -= value; }
+            add => this.resultsListView.KeyUp += value;
+            remove => this.resultsListView.KeyUp -= value;
         }
 
         /// <summary>
@@ -84,8 +81,8 @@ namespace Terminals.Forms.Controls
         /// </summary>
         public event ListViewItemSelectionChangedEventHandler ResultsSelectionChanged
         {
-            add { this.resultsListView.ItemSelectionChanged += value; }
-            remove { this.resultsListView.ItemSelectionChanged -= value; }
+            add => this.resultsListView.ItemSelectionChanged += value;
+            remove => this.resultsListView.ItemSelectionChanged -= value;
         }
 
         public SearchResultsPanel()
@@ -126,7 +123,7 @@ namespace Terminals.Forms.Controls
 
         private void ShowContextMenu(MouseEventArgs e)
         {
-            ListViewItem clickedItem = this.resultsListView.GetItemAt(e.X, e.Y);
+            var clickedItem = this.resultsListView.GetItemAt(e.X, e.Y);
 
             if (this.ResultsContextMenu == null || clickedItem == null)
                 return;
@@ -140,14 +137,14 @@ namespace Terminals.Forms.Controls
         /// </summary>
         internal void LoadAll()
         {
-            SortableList<IFavorite> favorites = this.persistence.Favorites.ToListOrderedByDefaultSorting();
+            var favorites = this.persistence.Favorites.ToListOrderedByDefaultSorting();
             this.LoadFromFavorites(favorites);
         }
 
         internal void LoadFromFavorites(List<IFavorite> favorites)
         {
             this.resultsListView.Items.Clear();
-            ListViewItem[] transformed = favorites.Select(FavoriteToListViewItem).ToArray();
+            var transformed = favorites.Select(FavoriteToListViewItem).ToArray();
             this.resultsListView.Items.AddRange(transformed);
             this.resultsListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
         }
@@ -158,8 +155,7 @@ namespace Terminals.Forms.Controls
                 .OfType<ListViewItem>()
                 .FirstOrDefault();
 
-            if (firstSelected != null)
-                firstSelected.BeginEdit();
+            firstSelected?.BeginEdit();
         }
     }
 }

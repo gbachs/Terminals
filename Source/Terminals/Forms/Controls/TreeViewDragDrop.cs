@@ -34,10 +34,7 @@ namespace Terminals.Forms.Controls
             get
             {
                 var favoriteNode = this.data.GetData(typeof(FavoriteTreeNode)) as FavoriteTreeNode;
-                if (favoriteNode != null)
-                    return favoriteNode.Favorite;
-
-                return null;
+                return favoriteNode?.Favorite;
             }
         }
 
@@ -46,20 +43,11 @@ namespace Terminals.Forms.Controls
             get
             {
                 var sourceNode = this.data.GetData(typeof(GroupTreeNode)) as GroupTreeNode;
-                if (sourceNode != null)
-                    return sourceNode.Group;
-
-                return null;
+                return sourceNode?.Group;
             }
         }
 
-        private bool DontDropFavorite
-        {
-            get
-            {
-                return this.SourceFavorite == null || this.targetGroup == null;
-            }
-        }
+        private bool DontDropFavorite => this.SourceFavorite == null || this.targetGroup == null;
 
         /// <summary>
         /// Gets drop effect to be performed for current situation, not the one currently set by arguments provided in constructor.
@@ -140,7 +128,7 @@ namespace Terminals.Forms.Controls
             if (this.DontDropFavorite)
                 return;
 
-            IFavorite copy = this.CopyCommnad.Copy(this.SourceFavorite);
+            var copy = this.CopyCommnad.Copy(this.SourceFavorite);
             if (copy != null)
                 this.persistence.Favorites.UpdateFavorite(copy, new List<IGroup>() { this.targetGroup });
         }
@@ -149,7 +137,7 @@ namespace Terminals.Forms.Controls
         {
             if (this.SourceFavorite == null) return;
 
-            List<IGroup> targetGroups = new List<IGroup>();
+            var targetGroups = new List<IGroup>();
             // target group can be null => move to root
             if (this.targetGroup != null)
                 targetGroups.Add(this.targetGroup);
@@ -162,8 +150,8 @@ namespace Terminals.Forms.Controls
             if (this.DontDropFavorite)
                 return;
 
-            IFavorite toUpdate = this.SourceFavorite;
-            List<IGroup> resultGroups = toUpdate.Groups.ToList();
+            var toUpdate = this.SourceFavorite;
+            var resultGroups = toUpdate.Groups.ToList();
             resultGroups.Add(this.targetGroup);
             this.persistence.Favorites.UpdateFavorite(toUpdate, resultGroups);
         }
@@ -186,7 +174,7 @@ namespace Terminals.Forms.Controls
         private void DropGroup()
         {
             // resolve source group only once
-            IGroup sourceGroup = this.SourceGroup;
+            var sourceGroup = this.SourceGroup;
             // dont check target group, becaue if empty, than we mare moving to the root
             if (sourceGroup == null || this.GroupDropOnItSelf(sourceGroup))
                 return;
@@ -217,7 +205,7 @@ namespace Terminals.Forms.Controls
                 return;
 
             var importers = new Importers(this.persistence);
-            List<FavoriteConfigurationElement> toImport = importers.ImportFavorites(files);
+            var toImport = importers.ImportFavorites(files);
             this.ApplyTargetGroup(toImport);
             var managedImport = new ImportWithDialogs(parentForm, this.persistence, this.connectinManager);
             managedImport.Import(toImport);
@@ -228,7 +216,7 @@ namespace Terminals.Forms.Controls
             if (this.targetGroup == null)
                 return;
 
-            foreach (FavoriteConfigurationElement toImport in favoritesToImport)
+            foreach (var toImport in favoritesToImport)
             {
                 toImport.Tags = this.targetGroup.Name;
             }

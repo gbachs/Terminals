@@ -38,7 +38,7 @@ namespace Terminals
         {
             try
             {
-                TabControlItem tabToClose = this.tcTerminals.SelectedItem;
+                var tabToClose = this.tcTerminals.SelectedItem;
                 if (this.tcTerminals.Items.Contains(tabToClose))
                     this.tcTerminals.CloseTab(tabToClose);
             }
@@ -56,7 +56,7 @@ namespace Terminals
         private void TcTerminals_TabControlItemClosing(TabControlItemClosingEventArgs e)
         {
             // we have to check the connection state in case tab is closing because of lost connection
-            IConnection currentConnection = this.selectionControler.CurrentConnection;
+            var currentConnection = this.selectionControler.CurrentConnection;
             if (currentConnection != null && currentConnection.Connected)
             {
                 if (!this.AskToClose())
@@ -68,7 +68,7 @@ namespace Terminals
         {
             // unregister not the method here, but the registered method
             connection.OnDisconnected -= this.mainForm.OnDisconnected;
-            TerminalTabControlItem tabPage = new TabControlFilter(this.tcTerminals).FindTabToClose(connection);
+            var tabPage = new TabControlFilter(this.tcTerminals).FindTabToClose(connection);
             this.InvokeCloseTab(tabPage);
         }
 
@@ -95,7 +95,7 @@ namespace Terminals
             if (tabPage == null)
                 return;
 
-            bool wasSelected = tabPage.Selected;
+            var wasSelected = tabPage.Selected;
             this.tcTerminals.RemoveTab(tabPage);
             this.CloseTabControlItem(tabPage);
 
@@ -109,9 +109,9 @@ namespace Terminals
         {
             if (this.settings.WarnOnConnectionClose)
             {
-                string message = Program.Resources.GetString("Areyousurethatyouwanttodisconnectfromtheactiveterminal");
-                string title = Program.Resources.GetString("Terminals");
-                YesNoDisableResult answer = YesNoDisableForm.ShowDialog(title, message);
+                var message = Program.Resources.GetString("Areyousurethatyouwanttodisconnectfromtheactiveterminal");
+                var title = Program.Resources.GetString("Terminals");
+                var answer = YesNoDisableForm.ShowDialog(title, message);
                 if (answer.Disable)
                     this.settings.WarnOnConnectionClose = false;
 
@@ -130,10 +130,10 @@ namespace Terminals
         private static void DisposeConnection(TabControlItem tabPage)
         {
             var toDispose = tabPage as TerminalTabControlItem;
-            if (toDispose != null && toDispose.Connection != null)
+            if (toDispose != null)
             {
                 // Expecting all connections are disposable, because derive from Connection
-                toDispose.Connection.Dispose();
+                toDispose.Connection?.Dispose();
             }
         }
 

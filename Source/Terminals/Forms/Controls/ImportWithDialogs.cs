@@ -24,10 +24,7 @@ namespace Terminals.Forms.Controls
 
         private readonly IDataValidator validator;
 
-        private IFavorites PersistedFavorites
-        {
-            get { return this.persistence.Favorites; }
-        }
+        private IFavorites PersistedFavorites => this.persistence.Favorites;
 
         internal ImportWithDialogs(Form sourceForm, IPersistence persistence, ConnectionManager connectionManager)
             : this(new FormsImportUi(sourceForm), persistence, connectionManager)
@@ -45,9 +42,9 @@ namespace Terminals.Forms.Controls
         internal Boolean Import(List<FavoriteConfigurationElement> favoritesToImport)
         {
             this.importUi.ReportStart();
-            int importedCount = ImportPreservingNames(favoritesToImport);
+            var importedCount = ImportPreservingNames(favoritesToImport);
             this.importUi.ReportEnd();
-            bool imported = importedCount > 0;
+            var imported = importedCount > 0;
             if (imported)
                 this.importUi.ShowResultMessage(importedCount);
 
@@ -56,10 +53,10 @@ namespace Terminals.Forms.Controls
 
         private int ImportPreservingNames(List<FavoriteConfigurationElement> favoritesToImport)
         {
-            List<FavoriteConfigurationElement> uniqueToImport = GetUniqueItemsToImport(favoritesToImport);
-            List<FavoriteConfigurationElement> conflictingFavorites = GetConflictingFavorites(uniqueToImport);
+            var uniqueToImport = GetUniqueItemsToImport(favoritesToImport);
+            var conflictingFavorites = GetConflictingFavorites(uniqueToImport);
             // using delegate allows us to call this method from unit tests, without use of UI
-            DialogResult renameAnswer = this.importUi.AskIfOverwriteOrRename(conflictingFavorites.Count);
+            var renameAnswer = this.importUi.AskIfOverwriteOrRename(conflictingFavorites.Count);
             if (renameAnswer == DialogResult.Yes)
                 RenameConflictingFavorites(conflictingFavorites);
 
@@ -87,9 +84,9 @@ namespace Terminals.Forms.Controls
         private int ImportAllToPeristence(List<FavoriteConfigurationElement> configFavoritesToImport)
         {
             this.persistence.StartDelayedUpdate();
-            int importedCount = 0;
+            var importedCount = 0;
 
-            foreach (FavoriteConfigurationElement configFavorite in configFavoritesToImport)
+            foreach (var configFavorite in configFavoritesToImport)
             {
                var context = new ImportContext(configFavorite);
                this.TryProcessFavorite(context);
@@ -104,7 +101,7 @@ namespace Terminals.Forms.Controls
         private void TryProcessFavorite(ImportContext context)
         {
             context.ToPerisist = ModelConverterV1ToV2.ConvertToFavorite(context.ToImport, this.persistence, this.connectionManager);
-            ValidationStates results = this.validator.Validate(context.ToPerisist);
+            var results = this.validator.Validate(context.ToPerisist);
             if (results.Empty)
                 this.ProcessFavorite(context);
             else
@@ -114,15 +111,15 @@ namespace Terminals.Forms.Controls
         private void ProcessFavorite(ImportContext context)
         {
             this.ImportToPersistence(context.ToPerisist);
-            IEnumerable<string> validGroupNames = this.SelectValidGroupNames(context.ToImport);
+            var validGroupNames = this.SelectValidGroupNames(context.ToImport);
             AddFavoriteIntoGroups(this.persistence, context.ToPerisist, validGroupNames);
             context.Imported = true;
         }
         
         private static void LogFavoriteImportError(ValidationStates results, IFavorite favorite)
         {
-            string allErrors = results.ToOneMessage();
-            string message = string.Format("Couldnt import invalid favorite: '{0}' because:\r\n{1}", favorite.Name, allErrors);
+            var allErrors = results.ToOneMessage();
+            var message = string.Format("Couldnt import invalid favorite: '{0}' because:\r\n{1}", favorite.Name, allErrors);
             Logging.Warn(message);
         }
 
@@ -136,16 +133,16 @@ namespace Terminals.Forms.Controls
 
         internal static void AddFavoriteIntoGroups(IPersistence persistence, IFavorite toPerisist, IEnumerable<string> validGroupNames)
         {
-            foreach (string groupName in validGroupNames)
+            foreach (var groupName in validGroupNames)
             {
-                IGroup group = FavoritesFactory.GetOrAddNewGroup(persistence, groupName);
+                var group = FavoritesFactory.GetOrAddNewGroup(persistence, groupName);
                 group.AddFavorite(toPerisist);
             }
         }
         
         private void ImportToPersistence(IFavorite favorite)
         {
-            IFavorite oldFavorite = this.PersistedFavorites[favorite.Name];
+            var oldFavorite = this.PersistedFavorites[favorite.Name];
             if (oldFavorite != null) // force to override old favorite
             {
                 oldFavorite.UpdateFrom(favorite);
@@ -159,7 +156,7 @@ namespace Terminals.Forms.Controls
 
         private void RenameConflictingFavorites(List<FavoriteConfigurationElement> conflictingFavorites)
         {
-            foreach (FavoriteConfigurationElement favoriteToRename in conflictingFavorites)
+            foreach (var favoriteToRename in conflictingFavorites)
             {
                 this.AddImportSuffixToFavorite(favoriteToRename);
             }

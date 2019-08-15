@@ -11,14 +11,14 @@ namespace Unified
     {
         public static MemoryStream SerializeBinary(object request)
         {
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            MemoryStream memoryStream1 = new MemoryStream();
+            var binaryFormatter = new BinaryFormatter();
+            var memoryStream1 = new MemoryStream();
             binaryFormatter.Serialize(memoryStream1, request);
             return memoryStream1;
         }
         public static byte[] SerializeBinaryAsBytes(object request)
         {
-            using (MemoryStream stm = SerializeBinary(request))
+            using (var stm = SerializeBinary(request))
             {
                 return StreamHelper.StreamToBytes(stm);
             }
@@ -26,7 +26,7 @@ namespace Unified
         public static object DeSerializeBinary(MemoryStream memStream)
         {
             memStream.Position = (long)0;
-            object local1 = new BinaryFormatter().Deserialize(memStream);
+            var local1 = new BinaryFormatter().Deserialize(memStream);
             memStream.Close();
             return local1;
         }
@@ -42,7 +42,7 @@ namespace Unified
 
             try
             {
-                XmlSerializer xmlSerializer = new XmlSerializer(type);
+                var xmlSerializer = new XmlSerializer(type);
                 local2 = xmlSerializer.Deserialize(memStream);
             }
             catch
@@ -66,7 +66,7 @@ namespace Unified
 
             try
             {
-                XmlSerializer xmlSerializer = new XmlSerializer(type);
+                var xmlSerializer = new XmlSerializer(type);
                 local2 = xmlSerializer.Deserialize(memStream);
             }
             catch (Exception)
@@ -79,7 +79,7 @@ namespace Unified
 
         public static byte[] SerializeXMLAsBytes(object request)
         {
-            using (MemoryStream stm = SerializeXML(request))
+            using (var stm = SerializeXML(request))
             {
                 return StreamHelper.StreamToBytes(stm);
             }
@@ -99,11 +99,11 @@ namespace Unified
 
         public static void SerializeXMLToDisk(object request, string Filename, XmlSerializer xmlSerializer)
         {
-            if (System.IO.File.Exists(Filename))
-                System.IO.File.Delete(Filename);
+            if (File.Exists(Filename))
+                File.Delete(Filename);
 
-            string serialized = SerializeXMLAsString(request, xmlSerializer);
-            System.IO.File.WriteAllText(Filename, serialized, Encoding.UTF8);
+            var serialized = SerializeXMLAsString(request, xmlSerializer);
+            File.WriteAllText(Filename, serialized, Encoding.UTF8);
         }
 
         public static string SerializeXMLAsString(object request)
@@ -113,7 +113,7 @@ namespace Unified
 
         public static string SerializeXMLAsString(object request, XmlSerializer serializer)
         {
-            using (MemoryStream stm = SerializeXML(request, serializer))
+            using (var stm = SerializeXML(request, serializer))
             {
                 return StreamHelper.StreamToString(stm);
             }
@@ -131,8 +131,8 @@ namespace Unified
 
             try
             {
-                XmlSerializer xmlSerializer = new XmlSerializer(type);
-                MemoryStream memoryStream1 = new MemoryStream();
+                var xmlSerializer = new XmlSerializer(type);
+                var memoryStream1 = new MemoryStream();
                 xmlSerializer.Serialize(memoryStream1, request);
                 memoryStream2 = memoryStream1;
             }
@@ -152,7 +152,7 @@ namespace Unified
 
             try
             {
-                MemoryStream memoryStream1 = new MemoryStream();
+                var memoryStream1 = new MemoryStream();
                 xmlSerializer.Serialize(memoryStream1, request);
                 memoryStream2 = memoryStream1;
             }
@@ -179,7 +179,7 @@ namespace Unified
         {
             if (File.Exists(Filename))
             {
-                string contents = File.ReadAllText(Filename);
+                var contents = File.ReadAllText(Filename);
                 return DeSerializeXML(contents, xmlSerializer);
             }
 
@@ -191,9 +191,9 @@ namespace Unified
             object local2;
             try
             {
-                XmlSerializer xmlSerializer = new XmlSerializer(type);
-                MemoryStream memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(envelope));
-                object local1 = xmlSerializer.Deserialize(memoryStream);
+                var xmlSerializer = new XmlSerializer(type);
+                var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(envelope));
+                var local1 = xmlSerializer.Deserialize(memoryStream);
                 memoryStream.Close();
                 local2 = local1;
             }
@@ -218,8 +218,8 @@ namespace Unified
             try
             {
 
-                MemoryStream memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(envelope));
-                object local1 = xmlSerializer.Deserialize(memoryStream);
+                var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(envelope));
+                var local1 = xmlSerializer.Deserialize(memoryStream);
                 memoryStream.Close();
                 local2 = local1;
             }

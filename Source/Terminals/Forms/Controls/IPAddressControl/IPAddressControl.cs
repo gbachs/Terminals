@@ -58,7 +58,7 @@ namespace Terminals.Forms.Controls
 
             ResetBackColorChanged();
 
-            for (int index = 0; index < ipAddressFieldControls.Length; ++index)
+            for (var index = 0; index < ipAddressFieldControls.Length; ++index)
             {
                 ipAddressFieldControls[index] = new IPAddressFieldControl();
 
@@ -155,7 +155,7 @@ namespace Terminals.Forms.Controls
         {
             get
             {
-                foreach (IPAddressFieldControl fc in ipAddressFieldControls)
+                foreach (var fc in ipAddressFieldControls)
                 {
                     return fc.TabStop;
                 }
@@ -164,7 +164,7 @@ namespace Terminals.Forms.Controls
             }
             set
             {
-                foreach (IPAddressFieldControl fc in ipAddressFieldControls)
+                foreach (var fc in ipAddressFieldControls)
                 {
                     fc.TabStop = value;
                 }
@@ -176,7 +176,7 @@ namespace Terminals.Forms.Controls
         {
             get
             {
-                foreach (IPAddressFieldControl fc in ipAddressFieldControls)
+                foreach (var fc in ipAddressFieldControls)
                 {
                     if (fc.Blank)
                         return true;
@@ -189,10 +189,7 @@ namespace Terminals.Forms.Controls
         [Browsable(true)]
         public bool AutoHeight
         {
-            get
-            {
-                return _autoHeight;
-            }
+            get => _autoHeight;
             set
             {
                 _autoHeight = value;
@@ -207,9 +204,9 @@ namespace Terminals.Forms.Controls
         {
             get
             {
-                Native.TEXTMETRIC textMetric = GetTextMetrics(Handle, Font);
+                var textMetric = GetTextMetrics(Handle, Font);
 
-                int offset = textMetric.tmAscent + 1;
+                var offset = textMetric.tmAscent + 1;
 
                 switch (BorderStyle)
                 {
@@ -230,7 +227,7 @@ namespace Terminals.Forms.Controls
         {
             get
             {
-                foreach (IPAddressFieldControl fc in ipAddressFieldControls)
+                foreach (var fc in ipAddressFieldControls)
                 {
                     if (!fc.Blank)
                         return false;
@@ -243,10 +240,7 @@ namespace Terminals.Forms.Controls
         [Browsable(true)]
         public BorderStyle BorderStyle
         {
-            get
-            {
-                return _borderStyle;
-            }
+            get => _borderStyle;
             set
             {
                 _borderStyle = value;
@@ -260,7 +254,7 @@ namespace Terminals.Forms.Controls
         {
             get
             {
-                foreach (IPAddressFieldControl fc in ipAddressFieldControls)
+                foreach (var fc in ipAddressFieldControls)
                 {
                     if (fc.Focused)
                         return true;
@@ -271,31 +265,22 @@ namespace Terminals.Forms.Controls
         }
 
         [Browsable(true)]
-        public override Size MinimumSize
-        {
-            get
-            {
-                return CalculateMinimumSize();
-            }
-        }
+        public override Size MinimumSize => CalculateMinimumSize();
 
         [Browsable(true)]
         public bool ReadOnly
         {
-            get
-            {
-                return _readOnly;
-            }
+            get => _readOnly;
             set
             {
                 _readOnly = value;
 
-                foreach (IPAddressFieldControl fc in ipAddressFieldControls)
+                foreach (var fc in ipAddressFieldControls)
                 {
                     fc.ReadOnly = _readOnly;
                 }
 
-                foreach (IPAddressDotControl dc in ipAddressDotControls)
+                foreach (var dc in ipAddressDotControls)
                 {
                     dc.ReadOnly = _readOnly;
                 }
@@ -311,10 +296,10 @@ namespace Terminals.Forms.Controls
         {
             get
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 ;
 
-                for (int index = 0; index < ipAddressFieldControls.Length; ++index)
+                for (var index = 0; index < ipAddressFieldControls.Length; ++index)
                 {
                     sb.Append(ipAddressFieldControls[index].Text);
 
@@ -324,10 +309,7 @@ namespace Terminals.Forms.Controls
 
                 return sb.ToString();
             }
-            set
-            {
-                Parse(value);
-            }
+            set => Parse(value);
         }
 
         #endregion // Public Properties
@@ -336,7 +318,7 @@ namespace Terminals.Forms.Controls
 
         public void Clear()
         {
-            foreach (IPAddressFieldControl fc in ipAddressFieldControls)
+            foreach (var fc in ipAddressFieldControls)
             {
                 fc.Clear();
             }
@@ -344,9 +326,9 @@ namespace Terminals.Forms.Controls
 
         public byte[] GetAddressBytes()
         {
-            byte[] bytes = new byte[FieldCount];
+            var bytes = new byte[FieldCount];
 
-            for (int index = 0; index < FieldCount; ++index)
+            for (var index = 0; index < FieldCount; ++index)
             {
                 bytes[index] = ipAddressFieldControls[index].Value;
             }
@@ -362,9 +344,9 @@ namespace Terminals.Forms.Controls
             if (bytes == null)
                 return;
 
-            int length = Math.Min(FieldCount, bytes.Length);
+            var length = Math.Min(FieldCount, bytes.Length);
 
-            for (int i = 0; i < length; ++i)
+            for (var i = 0; i < length; ++i)
             {
                 ipAddressFieldControls[i].Text = bytes[i].ToString(CultureInfo.InvariantCulture);
             }
@@ -387,9 +369,9 @@ namespace Terminals.Forms.Controls
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            for (int index = 0; index < FieldCount; ++index)
+            for (var index = 0; index < FieldCount; ++index)
             {
                 sb.Append(ipAddressFieldControls[index].ToString());
 
@@ -454,7 +436,7 @@ namespace Terminals.Forms.Controls
         {
             base.OnPaint(e);
 
-            Color backColor = BackColor;
+            var backColor = BackColor;
 
             if (!_backColorChanged)
             {
@@ -462,12 +444,12 @@ namespace Terminals.Forms.Controls
                     backColor = SystemColors.Control;
             }
 
-            using (SolidBrush backgroundBrush = new SolidBrush(backColor))
+            using (var backgroundBrush = new SolidBrush(backColor))
             {
                 e.Graphics.FillRectangle(backgroundBrush, ClientRectangle);
             }
 
-            Rectangle rectBorder = new Rectangle(ClientRectangle.Left, ClientRectangle.Top,
+            var rectBorder = new Rectangle(ClientRectangle.Left, ClientRectangle.Top,
                                                  ClientRectangle.Width - 1, ClientRectangle.Height - 1);
 
             switch (BorderStyle)
@@ -498,13 +480,7 @@ namespace Terminals.Forms.Controls
 
         #region Private Properties
 
-        private bool HasMouse
-        {
-            get
-            {
-                return DisplayRectangle.Contains(PointToClient(MousePosition));
-            }
-        }
+        private bool HasMouse => DisplayRectangle.Contains(PointToClient(MousePosition));
 
         #endregion  // Private Properties
 
@@ -512,7 +488,7 @@ namespace Terminals.Forms.Controls
 
         private void AdjustSize()
         {
-            Size newSize = MinimumSize;
+            var newSize = MinimumSize;
 
             if (Width > newSize.Width)
                 newSize.Width = Width;
@@ -530,15 +506,15 @@ namespace Terminals.Forms.Controls
 
         private Size CalculateMinimumSize()
         {
-            Size minimumSize = new Size(0, 0);
+            var minimumSize = new Size(0, 0);
 
-            foreach (IPAddressFieldControl fc in ipAddressFieldControls)
+            foreach (var fc in ipAddressFieldControls)
             {
                 minimumSize.Width += fc.Width;
                 minimumSize.Height = Math.Max(minimumSize.Height, fc.Height);
             }
 
-            foreach (IPAddressDotControl dc in ipAddressDotControls)
+            foreach (var dc in ipAddressDotControls)
             {
                 minimumSize.Width += dc.Width;
                 minimumSize.Height = Math.Max(minimumSize.Height, dc.Height);
@@ -569,14 +545,14 @@ namespace Terminals.Forms.Controls
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806", Justification = "What should be done if ReleaseDC() doesn't work?")]
         private static Native.TEXTMETRIC GetTextMetrics(IntPtr hwnd, Font font)
         {
-            IntPtr hdc = Native.Methods.GetWindowDC(hwnd);
+            var hdc = Native.Methods.GetWindowDC(hwnd);
 
             Native.TEXTMETRIC textMetric;
-            IntPtr hFont = font.ToHfont();
+            var hFont = font.ToHfont();
 
             try
             {
-                IntPtr hFontPrevious = Native.Methods.SelectObject(hdc, hFont);
+                var hFontPrevious = Native.Methods.SelectObject(hdc, hFont);
                 Native.Methods.GetTextMetrics(hdc, out textMetric);
                 Native.Methods.SelectObject(hdc, hFontPrevious);
             }
@@ -606,18 +582,18 @@ namespace Terminals.Forms.Controls
         {
             SuspendLayout();
 
-            int difference = Width - MinimumSize.Width;
+            var difference = Width - MinimumSize.Width;
 
             Debug.Assert(difference >= 0);
 
-            int numOffsets = ipAddressFieldControls.Length + ipAddressDotControls.Length + 1;
+            var numOffsets = ipAddressFieldControls.Length + ipAddressDotControls.Length + 1;
 
-            int div = difference/(numOffsets);
-            int mod = difference%(numOffsets);
+            var div = difference/(numOffsets);
+            var mod = difference%(numOffsets);
 
-            int[] offsets = new int[numOffsets];
+            var offsets = new int[numOffsets];
 
-            for (int index = 0; index < numOffsets; ++index)
+            for (var index = 0; index < numOffsets; ++index)
             {
                 offsets[index] = div;
 
@@ -625,8 +601,8 @@ namespace Terminals.Forms.Controls
                     ++offsets[index];
             }
 
-            int x = 0;
-            int y = 0;
+            var x = 0;
+            var y = 0;
 
             switch (BorderStyle)
             {
@@ -640,11 +616,11 @@ namespace Terminals.Forms.Controls
                     break;
             }
 
-            int offsetIndex = 0;
+            var offsetIndex = 0;
 
             x += offsets[offsetIndex++];
 
-            for (int i = 0; i < ipAddressFieldControls.Length; ++i)
+            for (var i = 0; i < ipAddressFieldControls.Length; ++i)
             {
                 ipAddressFieldControls[i].Location = new Point(x, y);
 
@@ -689,7 +665,7 @@ namespace Terminals.Forms.Controls
                 (e.IPAddressControlDirection == IPAddressControlDirection.Forward && e.FieldIndex == (FieldCount - 1)))
                 return;
 
-            int fieldIndex = e.FieldIndex;
+            var fieldIndex = e.FieldIndex;
 
             if (e.IPAddressControlDirection == IPAddressControlDirection.Forward)
                 ++fieldIndex;
@@ -741,7 +717,7 @@ namespace Terminals.Forms.Controls
         {
             if (null != FieldChangedEvent)
             {
-                FieldChangedEventArgs args = new FieldChangedEventArgs();
+                var args = new FieldChangedEventArgs();
                 args.FieldIndex = e.FieldIndex;
                 args.Text = e.Text;
                 FieldChangedEvent(this, args);
@@ -797,13 +773,13 @@ namespace Terminals.Forms.Controls
             if (null == text)
                 return;
 
-            int textIndex = 0;
+            var textIndex = 0;
 
-            int index = 0;
+            var index = 0;
 
             for (index = 0; index < ipAddressDotControls.Length; ++index)
             {
-                int findIndex = text.IndexOf(ipAddressDotControls[index].Text, textIndex, StringComparison.Ordinal);
+                var findIndex = text.IndexOf(ipAddressDotControls[index].Text, textIndex, StringComparison.Ordinal);
 
                 if (findIndex >= 0)
                 {

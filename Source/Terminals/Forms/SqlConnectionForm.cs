@@ -11,10 +11,7 @@ namespace Terminals.Forms
     {
         internal SqlConnectionStringBuilder DataSource
         {
-            get
-            {
-                return this.pGridConnection.SelectedObject as SqlConnectionStringBuilder;
-            }
+            get => this.pGridConnection.SelectedObject as SqlConnectionStringBuilder;
             set
             {
                 if (value == null)

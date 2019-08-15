@@ -38,7 +38,7 @@ namespace Terminals.Forms
 
         private void chkExecuteBeforeConnect_CheckedChanged(object sender, EventArgs e)
         {
-            Boolean enabled = this.chkExecuteBeforeConnect.Checked;
+            var enabled = this.chkExecuteBeforeConnect.Checked;
             this.txtCommand.Enabled = enabled;
             this.txtArguments.Enabled = enabled;
             this.txtInitialDirectory.Enabled = enabled;

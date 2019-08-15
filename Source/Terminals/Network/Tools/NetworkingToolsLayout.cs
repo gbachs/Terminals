@@ -27,8 +27,7 @@ namespace Terminals.Connections
 
         private void tabbedTools1_OnTabChanged(object sender, TabControlEventArgs e)
         {
-            if (this.OnTabChanged != null)
-                this.OnTabChanged(sender, e);
+            this.OnTabChanged?.Invoke(sender, e);
         }
     }
 }

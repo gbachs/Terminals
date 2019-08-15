@@ -181,28 +181,15 @@ namespace Metro.TransportLayer.Icmp
 		/// <summary>
 		///		Whether or not a trace is currently running.
 		/// </summary>
-		public bool Running
-		{
-			get
-			{
-				return m_working;
-			}
-		}
-		
-		
+		public bool Running => m_working;
+
 		/// <summary>
 		///		The time out time.
 		/// </summary>
 		public int TimeOutInterval
 		{
-			get
-			{
-				return m_timeoutTime;
-			}
-			set
-			{
-				m_timeoutTime = value;
-			}
+			get => m_timeoutTime;
+			set => m_timeoutTime = value;
 		}
 		
 		
@@ -211,14 +198,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public byte MaxHops
 		{
-			get
-			{
-				return m_maxHops;
-			}
-			set
-			{
-				m_maxHops = value;
-			}
+			get => m_maxHops;
+			set => m_maxHops = value;
 		}
 				
 				
@@ -227,14 +208,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public bool FragmentPackets
 		{
-			get
-			{
-				return m_fragment;
-			}
-			set
-			{
-				m_fragment = value;
-			}
+			get => m_fragment;
+			set => m_fragment = value;
 		}
 		
 		
@@ -244,14 +219,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public bool UseStrictRouting
 		{
-			get
-			{	
-				return m_strictRouting;
-			}
-			set
-			{
-				m_strictRouting = value;
-			}
+			get => m_strictRouting;
+			set => m_strictRouting = value;
 		}
 		
 		
@@ -260,14 +229,8 @@ namespace Metro.TransportLayer.Icmp
 		/// </summary>
 		public IpV4RoutingOption Route
 		{
-			get
-			{
-				return m_route;
-			}
-			set
-			{
-				m_route = value;
-			}
+			get => m_route;
+			set => m_route = value;
 		}
 		
 		

@@ -81,9 +81,7 @@ namespace Terminals.Configuration
         internal FavoriteConfigurationElementCollection GetFavorites()
         {
             var section = this.GetSection();
-            if (section != null)
-                return section.Favorites;
-            return null;
+            return section?.Favorites;
         }
     }
 }

@@ -63,26 +63,12 @@ namespace Metro.NetworkLayer.ARP
 		/// <summary>
 		///		Whether or not the class has been disposed yet,
 		/// </summary>
-		public bool Disposed
-		{
-			get
-			{
-				return m_disposed;
-			}
-		}
+		public bool Disposed => m_disposed;
 
-		
 		/// <summary>
 		///		Whether or not there is a query already running.
 		/// </summary>
-		public bool QueryPending
-		{
-			get
-			{
-				return m_querying;	
-			}
-		}
-		
+		public bool QueryPending => m_querying;
 
 		#endregion
 	

@@ -111,9 +111,7 @@ namespace Terminals.Scanner
 
         private void FireOnScanFinished()
         {
-            if (this.OnScanFinished != null)
-                // we dont have cancel here, because it already has no more work to do);
-                this.OnScanFinished(this.CreateNewEventArguments());
+            this.OnScanFinished?.Invoke(this.CreateNewEventArguments());
         }
 
         private void WaitUntilTimeOut(ConnectionState connectionState)

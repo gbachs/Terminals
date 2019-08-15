@@ -32,7 +32,7 @@ namespace Terminals.Forms.Controls
         {
             get
             {
-                IPAddressControl control = (IPAddressControl) Control;
+                var control = (IPAddressControl) Control;
 
                 if (control.AutoHeight)
                     return SelectionRules.Moveable | SelectionRules.Visible | SelectionRules.LeftSizeable | SelectionRules.RightSizeable;
@@ -45,9 +45,9 @@ namespace Terminals.Forms.Controls
         {
             get
             {
-                IPAddressControl control = (IPAddressControl) Control;
+                var control = (IPAddressControl) Control;
 
-                IList snapLines = base.SnapLines;
+                var snapLines = base.SnapLines;
 
                 snapLines.Add(new SnapLine(SnapLineType.Baseline, control.Baseline));
 

@@ -10,22 +10,16 @@ namespace Terminals.Forms.Controls
     /// </summary>
     internal class FavoritesLevelUpdate : TreeNodesLevelUpdate<FavoritesChangedEventArgs, FavoriteTreeNode>
     {
-        protected override bool RemoveCurrent
-        {
-            get
-            {
-                return this.CurrentNode.HasFavoriteIn(this.Changes.Removed);
-            }
-        }
+        protected override bool RemoveCurrent => this.CurrentNode.HasFavoriteIn(this.Changes.Removed);
 
         private IEnumerable<IFavorite> FavoritesToAdd
         {
             get
             {
-                List<IFavorite> toAdd = this.Changes.Added.Where(this.IsThisLevelFavorite)
+                var toAdd = this.Changes.Added.Where(this.IsThisLevelFavorite)
                                          .ToList();
 
-                IEnumerable<IFavorite> moved = this.MovedFavorites();
+                var moved = this.MovedFavorites();
                 toAdd.AddRange(moved);
                 // select unique favorites, because add new sends at once added and update
                 return toAdd.Distinct();
@@ -97,7 +91,7 @@ namespace Terminals.Forms.Controls
 
         protected override void UpdateCurrent()
         {
-            IFavorite updatedFavorite = this.SelectUpdatedFavorite();
+            var updatedFavorite = this.SelectUpdatedFavorite();
             if (updatedFavorite == null)
                 return;
 
@@ -111,24 +105,24 @@ namespace Terminals.Forms.Controls
 
         private void UpdateFavoriteByRename(IFavorite updatedFavorite)
         {
-            int index = this.Nodes.FindFavoriteNodeInsertIndex(updatedFavorite);
+            var index = this.Nodes.FindFavoriteNodeInsertIndex(updatedFavorite);
             this.Nodes.InsertNodePreservingOrder(index, this.CurrentNode);
 
             // dont apply the name before we fix the position
-            string toolTip = this.ToolTipBuilder.BuildTooTip(updatedFavorite);
+            var toolTip = this.ToolTipBuilder.BuildTooTip(updatedFavorite);
             this.CurrentNode.UpdateByFavorite(updatedFavorite, toolTip);
         }
 
         private IFavorite SelectUpdatedFavorite()
         {
-            IFavorite favorite = this.CurrentNode.Favorite;
+            var favorite = this.CurrentNode.Favorite;
             return this.Changes.Updated.FirstOrDefault(candidate => candidate.StoreIdEquals(favorite));
         }
 
         private void UpdateGroupNodeChilds()
         {
             // take only expanded nodes, for better performance and to protect the lazy loading
-            foreach (GroupTreeNode groupNode in this.LoadedGroupNodes)
+            foreach (var groupNode in this.LoadedGroupNodes)
             {
                 var levelUpdate = new FavoritesLevelUpdate(this.FavoriteIcons, groupNode.Nodes, this.Changes, groupNode, this.ToolTipBuilder);
                 levelUpdate.Run();

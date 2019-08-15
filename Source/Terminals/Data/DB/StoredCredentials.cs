@@ -167,8 +167,7 @@ namespace Terminals.Data.DB
         {
             this.cache.Clear();
             this.ReloadCache();
-            if (this.CredentialsChanged != null)
-                this.CredentialsChanged(this, new EventArgs());
+            this.CredentialsChanged?.Invoke(this, new EventArgs());
         }
 
         private void ReloadCache()
